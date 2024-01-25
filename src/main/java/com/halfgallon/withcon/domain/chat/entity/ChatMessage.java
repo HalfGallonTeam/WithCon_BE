@@ -33,7 +33,7 @@ public class ChatMessage {
   private String message;
 
   @Enumerated(value = EnumType.STRING)
-  private MessageType chattingType;
+  private MessageType messageType;
 
   @CreatedDate
   @Column(updatable = false)

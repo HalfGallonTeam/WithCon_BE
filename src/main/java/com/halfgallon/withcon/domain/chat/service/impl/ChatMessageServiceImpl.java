@@ -1,8 +1,9 @@
-package com.halfgallon.withcon.domain.chat.service;
+package com.halfgallon.withcon.domain.chat.service.impl;
 
 import com.halfgallon.withcon.domain.chat.constant.MessageType;
 import com.halfgallon.withcon.domain.chat.dto.ChatMessageRequest;
 import com.halfgallon.withcon.domain.chat.dto.ChatMessageResponse;
+import com.halfgallon.withcon.domain.chat.service.ChatMessageService;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
