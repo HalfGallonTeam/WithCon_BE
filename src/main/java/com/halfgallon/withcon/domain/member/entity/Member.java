@@ -2,7 +2,6 @@ package com.halfgallon.withcon.domain.member.entity;
 
 import static lombok.AccessLevel.PROTECTED;
 
-import com.halfgallon.withcon.domain.member.constant.GenderType;
 import com.halfgallon.withcon.domain.member.constant.LoginType;
 import com.halfgallon.withcon.global.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
@@ -13,11 +12,15 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Entity
+@Builder
 @NoArgsConstructor(access = PROTECTED)
-@AllArgsConstructor
+@AllArgsConstructor(access = PROTECTED)
 public class Member extends BaseTimeEntity {
 
   @Id
@@ -39,10 +42,6 @@ public class Member extends BaseTimeEntity {
 
   @Column(nullable = false)
   private String nickname;
-
-  @Column(nullable = false)
-  @Enumerated(EnumType.STRING)
-  private GenderType genderType;
 
   @Column(nullable = false)
   private String phoneNumber;
