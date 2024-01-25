@@ -1,5 +1,6 @@
 package com.halfgallon.withcon.global.exception;
 
+import static org.springframework.http.HttpStatus.CONTINUE;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
@@ -34,6 +35,10 @@ public enum ErrorCode {
    * 409 conflict
    */
   DUPLICATE_CHATROOM(CONFLICT.value(), "이미 존재하는 채팅방입니다."),
+  DUPLICATE_EMAIL(CONFLICT.value(), "이미 사용하고 있는 이메일입니다."),
+  DUPLICATE_USERNAME(CONTINUE.value(), "이미 사용하고 있는 ID 입니다."),
+  DUPLICATE_NICKNAME(CONTINUE.value(), "이미 사용하고 있는 닉네임입니다."),
+  DUPLICATE_PHONE_NUMBER(CONTINUE.value(), "이미 사용하고 있는 핸드폰 번호입니다."),
 
   /**
    * 500 Internal Server Error
