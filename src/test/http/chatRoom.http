@@ -1,0 +1,20 @@
+### 채팅방 생성
+POST http://localhost:8080/chatRoom
+Content-Type: application/json
+
+{
+  "memberId": 1,
+  "name": "1번채팅방"
+}
+
+### 채팅방 조회
+GET http://localhost:8080/chatRoom
+Content-Type: application/json
+
+### 채팅방 입장
+GET http://localhost:8080/chatRoom/7/enter?memberId=2
+Content-Type: application/json
+
+### 채팅방 퇴장
+DELETE http://localhost:8080/chatRoom/5/exit?memberId=1
+Content-Type: application/json
