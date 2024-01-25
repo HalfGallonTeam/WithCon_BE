@@ -1,5 +1,6 @@
 package com.halfgallon.withcon.domain.chat.dto;
 
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.halfgallon.withcon.domain.chat.constant.MessageType;
 import java.time.LocalDateTime;
