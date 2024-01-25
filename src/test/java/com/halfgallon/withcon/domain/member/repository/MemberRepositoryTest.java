@@ -55,7 +55,7 @@ class MemberRepositoryTest {
   @DisplayName("존재하는 닉네임이면 true 를 리턴한다.")
   void existsByNickname_success() {
     // given
-    String nickname = "nickname";
+    String nickname = "위드콘";
 
     Member member = createDefaultMember();
 
