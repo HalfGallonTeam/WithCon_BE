@@ -1,4 +1,4 @@
-package com.halfgallon.withcon.domain.chat.service;
+package com.halfgallon.withcon.domain.chat.service.impl;
 
 import static com.halfgallon.withcon.global.exception.ErrorCode.ALREADY_PARTICIPANT_CHATTING;
 import static com.halfgallon.withcon.global.exception.ErrorCode.DUPLICATE_CHATROOM;
@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.data.domain.Sort.Direction.DESC;
 
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomEnterResponse;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomRequest;
@@ -16,7 +17,6 @@ import com.halfgallon.withcon.domain.chat.entity.ChatParticipant;
 import com.halfgallon.withcon.domain.chat.entity.ChatRoom;
 import com.halfgallon.withcon.domain.chat.repository.ChatParticipantRepository;
 import com.halfgallon.withcon.domain.chat.repository.ChatRoomRepository;
-import com.halfgallon.withcon.domain.chat.service.impl.ChatRoomServiceImpl;
 import com.halfgallon.withcon.domain.member.entity.Member;
 import com.halfgallon.withcon.domain.member.repository.MemberRepository;
 import com.halfgallon.withcon.global.exception.CustomException;
@@ -31,6 +31,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 @ExtendWith(MockitoExtension.class)
@@ -136,7 +141,7 @@ class ChatRoomServiceImplTest {
 
 
   @Test
-  @DisplayName("채팅방 조회 성공")
+  @DisplayName("채팅방 조회 성공 - 페이징 처리")
   void findChatRoom() {
     //given
     ChatRoom chatRoom = ChatRoom.builder()
@@ -144,14 +149,16 @@ class ChatRoomServiceImplTest {
         .name("1번 채팅방")
         .build();
 
-    given(chatRoomRepository.findAll())
-        .willReturn(List.of(chatRoom));
+    Pageable pageable = PageRequest.of(0, 10, Sort.by(DESC, "createdAt"));
+
+    given(chatRoomRepository.findAll(pageable))
+        .willReturn(new PageImpl<>(List.of(chatRoom)));
 
     //when
-    List<ChatRoomResponse> responses = chatRoomService.findChatRoom();
+    Page<ChatRoomResponse> responses = chatRoomService.findChatRoom(pageable);
 
     //then
-    assertThat(responses.size()).isOne();
+    assertThat(responses.getTotalPages()).isOne();
   }
 
 
@@ -164,9 +171,9 @@ class ChatRoomServiceImplTest {
 
     given(chatRoomRepository.findById(anyLong()))
         .willReturn(Optional.of(ChatRoom.builder()
-                .id(1L)
-                .name("1번채팅방")
-                .build()));
+            .id(1L)
+            .name("1번채팅방")
+            .build()));
 
     given(chatParticipantRepository.existsByMemberIdAndChatRoomId(anyLong(), anyLong()))
         .willReturn(true);

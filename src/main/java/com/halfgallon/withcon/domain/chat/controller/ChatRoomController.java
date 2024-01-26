@@ -4,8 +4,11 @@ import com.halfgallon.withcon.domain.chat.dto.ChatRoomEnterResponse;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomRequest;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomResponse;
 import com.halfgallon.withcon.domain.chat.service.ChatRoomService;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,8 +31,9 @@ public class ChatRoomController {
   }
 
   @GetMapping("/chatRoom")
-  public ResponseEntity<List<ChatRoomResponse>> findChatRoom() {
-    return ResponseEntity.ok(chatRoomService.findChatRoom());
+  public ResponseEntity<Page<ChatRoomResponse>> findChatRoom(
+      @PageableDefault(size = 5, sort = "createdAt", direction = Direction.DESC) Pageable pageable) {
+    return ResponseEntity.ok(chatRoomService.findChatRoom(pageable));
   }
 
   @GetMapping("/chatRoom/{chatRoomId}/enter")

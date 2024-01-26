@@ -1,9 +1,10 @@
 package com.halfgallon.withcon.domain.chat.service;
 
 import com.halfgallon.withcon.domain.chat.dto.ChatParticipantResponse;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface ChatParticipantService {
 
-  List<ChatParticipantResponse> findMyChatRoom(Long memberId);
+  Page<ChatParticipantResponse> findMyChatRoom(Long memberId, Pageable pageable);
 }
