@@ -2,8 +2,10 @@ package com.halfgallon.withcon.domain.chat.controller;
 
 import com.halfgallon.withcon.domain.chat.dto.ChatParticipantResponse;
 import com.halfgallon.withcon.domain.chat.service.ChatParticipantService;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,9 +18,9 @@ public class ChatParticipantController {
   private final ChatParticipantService chatParticipantService;
 
   @GetMapping("/chatRoom/members/{memberId}")
-  public ResponseEntity<List<ChatParticipantResponse>> findMyChatRoom(
-      @PathVariable("memberId") Long memberId) {
-    return ResponseEntity.ok(chatParticipantService.findMyChatRoom(memberId));
+  public ResponseEntity<Page<ChatParticipantResponse>> findMyChatRoom(
+      @PathVariable("memberId") Long memberId, @PageableDefault(size = 5) Pageable pageable) {
+    return ResponseEntity.ok(chatParticipantService.findMyChatRoom(memberId, pageable));
   }
 
 }

@@ -3,8 +3,9 @@ package com.halfgallon.withcon.domain.chat.repository;
 import com.halfgallon.withcon.domain.chat.entity.ChatParticipant;
 import com.halfgallon.withcon.domain.chat.entity.ChatRoom;
 import com.halfgallon.withcon.domain.member.entity.Member;
-import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,7 +16,11 @@ public interface ChatParticipantRepository extends JpaRepository<ChatParticipant
 
   boolean existsByMemberId(Long MemberId);
 
-  List<ChatParticipant> findAllByMemberId(Long id);
+  @Query("SELECT cp FROM ChatParticipant cp "
+      + " JOIN FETCH cp.chatRoom cr "
+      + " WHERE cp.member.id = :memberId"
+      + " ORDER BY cr.createdAt DESC ")
+  Page<ChatParticipant> findAllByMemberId(@Param("memberId") Long memberId, Pageable pageable);
 
   boolean existsByMemberIdAndChatRoomId(Long memberId, Long roomId);
 
