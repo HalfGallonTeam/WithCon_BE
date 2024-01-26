@@ -3,13 +3,14 @@ package com.halfgallon.withcon.domain.chat.service;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomEnterResponse;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomRequest;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomResponse;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface ChatRoomService {
 
   ChatRoomResponse createChatRoom(ChatRoomRequest request);
 
-  List<ChatRoomResponse> findChatRoom();
+  Page<ChatRoomResponse> findChatRoom(Pageable pageable);
 
   ChatRoomEnterResponse enterChatRoom(Long chatRoomId, Long memberId);
 

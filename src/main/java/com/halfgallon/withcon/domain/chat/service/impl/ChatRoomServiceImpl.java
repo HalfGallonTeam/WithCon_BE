@@ -20,6 +20,8 @@ import com.halfgallon.withcon.domain.member.repository.MemberRepository;
 import com.halfgallon.withcon.global.exception.CustomException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +32,6 @@ public class ChatRoomServiceImpl implements ChatRoomService {
   private final ChatRoomRepository chatRoomRepository;
   private final ChatParticipantRepository participantRepository;
   private final MemberRepository memberRepository;
-
   @Override
   public ChatRoomResponse createChatRoom(ChatRoomRequest request) {
     //멤버 조회 검사(@AuthenticationPrincipal) -> 임시로 memberRepository에서 들고와서 진행
@@ -54,8 +55,8 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
   @Override
   @Transactional(readOnly = true)
-  public List<ChatRoomResponse> findChatRoom() {
-    return chatRoomRepository.findAll().stream().map(ChatRoomResponse::fromEntity).toList();
+  public Page<ChatRoomResponse> findChatRoom(Pageable pageable) {
+    return chatRoomRepository.findAll(pageable).map(ChatRoomResponse::fromEntity);
   }
 
   @Override
