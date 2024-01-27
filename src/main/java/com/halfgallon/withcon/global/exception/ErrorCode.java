@@ -18,7 +18,8 @@ public enum ErrorCode {
   USER_NOT_PARTICIPANT_CHATTING(BAD_REQUEST.value(), "참여하고 있는 채팅이 없습니다."),
   ALREADY_PARTICIPANT_CHATTING(BAD_REQUEST.value(), "이미 참여하고 있는 채팅입니다."),
   USER_JUST_ONE_CREATE_CHATROOM(BAD_REQUEST.value(), "채팅방은 1인당 1개만 생성 가능합니다."),
-
+  METHOD_NOT_SUPPORTED(BAD_REQUEST.value(), "잘못된 Method 요청입니다."),
+  CONTENT_TYPE_NOT_SUPPORTED(BAD_REQUEST.value(), "잘못된 Content-type 요청입니다."),
   /**
    * 401 Unauthorized
    */
