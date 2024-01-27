@@ -3,10 +3,12 @@ package com.halfgallon.withcon.domain.auth.security.service;
 import com.halfgallon.withcon.domain.member.entity.Member;
 import java.util.Collection;
 import java.util.List;
+import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+@AllArgsConstructor
 public class CustomUserDetails implements UserDetails {
 
   private final Long id;
@@ -15,10 +17,8 @@ public class CustomUserDetails implements UserDetails {
 
   private final String password;
 
-  public CustomUserDetails(Member member) {
-    this.id = member.getId();
-    this.username = member.getUsername();
-    this.password = member.getPassword();
+  public static CustomUserDetails fromEntity(Member member) {
+    return new CustomUserDetails(member.getId(), member.getUsername(), member.getPassword());
   }
 
   @Override

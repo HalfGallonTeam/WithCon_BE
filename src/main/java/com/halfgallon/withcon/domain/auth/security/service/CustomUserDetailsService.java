@@ -21,6 +21,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     Member findMember = memberRepository.findByUsername(username)
         .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-    return new CustomUserDetails(findMember);
+    return CustomUserDetails.fromEntity(findMember);
   }
 }
