@@ -119,7 +119,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
       throw new CustomException(DUPLICATE_CHATROOM);
     }
     //채팅방은 1인당 1개만 생성이 가능하다.
-    if (participantRepository.existRoomLeader(request.memberId())) {
+    if (participantRepository.checkRoomManager(request.memberId())) {
       throw new CustomException(USER_JUST_ONE_CREATE_CHATROOM);
     }
   }

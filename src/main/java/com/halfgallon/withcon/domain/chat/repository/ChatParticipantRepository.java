@@ -12,7 +12,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ChatParticipantRepository extends JpaRepository<ChatParticipant, Long> {
+public interface ChatParticipantRepository extends JpaRepository<ChatParticipant, Long>, CustomChatParticipantRepository {
 
   boolean existsByMemberId(Long MemberId);
 
