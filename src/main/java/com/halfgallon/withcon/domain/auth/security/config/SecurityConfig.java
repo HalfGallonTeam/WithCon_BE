@@ -1,6 +1,9 @@
 package com.halfgallon.withcon.domain.auth.security.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.halfgallon.withcon.domain.auth.manager.JwtManager;
+import com.halfgallon.withcon.domain.auth.repository.AccessTokenRepository;
+import com.halfgallon.withcon.domain.auth.repository.RefreshTokenRepository;
 import com.halfgallon.withcon.domain.auth.security.filter.LoginFilter;
 import com.halfgallon.withcon.domain.auth.security.handler.LoginFailureHandler;
 import com.halfgallon.withcon.domain.auth.security.handler.LoginSuccessHandler;
@@ -31,8 +34,12 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+  private final JwtManager jwtManager;
   private final ObjectMapper objectMapper;
   private final MemberRepository memberRepository;
+  private final AccessTokenRepository accessTokenRepository;
+  private final RefreshTokenRepository refreshTokenRepository;
+
 
   @Bean
   public WebSecurityCustomizer webSecurityCustomizer() {
@@ -61,7 +68,8 @@ public class SecurityConfig {
   public LoginFilter loginFilter() {
     LoginFilter filter = new LoginFilter(
         new AntPathRequestMatcher("/auth/login", "POST"), authenticationManager(), objectMapper);
-    filter.setAuthenticationSuccessHandler(new LoginSuccessHandler());
+    filter.setAuthenticationSuccessHandler(
+        new LoginSuccessHandler(jwtManager, accessTokenRepository, refreshTokenRepository));
     filter.setAuthenticationFailureHandler(new LoginFailureHandler(objectMapper));
     return filter;
   }
