@@ -15,6 +15,7 @@ import com.halfgallon.withcon.domain.chat.entity.ChatRoom;
 import com.halfgallon.withcon.domain.chat.repository.ChatParticipantRepository;
 import com.halfgallon.withcon.domain.chat.repository.ChatRoomRepository;
 import com.halfgallon.withcon.domain.chat.service.ChatRoomService;
+import com.halfgallon.withcon.domain.member.dto.MemberDto;
 import com.halfgallon.withcon.domain.member.entity.Member;
 import com.halfgallon.withcon.domain.member.repository.MemberRepository;
 import com.halfgallon.withcon.global.exception.CustomException;
@@ -81,11 +82,15 @@ public class ChatRoomServiceImpl implements ChatRoomService {
             .member(member)
             .build()));
 
+    //채팅방 참여하고 있는 인원 리스트
+    List<MemberDto> members = chatRoom.getChatParticipants().stream()
+        .map(p -> MemberDto.fromEntity(p.getMember())).toList();
+
     return ChatRoomEnterResponse.builder()
         .chatRoomName(chatRoom.getName())
         .chatRoomId(chatRoomId)
         .userCount(chatRoom.getUserCount())
-        .members(List.of(member))
+        .members(members)
         .build();
   }
 
