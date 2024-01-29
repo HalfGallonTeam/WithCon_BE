@@ -25,7 +25,7 @@ public class ChatParticipantServiceImpl implements ChatParticipantService {
       throw new CustomException(USER_NOT_PARTICIPANT_CHATTING);
     }
 
-    return chatParticipantRepository.findAllByMemberId(memberId, pageable)
+    return chatParticipantRepository.findAllMyChattingRoom(memberId, pageable)
         .map(ChatParticipantResponse::fromEntity);
   }
 
