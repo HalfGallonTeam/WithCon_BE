@@ -1,4 +1,4 @@
-package com.halfgallon.withcon.domain.auth.security.filter;
+package com.halfgallon.withcon.domain.auth.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -35,6 +35,8 @@ import org.springframework.transaction.annotation.Transactional;
 @ActiveProfiles("test")
 class LoginTest {
 
+  private final String LOGIN_PATH = "/auth/login";
+
   @Autowired
   private ObjectMapper objectMapper;
 
@@ -69,7 +71,7 @@ class LoginTest {
         "아이디 혹은 비밀번호가 올바르지 않습니다.");
     // when
     // then
-    mockMvc.perform(post("/auth/login")
+    mockMvc.perform(post(LOGIN_PATH)
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(loginRequest)))
         .andExpect(status().isBadRequest())
@@ -92,7 +94,7 @@ class LoginTest {
         "아이디 혹은 비밀번호가 올바르지 않습니다.");
     // when
     // then
-    mockMvc.perform(post("/auth/login")
+    mockMvc.perform(post(LOGIN_PATH)
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(loginRequest)))
         .andExpect(status().isBadRequest())
@@ -113,7 +115,7 @@ class LoginTest {
 
     // when
     // then
-    mockMvc.perform(post("/auth/login")
+    mockMvc.perform(post(LOGIN_PATH)
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(loginRequest)))
         .andExpect(header().exists("Authorization"))
@@ -135,7 +137,7 @@ class LoginTest {
 
     // when
     // then
-    mockMvc.perform(post("/auth/login")
+    mockMvc.perform(post(LOGIN_PATH)
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(loginRequest)))
         .andExpect(header().exists("Authorization"))
