@@ -1,11 +1,10 @@
 package com.halfgallon.withcon.domain.chat.service;
 
-import com.halfgallon.withcon.domain.chat.dto.ChatMessageRequest;
-import com.halfgallon.withcon.domain.chat.dto.ChatMessageResponse;
+import com.halfgallon.withcon.domain.chat.dto.ChatMessageDto;
 
 public interface ChatMessageService {
-  ChatMessageResponse chatMessage(ChatMessageRequest request, Long roomId);
-  ChatMessageResponse enterMessage(ChatMessageRequest request, Long roomId);
-  ChatMessageResponse exitMessage(ChatMessageRequest request, Long roomId);
+  ChatMessageDto chatMessage(ChatMessageDto request, Long roomId);
+  ChatMessageDto enterMessage(ChatMessageDto request, Long roomId);
+  ChatMessageDto exitMessage(ChatMessageDto request, Long roomId);
 
 }

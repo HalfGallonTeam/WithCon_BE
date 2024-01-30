@@ -12,16 +12,20 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
   @Override
   public void configureMessageBroker(MessageBrokerRegistry registry) {
-    //클라이언트에게 메시지 전달
-    registry.enableSimpleBroker("/topic");
-    //클라이언트의 Send 요청 처리
+    registry.enableStompBrokerRelay("/exchange")
+        .setRelayHost("localhost")
+        .setRelayPort(61613)
+        .setClientLogin("guest")
+        .setClientPasscode("guest")
+        .setSystemLogin("guest")
+        .setSystemPasscode("guest");
+
     registry.setApplicationDestinationPrefixes("/app");
   }
 
   @Override
   public void registerStompEndpoints(StompEndpointRegistry registry) {
     registry.addEndpoint("/ws")
-        .addInterceptors()
         .setAllowedOriginPatterns("*");
   }
 }
