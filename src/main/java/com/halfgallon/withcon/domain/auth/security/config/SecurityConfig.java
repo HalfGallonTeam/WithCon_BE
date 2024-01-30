@@ -5,8 +5,10 @@ import com.halfgallon.withcon.domain.auth.manager.JwtManager;
 import com.halfgallon.withcon.domain.auth.repository.AccessTokenRepository;
 import com.halfgallon.withcon.domain.auth.repository.RefreshTokenRepository;
 import com.halfgallon.withcon.domain.auth.security.filter.LoginFilter;
+import com.halfgallon.withcon.domain.auth.security.handler.CustomLogoutSuccessHandler;
 import com.halfgallon.withcon.domain.auth.security.handler.LoginFailureHandler;
 import com.halfgallon.withcon.domain.auth.security.handler.LoginSuccessHandler;
+import com.halfgallon.withcon.domain.auth.security.handler.TokenClearingLogoutHandler;
 import com.halfgallon.withcon.domain.auth.security.service.CustomUserDetailsService;
 import com.halfgallon.withcon.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +42,14 @@ public class SecurityConfig {
   private final AccessTokenRepository accessTokenRepository;
   private final RefreshTokenRepository refreshTokenRepository;
 
+  private static final AntPathRequestMatcher LOGIN_ANT_PATH_REQUEST_MATCHER =
+      new AntPathRequestMatcher("/auth/login", "POST");
+
+  private static final AntPathRequestMatcher LOGOUT_ANT_PATH_REQUEST_MATCHER =
+      new AntPathRequestMatcher("/auth/logout", "POST");
+
+  private static final String REFRESH_TOKEN_COOKIE_NAME = "refresh_token";
+
 
   @Bean
   public WebSecurityCustomizer webSecurityCustomizer() {
@@ -53,10 +63,18 @@ public class SecurityConfig {
     http
         .formLogin(AbstractHttpConfigurer::disable)
         .httpBasic(AbstractHttpConfigurer::disable)
+        .csrf(AbstractHttpConfigurer::disable)
         .sessionManagement(
             (configurer) -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .csrf(AbstractHttpConfigurer::disable)
+        .logout(
+            (configurer) -> configurer
+                .logoutRequestMatcher(LOGOUT_ANT_PATH_REQUEST_MATCHER)
+                .deleteCookies(REFRESH_TOKEN_COOKIE_NAME)
+                .addLogoutHandler(
+                    new TokenClearingLogoutHandler(accessTokenRepository, refreshTokenRepository))
+                .logoutSuccessHandler(new CustomLogoutSuccessHandler()))
         .authorizeHttpRequests((request) -> request
+            .requestMatchers(LOGOUT_ANT_PATH_REQUEST_MATCHER).hasRole("USER")
             .anyRequest().permitAll()
         )
         .addFilterBefore(loginFilter(), UsernamePasswordAuthenticationFilter.class);
@@ -67,7 +85,7 @@ public class SecurityConfig {
   @Bean
   public LoginFilter loginFilter() {
     LoginFilter filter = new LoginFilter(
-        new AntPathRequestMatcher("/auth/login", "POST"), authenticationManager(), objectMapper);
+        LOGIN_ANT_PATH_REQUEST_MATCHER, authenticationManager(), objectMapper);
     filter.setAuthenticationSuccessHandler(
         new LoginSuccessHandler(jwtManager, accessTokenRepository, refreshTokenRepository));
     filter.setAuthenticationFailureHandler(new LoginFailureHandler(objectMapper));

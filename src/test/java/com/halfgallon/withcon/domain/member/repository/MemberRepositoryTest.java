@@ -3,6 +3,7 @@ package com.halfgallon.withcon.domain.member.repository;
 import com.halfgallon.withcon.domain.member.constant.LoginType;
 import com.halfgallon.withcon.domain.member.entity.Member;
 import com.halfgallon.withcon.global.config.JpaAuditingConfig;
+import com.halfgallon.withcon.global.config.QueryDslConfig;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,7 +12,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
 @DataJpaTest
-@Import(JpaAuditingConfig.class)
+@Import({JpaAuditingConfig.class, QueryDslConfig.class})
 class MemberRepositoryTest {
 
   @Autowired
