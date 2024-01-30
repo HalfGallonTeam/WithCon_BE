@@ -80,7 +80,7 @@ class ChatRoomServiceImplTest {
     given(chatRoomRepository.existsByName(anyString()))
         .willReturn(false);
 
-    given(chatParticipantRepository.existRoomLeader(anyLong()))
+    given(chatParticipantRepository.checkRoomManager(anyLong()))
         .willReturn(false);
 
     given(chatRoomRepository.save(any()))
@@ -128,7 +128,7 @@ class ChatRoomServiceImplTest {
     given(memberRepository.findById(anyLong()))
         .willReturn(Optional.of(member));
 
-    given(chatParticipantRepository.existRoomLeader(anyLong()))
+    given(chatParticipantRepository.checkRoomManager(anyLong()))
         .willReturn(true);
 
     //when

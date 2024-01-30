@@ -63,21 +63,21 @@ class ChatParticipantServiceImplTest {
     given(chatParticipantRepository.existsByMemberId(anyLong()))
         .willReturn(true);
 
-    given(chatParticipantRepository.findAllByMemberId(1L, pageable))
+    given(chatParticipantRepository.findAllMyChattingRoom(1L, pageable))
         .willReturn(new PageImpl<>(List.of(ChatParticipant.builder()
+            .id(1L)
+            .chatRoom(ChatRoom.builder()
                 .id(1L)
-                .chatRoom(ChatRoom.builder()
-                    .id(1L)
-                    .name("1번 채팅방")
-                    .build())
-                .member(Member.builder()
-                    .id(1L)
-                    .username("test1234")
-                    .phoneNumber("010-1234-5678")
-                    .password("12345")
-                    .email("test@test.com")
-                    .build())
-                .build())));
+                .name("1번 채팅방")
+                .build())
+            .member(Member.builder()
+                .id(1L)
+                .username("test1234")
+                .phoneNumber("010-1234-5678")
+                .password("12345")
+                .email("test@test.com")
+                .build())
+            .build())));
 
     //when
     Page<ChatParticipantResponse> responses
