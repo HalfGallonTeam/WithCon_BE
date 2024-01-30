@@ -1,5 +1,6 @@
 package com.halfgallon.withcon.domain.auth.security.filter;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
@@ -7,6 +8,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.halfgallon.withcon.domain.auth.repository.AccessTokenRepository;
+import com.halfgallon.withcon.domain.auth.repository.RefreshTokenRepository;
 import com.halfgallon.withcon.domain.auth.security.filter.LoginFilter.LoginRequest;
 import com.halfgallon.withcon.domain.member.constant.LoginType;
 import com.halfgallon.withcon.domain.member.entity.Member;
@@ -30,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-class LoginRequestTest {
+class LoginTest {
 
   @Autowired
   private ObjectMapper objectMapper;
@@ -42,6 +45,12 @@ class LoginRequestTest {
   private PasswordEncoder passwordEncoder;
 
   @Autowired
+  private AccessTokenRepository accessTokenRepository;
+
+  @Autowired
+  private RefreshTokenRepository refreshTokenRepository;
+
+  @Autowired
   private MockMvc mockMvc;
 
   @Test
@@ -50,14 +59,7 @@ class LoginRequestTest {
     // given
     String encodedPassword = passwordEncoder.encode("password");
 
-    Member member = Member.builder()
-        .username("username")
-        .email("test@example.com")
-        .nickname("위드콘")
-        .loginType(LoginType.HOME)
-        .password(encodedPassword)
-        .phoneNumber("01012345678")
-        .build();
+    Member member = createDefaultMember(encodedPassword);
 
     memberRepository.save(member);
 
@@ -80,14 +82,7 @@ class LoginRequestTest {
     // given
     String encodedPassword = passwordEncoder.encode("password");
 
-    Member member = Member.builder()
-        .username("username")
-        .email("test@example.com")
-        .nickname("위드콘")
-        .loginType(LoginType.HOME)
-        .password(encodedPassword)
-        .phoneNumber("01012345678")
-        .build();
+    Member member = createDefaultMember(encodedPassword);
 
     memberRepository.save(member);
 
@@ -110,14 +105,7 @@ class LoginRequestTest {
     // given
     String encodedPassword = passwordEncoder.encode("password");
 
-    Member member = Member.builder()
-        .username("username")
-        .email("test@example.com")
-        .nickname("위드콘")
-        .loginType(LoginType.HOME)
-        .password(encodedPassword)
-        .phoneNumber("01012345678")
-        .build();
+    Member member = createDefaultMember(encodedPassword);
 
     memberRepository.save(member);
 
@@ -131,5 +119,46 @@ class LoginRequestTest {
         .andExpect(header().exists("Authorization"))
         .andExpect(cookie().exists("refresh_token"))
         .andExpect(status().isOk());
+  }
+
+  @Test
+  @DisplayName("로그인 성공 시 액세스토큰과 리프래시 토큰이 회원 id를 키 값으로 Redis에 저장된다.")
+  void login_Success_Will_Save_Token_In_Redis() throws Exception {
+    // given
+    String encodedPassword = passwordEncoder.encode("password");
+
+    Member member = createDefaultMember(encodedPassword);
+
+    Member savedMember = memberRepository.save(member);
+
+    LoginRequest loginRequest = new LoginRequest("username", "password");
+
+    // when
+    // then
+    mockMvc.perform(post("/auth/login")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(loginRequest)))
+        .andExpect(header().exists("Authorization"))
+        .andExpect(cookie().exists("refresh_token"))
+        .andExpect(status().isOk());
+
+    boolean existAccessToken = accessTokenRepository.findById(savedMember.getId())
+        .isPresent();
+    boolean existRefreshToken = refreshTokenRepository.findById(savedMember.getId())
+        .isPresent();
+
+    assertThat(existAccessToken).isTrue();
+    assertThat(existRefreshToken).isTrue();
+  }
+
+  private static Member createDefaultMember(String encodedPassword) {
+    return Member.builder()
+        .username("username")
+        .email("test@example.com")
+        .nickname("위드콘")
+        .loginType(LoginType.HOME)
+        .password(encodedPassword)
+        .phoneNumber("01012345678")
+        .build();
   }
 }
