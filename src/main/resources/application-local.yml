@@ -21,3 +21,10 @@ spring:
         format_sql: true
     open-in-view: false
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+jwt:
+  key: emVyb2Jhc2Utc3ByaW5nLWJvb3QtZGl2aWRlbmQtcHJvamVjdC10dXRvcmlhbC1qd3Qtc2VjcmV0LWtleQo=
