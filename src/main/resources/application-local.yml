@@ -5,16 +5,26 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/withcon?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: topy
-    password: 7777asd
-    name: withcon
+    url: jdbc:mysql://localhost:13306/withcon?serverTimezone=UTC&characterEncoding=UTF-8
+    username: root
+    password: zerobase
 
   jpa:
+    show-sql: true
+    database: mysql
+    defer-datasource-initialization: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     properties:
       hibernate:
         show_sql: true
         format_sql: true
-        use_sql_comments: true
+    open-in-view: false
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+jwt:
+  key: emVyb2Jhc2Utc3ByaW5nLWJvb3QtZGl2aWRlbmQtcHJvamVjdC10dXRvcmlhbC1qd3Qtc2VjcmV0LWtleQo=
