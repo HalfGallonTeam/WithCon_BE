@@ -1,7 +1,7 @@
 package com.halfgallon.withcon.domain.notification.constant;
 
 public enum NotificationType {
-  chatRoom,
-  performance,
+  CHATROOM,
+  PERFORMANCE
 
 }

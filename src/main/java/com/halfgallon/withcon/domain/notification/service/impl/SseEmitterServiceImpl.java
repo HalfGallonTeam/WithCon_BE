@@ -18,12 +18,12 @@ public class SseEmitterServiceImpl implements SseEmitterService {
   private final SseEmitterRepository sseEmitterRepository;
 
   @Override
-  public SseEmitter subscribe(String username, String lastEventId) {
-    String emitterId = createEmitterId(username);
+  public SseEmitter subscribe(Long memberId, String lastEventId) {
+    String emitterId = createEmitterId(memberId);
     SseEmitter sseEmitter = sseEmitterRepository.save(emitterId, new SseEmitter(TIME_OUT));
 
     // 더미 데이터(503 에러 방지)
-    send(sseEmitter, emitterId, NotificationMessageType.SUBSCRIBE + " username: " + username);
+    send(sseEmitter, emitterId, NotificationMessageType.SUBSCRIBE + " memberId: " + memberId);
     log.info("SSE 구독 완료");
 
     sseEmitter.onCompletion(() -> sseEmitterRepository.deleteById(emitterId));
@@ -33,8 +33,8 @@ public class SseEmitterServiceImpl implements SseEmitterService {
     return sseEmitter;
   }
 
-  private String createEmitterId(String username) {
-    return username + "_" + System.currentTimeMillis();
+  private String createEmitterId(Long memberId) {
+    return memberId + "_" + System.currentTimeMillis();
   }
 
   @Override
