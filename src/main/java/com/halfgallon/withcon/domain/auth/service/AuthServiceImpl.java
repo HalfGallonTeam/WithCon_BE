@@ -1,19 +1,35 @@
 package com.halfgallon.withcon.domain.auth.service;
 
+import static com.halfgallon.withcon.global.exception.ErrorCode.DUPLICATE_EMAIL;
+import static com.halfgallon.withcon.global.exception.ErrorCode.DUPLICATE_NICKNAME;
+import static com.halfgallon.withcon.global.exception.ErrorCode.DUPLICATE_PHONE_NUMBER;
+import static com.halfgallon.withcon.global.exception.ErrorCode.DUPLICATE_USERNAME;
+import static com.halfgallon.withcon.global.exception.ErrorCode.MEMBER_NOT_FOUND;
+import static com.halfgallon.withcon.global.exception.ErrorCode.REFRESH_TOKEN_COOKIE_IS_EMPTY;
+import static com.halfgallon.withcon.global.exception.ErrorCode.REFRESH_TOKEN_EXPIRED;
+
 import com.halfgallon.withcon.domain.auth.dto.request.AuthJoinRequest;
+import com.halfgallon.withcon.domain.auth.entity.AccessToken;
+import com.halfgallon.withcon.domain.auth.entity.RefreshToken;
+import com.halfgallon.withcon.domain.auth.manager.JwtManager;
+import com.halfgallon.withcon.domain.auth.repository.AccessTokenRepository;
+import com.halfgallon.withcon.domain.auth.repository.RefreshTokenRepository;
 import com.halfgallon.withcon.domain.member.repository.MemberRepository;
 import com.halfgallon.withcon.global.exception.CustomException;
-import com.halfgallon.withcon.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-  private final MemberRepository memberRepository;
+  private final JwtManager jwtManager;
   private final PasswordEncoder passwordEncoder;
+  private final MemberRepository memberRepository;
+  private final AccessTokenRepository accessTokenRepository;
+  private final RefreshTokenRepository refreshTokenRepository;
 
   /**
    * 회원가입
@@ -29,19 +45,44 @@ public class AuthServiceImpl implements AuthService {
 
   private void validateJoinRequest(AuthJoinRequest request) {
     if (memberRepository.existsByUsername(request.getUsername())) {
-      throw new CustomException(ErrorCode.DUPLICATE_USERNAME);
+      throw new CustomException(DUPLICATE_USERNAME);
     }
 
     if (memberRepository.existsByEmail(request.getEmail())) {
-      throw new CustomException(ErrorCode.DUPLICATE_EMAIL);
+      throw new CustomException(DUPLICATE_EMAIL);
     }
 
     if (memberRepository.existsByNickname(request.getNickname())) {
-      throw new CustomException(ErrorCode.DUPLICATE_NICKNAME);
+      throw new CustomException(DUPLICATE_NICKNAME);
     }
 
     if (memberRepository.existsByPhoneNumber(request.getPhoneNumber())) {
-      throw new CustomException(ErrorCode.DUPLICATE_PHONE_NUMBER);
+      throw new CustomException(DUPLICATE_PHONE_NUMBER);
     }
+  }
+
+  /**
+   * 액세스 토큰 재발급
+   */
+  @Override
+  public String reissueAccessToken(String refreshToken) {
+    if (!StringUtils.hasText(refreshToken)) {
+      throw new CustomException(REFRESH_TOKEN_COOKIE_IS_EMPTY);
+    }
+
+    RefreshToken findRefreshToken = refreshTokenRepository.findByRefreshToken(refreshToken)
+        .orElseThrow(() -> new CustomException(REFRESH_TOKEN_EXPIRED));
+
+    Long memberId = findRefreshToken.getMemberId();
+
+    if (memberRepository.findById(memberId).isEmpty()) {
+      throw new CustomException(MEMBER_NOT_FOUND);
+    }
+
+    String newAccessToken = jwtManager.createAccessToken(memberId);
+
+    accessTokenRepository.save(new AccessToken(memberId, newAccessToken));
+
+    return newAccessToken;
   }
 }
