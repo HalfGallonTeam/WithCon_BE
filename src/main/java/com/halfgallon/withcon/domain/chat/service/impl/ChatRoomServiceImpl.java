@@ -5,7 +5,7 @@ import static com.halfgallon.withcon.global.exception.ErrorCode.CHATROOM_NOT_FOU
 import static com.halfgallon.withcon.global.exception.ErrorCode.DUPLICATE_CHATROOM;
 import static com.halfgallon.withcon.global.exception.ErrorCode.PARTICIPANT_NOT_FOUND;
 import static com.halfgallon.withcon.global.exception.ErrorCode.USER_JUST_ONE_CREATE_CHATROOM;
-import static com.halfgallon.withcon.global.exception.ErrorCode.USER_NOT_FOUND;
+import static com.halfgallon.withcon.global.exception.ErrorCode.MEMBER_NOT_FOUND;
 
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomEnterResponse;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomRequest;
@@ -37,7 +37,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
   public ChatRoomResponse createChatRoom(ChatRoomRequest request) {
     //멤버 조회 검사(@AuthenticationPrincipal) -> 임시로 memberRepository에서 들고와서 진행
     Member member = memberRepository.findById(request.memberId())
-        .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
 
     validationCreateChatroom(request);
 
@@ -65,7 +65,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
   public ChatRoomEnterResponse enterChatRoom(Long chatRoomId, Long memberId) {
     //멤버 조회 검사(@AuthenticationPrincipal) -> 임시 멤버 생성
     Member member = memberRepository.findById(memberId)
-        .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
 
     ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
         .orElseThrow(() -> new CustomException(CHATROOM_NOT_FOUND));
@@ -98,7 +98,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
   @Transactional
   public void exitChatRoom(Long chatRoomId, Long memberId) {
     Member member = memberRepository.findById(memberId)
-        .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
 
     ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
         .orElseThrow(() -> new CustomException(CHATROOM_NOT_FOUND));
