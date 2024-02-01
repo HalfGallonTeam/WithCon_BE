@@ -74,7 +74,7 @@ class AuthControllerTest {
   @Test
   @DisplayName("액세스토큰 재발급 요청")
   void reissueAccessToken_Success() throws Exception {
-    String refreshToken = "Bearer RefreshToken";
+    String refreshToken = "RefreshToken";
 
     mockMvc.perform(post("/auth/reissue")
             .contentType(MediaType.APPLICATION_JSON)
