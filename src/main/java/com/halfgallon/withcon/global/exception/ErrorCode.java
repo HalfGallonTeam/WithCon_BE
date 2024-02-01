@@ -21,15 +21,16 @@ public enum ErrorCode {
   USER_JUST_ONE_CREATE_CHATROOM(BAD_REQUEST.value(), "채팅방은 1인당 1개만 생성 가능합니다."),
   METHOD_NOT_SUPPORTED(BAD_REQUEST.value(), "잘못된 Method 요청입니다."),
   CONTENT_TYPE_NOT_SUPPORTED(BAD_REQUEST.value(), "잘못된 Content-type 요청입니다."),
-  ACCESS_TOKEN_NOT_SUPPORTED(BAD_REQUEST.value(), "잘못된 액세스 토큰 요청입니다."),
-  REFRESH_TOKEN_COOKIE_IS_EMPTY(BAD_REQUEST.value(), "리프래시 토큰 쿠키가 없는 요청입니다."),
-  JWT_PARSE_ERROR(BAD_REQUEST.value(), "만료되었거나 유효하지 않은 JWT 토큰 입니다."),
+
 
   /**
    * 401 Unauthorized
    */
   ACCESS_TOKEN_EXPIRED(UNAUTHORIZED.value(), "액세스 토큰이 만료되었습니다."),
   REFRESH_TOKEN_EXPIRED(UNAUTHORIZED.value(), "리프래시 토큰이 만료되었습니다."),
+  ACCESS_TOKEN_NOT_SUPPORTED(UNAUTHORIZED.value(), "잘못된 액세스 토큰 요청입니다."),
+  REFRESH_TOKEN_COOKIE_IS_EMPTY(UNAUTHORIZED.value(), "리프래시 토큰 쿠키가 없는 요청입니다."),
+  JWT_PARSE_ERROR(UNAUTHORIZED.value(), "만료되었거나 유효하지 않은 JWT 토큰 입니다."),
 
   /**
    * 404 Not Found
