@@ -1,9 +1,13 @@
 package com.halfgallon.withcon.domain.auth.security.config;
 
+import static com.halfgallon.withcon.domain.auth.constant.AuthConstant.*;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.halfgallon.withcon.domain.auth.constant.AuthConstant;
 import com.halfgallon.withcon.domain.auth.manager.JwtManager;
 import com.halfgallon.withcon.domain.auth.repository.AccessTokenRepository;
 import com.halfgallon.withcon.domain.auth.repository.RefreshTokenRepository;
+import com.halfgallon.withcon.domain.auth.security.filter.JwtAuthenticationFilter;
 import com.halfgallon.withcon.domain.auth.security.filter.LoginFilter;
 import com.halfgallon.withcon.domain.auth.security.handler.CustomLogoutSuccessHandler;
 import com.halfgallon.withcon.domain.auth.security.handler.LoginFailureHandler;
@@ -28,6 +32,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
@@ -47,9 +52,6 @@ public class SecurityConfig {
 
   private static final AntPathRequestMatcher LOGOUT_ANT_PATH_REQUEST_MATCHER =
       new AntPathRequestMatcher("/auth/logout", "POST");
-
-  private static final String REFRESH_TOKEN_COOKIE_NAME = "refresh_token";
-
 
   @Bean
   public WebSecurityCustomizer webSecurityCustomizer() {
@@ -77,7 +79,11 @@ public class SecurityConfig {
             .requestMatchers(LOGOUT_ANT_PATH_REQUEST_MATCHER).hasRole("USER")
             .anyRequest().permitAll()
         )
-        .addFilterBefore(loginFilter(), UsernamePasswordAuthenticationFilter.class);
+        .addFilterBefore(
+            new JwtAuthenticationFilter(memberRepository, accessTokenRepository),
+            LogoutFilter.class)
+        .addFilterBefore(loginFilter(), UsernamePasswordAuthenticationFilter.class)
+    ;
 
     return http.build();
   }
