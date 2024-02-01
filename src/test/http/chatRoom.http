@@ -3,8 +3,9 @@ POST http://localhost:8080/chatRoom
 Content-Type: application/json
 
 {
-  "memberId": 1,
-  "name": "1번채팅방"
+  "memberId": 7,
+  "name": "7번채팅방",
+  "tags": ["#3번", "#7번"]
 }
 
 ### 채팅방 조회

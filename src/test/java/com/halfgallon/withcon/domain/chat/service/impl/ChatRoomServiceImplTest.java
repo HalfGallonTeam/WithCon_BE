@@ -19,6 +19,8 @@ import com.halfgallon.withcon.domain.chat.repository.ChatParticipantRepository;
 import com.halfgallon.withcon.domain.chat.repository.ChatRoomRepository;
 import com.halfgallon.withcon.domain.member.entity.Member;
 import com.halfgallon.withcon.domain.member.repository.MemberRepository;
+import com.halfgallon.withcon.domain.tag.entity.Tag;
+import com.halfgallon.withcon.domain.tag.repository.TagRepository;
 import com.halfgallon.withcon.global.exception.CustomException;
 import com.halfgallon.withcon.global.exception.ErrorCode;
 import java.util.List;
@@ -50,8 +52,11 @@ class ChatRoomServiceImplTest {
   MemberRepository memberRepository;
   @Mock
   ChatParticipantRepository chatParticipantRepository;
+  @Mock
+  TagRepository tagRepository;
 
   private Member member;
+
   @BeforeEach
   void setUp() {
     member = Member.builder()
@@ -67,11 +72,12 @@ class ChatRoomServiceImplTest {
   @DisplayName("채팅방 생성 성공")
   void createChatRoom_Success() {
     //given
-    ChatRoomRequest request = new ChatRoomRequest(1L, "1번채팅방");
+    ChatRoomRequest request = new ChatRoomRequest(1L, "1번채팅방",
+        List.of("#1번방", "#2번방"));
 
     ChatRoom chatRoom = ChatRoom.builder()
         .id(1L)
-        .name("1번 채팅방")
+        .name("1번채팅방")
         .build();
 
     given(memberRepository.findById(anyLong()))
@@ -96,6 +102,11 @@ class ChatRoomServiceImplTest {
             .isManager(true)
             .build());
 
+    given(tagRepository.saveAll(any()))
+        .willReturn(List.of(Tag.builder()
+                .name("#1번방")
+                .build()));
+
     //when
     ChatRoomResponse response = chatRoomService.createChatRoom(request);
 
@@ -113,9 +124,12 @@ class ChatRoomServiceImplTest {
     given(chatRoomRepository.existsByName(anyString()))
         .willReturn(true);
 
+    ChatRoomRequest request = new ChatRoomRequest(1L, "1번 채팅방",
+        List.of("#1번방", "#2번방"));
+
     //when
     CustomException customException = Assertions.assertThrows(CustomException.class,
-        () -> chatRoomService.createChatRoom(new ChatRoomRequest(1L, "1번채팅방")));
+        () -> chatRoomService.createChatRoom(request));
 
     //then
     assertThat(DUPLICATE_CHATROOM.getStatus()).isEqualTo(customException.getStatusCode());
@@ -125,15 +139,17 @@ class ChatRoomServiceImplTest {
   @DisplayName("채팅방 생성 실패 - 1인당 1개만 생성 가능")
   void createChatRoom_FailByJustOne() {
     //given
+    ChatRoomRequest request = new ChatRoomRequest(1L, "1번 채팅방",
+        List.of("#1번방", "#2번방"));
+
     given(memberRepository.findById(anyLong()))
         .willReturn(Optional.of(member));
 
     given(chatParticipantRepository.checkRoomManager(anyLong()))
         .willReturn(true);
-
     //when
     CustomException customException = Assertions.assertThrows(CustomException.class,
-        () -> chatRoomService.createChatRoom(new ChatRoomRequest(1L, "1번채팅방")));
+        () -> chatRoomService.createChatRoom(request));
 
     //then
     assertThat(USER_JUST_ONE_CREATE_CHATROOM.getStatus()).isEqualTo(customException.getStatusCode());
