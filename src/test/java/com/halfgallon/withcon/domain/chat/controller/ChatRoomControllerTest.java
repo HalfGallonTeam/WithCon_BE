@@ -48,7 +48,26 @@ class ChatRoomControllerTest {
   }
 
   @Test
-  @DisplayName("채팅방 생성 완료")
+  @DisplayName("채팅방 생성 완료 - 태그 추가")
+  void createChatRoom_withTag_Success() throws Exception {
+    //given
+    given(chatRoomService.createChatRoom(any()))
+        .willReturn(getChatRoomResponse());
+
+    //when
+    //then
+    ChatRoomRequest request = new ChatRoomRequest(1L, "1번 채팅방",
+        List.of("#1번방", "#2번방"));
+
+    mockMvc.perform(post("/chatRoom")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isCreated())
+        .andDo(print());
+  }
+
+  @Test
+  @DisplayName("채팅방 생성 완료 - 태그 제외")
   void createChatRoom_Success() throws Exception {
     //given
     given(chatRoomService.createChatRoom(any()))
@@ -56,9 +75,11 @@ class ChatRoomControllerTest {
 
     //when
     //then
+    ChatRoomRequest request = new ChatRoomRequest(1L, "1번 채팅방", null);
+
     mockMvc.perform(post("/chatRoom")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(new ChatRoomRequest(1L, "1번 채팅방"))))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)))
         .andExpect(status().isCreated())
         .andDo(print());
   }

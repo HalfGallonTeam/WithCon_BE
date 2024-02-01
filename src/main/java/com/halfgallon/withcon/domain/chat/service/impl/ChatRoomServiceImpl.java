@@ -18,6 +18,8 @@ import com.halfgallon.withcon.domain.chat.service.ChatRoomService;
 import com.halfgallon.withcon.domain.member.dto.MemberDto;
 import com.halfgallon.withcon.domain.member.entity.Member;
 import com.halfgallon.withcon.domain.member.repository.MemberRepository;
+import com.halfgallon.withcon.domain.tag.entity.Tag;
+import com.halfgallon.withcon.domain.tag.repository.TagRepository;
 import com.halfgallon.withcon.global.exception.CustomException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +35,8 @@ public class ChatRoomServiceImpl implements ChatRoomService {
   private final ChatRoomRepository chatRoomRepository;
   private final ChatParticipantRepository participantRepository;
   private final MemberRepository memberRepository;
+  private final TagRepository tagRepository;
+
   @Override
   public ChatRoomResponse createChatRoom(ChatRoomRequest request) {
     //멤버 조회 검사(@AuthenticationPrincipal) -> 임시로 memberRepository에서 들고와서 진행
@@ -50,6 +54,20 @@ public class ChatRoomServiceImpl implements ChatRoomService {
             .member(member)
             .isManager(true)
             .build()));
+
+    //태그가 있는 경우에만 - 해당 태그 저장
+    if (request.tags() != null) {
+      List<Tag> tagList = request.tags()
+          .stream()
+          .map(t -> Tag.builder()
+              .name(t)
+              .chatRoom(chatRoom)
+              .build())
+          .toList();
+
+      tagRepository.saveAll(tagList);
+      tagList.forEach(chatRoom::addTag);
+    }
 
     return ChatRoomResponse.fromEntity(chatRoom);
   }

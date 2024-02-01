@@ -1,0 +1,3 @@
+### 태그 정보 조회(태그 갯수 정렬)
+GET http://localhost:8080/tag
+Content-Type: application/json
