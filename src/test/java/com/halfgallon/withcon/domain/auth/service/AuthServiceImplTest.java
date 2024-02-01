@@ -1,5 +1,8 @@
 package com.halfgallon.withcon.domain.auth.service;
 
+import static com.halfgallon.withcon.global.exception.ErrorCode.MEMBER_NOT_FOUND;
+import static com.halfgallon.withcon.global.exception.ErrorCode.REFRESH_TOKEN_COOKIE_IS_EMPTY;
+import static com.halfgallon.withcon.global.exception.ErrorCode.REFRESH_TOKEN_EXPIRED;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -7,9 +10,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.halfgallon.withcon.domain.auth.dto.request.AuthJoinRequest;
+import com.halfgallon.withcon.domain.auth.entity.RefreshToken;
+import com.halfgallon.withcon.domain.auth.manager.JwtManager;
+import com.halfgallon.withcon.domain.auth.repository.AccessTokenRepository;
+import com.halfgallon.withcon.domain.auth.repository.RefreshTokenRepository;
 import com.halfgallon.withcon.domain.member.entity.Member;
 import com.halfgallon.withcon.domain.member.repository.MemberRepository;
 import com.halfgallon.withcon.global.exception.CustomException;
+import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,10 +38,19 @@ class AuthServiceImplTest {
   private AuthServiceImpl authService;
 
   @Mock
+  private JwtManager jwtManager;
+
+  @Mock
   private MemberRepository memberRepository;
 
   @Mock
   private PasswordEncoder passwordEncoder;
+
+  @Mock
+  private AccessTokenRepository accessTokenRepository;
+
+  @Mock
+  private RefreshTokenRepository refreshTokenRepository;
 
   @Captor
   private ArgumentCaptor<Member> memberCaptor;
@@ -124,5 +141,74 @@ class AuthServiceImplTest {
 
     Member savedMember = memberCaptor.getValue();
     Assertions.assertThat(savedMember.getPassword()).isEqualTo("encodedPassword");
+  }
+
+  @Test
+  @DisplayName("❗️액세스토큰 재발급 시 쿠키에 토큰이 존재하지 않으면 실패한다.")
+  void reissueAccessToken_FailByRefreshTokenCookieIsEmpty() {
+    // given
+    String refreshToken = "";
+
+    // when
+    // then
+    assertThatThrownBy(() -> authService.reissueAccessToken(refreshToken))
+        .isInstanceOf(CustomException.class)
+        .hasMessageContaining(REFRESH_TOKEN_COOKIE_IS_EMPTY.getDescription());
+  }
+
+  @Test
+  @DisplayName("❗️액세스토큰 재발급 시 레디스에 토큰이 존재하지 않으면 만료된 엑세스 토큰이라는 예외가 발생한다.")
+  void reissueAccessToken_FailByRefreshTokenNotExistRedis() {
+    // given
+    String refreshToken = "RefreshToken";
+
+    given(refreshTokenRepository.findByRefreshToken(refreshToken)).willReturn(
+        Optional.empty());
+
+    // when
+    // then
+    assertThatThrownBy(() -> authService.reissueAccessToken(refreshToken))
+        .isInstanceOf(CustomException.class)
+        .hasMessageContaining(REFRESH_TOKEN_EXPIRED.getDescription());
+  }
+
+  @Test
+  @DisplayName("❗️액세스토큰 재발급 시 존재하지 않은 회원이면 예외가 발생한다.")
+  void reissueAccessToken_FailByMemberNotFound() {
+    // given
+    String refreshToken = "RefreshToken";
+
+    Long memberId = 1L;
+
+    given(refreshTokenRepository.findByRefreshToken(refreshToken)).willReturn(
+        Optional.of(new RefreshToken(memberId, refreshToken)));
+
+    given(memberRepository.findById(memberId)).willReturn(Optional.empty());
+    // when
+    // then
+    assertThatThrownBy(() -> authService.reissueAccessToken(refreshToken))
+        .isInstanceOf(CustomException.class)
+        .hasMessageContaining(MEMBER_NOT_FOUND.getDescription());
+  }
+
+  @Test
+  @DisplayName("액세스토큰 재발급 성공")
+  void reissueAccessToken_Success() {
+    // given
+    String refreshToken = "RefreshToken";
+
+    Long memberId = 1L;
+
+    given(refreshTokenRepository.findByRefreshToken(refreshToken)).willReturn(
+        Optional.of(new RefreshToken(memberId, refreshToken)));
+
+    given(memberRepository.findById(memberId)).willReturn(
+        Optional.of(Member.builder().id(memberId).build()));
+
+    // when
+    authService.reissueAccessToken(refreshToken);
+
+    // then
+    verify(jwtManager).createAccessToken(memberId);
   }
 }

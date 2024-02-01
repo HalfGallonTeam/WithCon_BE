@@ -1,5 +1,6 @@
 package com.halfgallon.withcon.domain.auth.security.handler;
 
+import static com.halfgallon.withcon.domain.auth.constant.AuthConstant.*;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -28,8 +29,6 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
   private final AccessTokenRepository accessTokenRepository;
   private final RefreshTokenRepository refreshTokenRepository;
 
-  private static final String ACCESS_TOKEN_HEADER_NAME = "Authorization";
-  private static final String REFRESH_TOKEN_COOKIE_NAME = "refresh_token";
   private static final int REFRESH_TOKEN_COOKIE_EXPIRY = 60 * 60 * 24 * 14;
 
   @Override
@@ -55,7 +54,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     refreshTokenCookie.setMaxAge(REFRESH_TOKEN_COOKIE_EXPIRY);
 
     // 응답
-    response.setHeader(ACCESS_TOKEN_HEADER_NAME, accessToken);
+    response.setHeader(ACCESS_TOKEN_HEADER_NAME, ACCESS_TOKEN_PREFIX + accessToken);
     response.addCookie(refreshTokenCookie);
     response.setContentType(APPLICATION_JSON_VALUE);
     response.setCharacterEncoding(UTF_8.name());

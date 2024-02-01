@@ -1,5 +1,7 @@
 package com.halfgallon.withcon.domain.auth.api;
 
+import static com.halfgallon.withcon.domain.auth.constant.AuthConstant.ACCESS_TOKEN_HEADER_NAME;
+import static com.halfgallon.withcon.domain.auth.constant.AuthConstant.REFRESH_TOKEN_COOKIE_NAME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -118,8 +120,8 @@ class LoginTest {
     mockMvc.perform(post(LOGIN_PATH)
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(loginRequest)))
-        .andExpect(header().exists("Authorization"))
-        .andExpect(cookie().exists("refresh_token"))
+        .andExpect(header().exists(ACCESS_TOKEN_HEADER_NAME))
+        .andExpect(cookie().exists(REFRESH_TOKEN_COOKIE_NAME))
         .andExpect(status().isOk());
   }
 
@@ -140,8 +142,8 @@ class LoginTest {
     mockMvc.perform(post(LOGIN_PATH)
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(loginRequest)))
-        .andExpect(header().exists("Authorization"))
-        .andExpect(cookie().exists("refresh_token"))
+        .andExpect(header().exists(ACCESS_TOKEN_HEADER_NAME))
+        .andExpect(cookie().exists(REFRESH_TOKEN_COOKIE_NAME))
         .andExpect(status().isOk());
 
     boolean existAccessToken = accessTokenRepository.findById(savedMember.getId())

@@ -1,5 +1,6 @@
 package com.halfgallon.withcon.domain.auth.api;
 
+import static com.halfgallon.withcon.domain.auth.constant.AuthConstant.REFRESH_TOKEN_COOKIE_NAME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
@@ -65,7 +66,7 @@ class LogoutTest {
   @DisplayName("로그아웃 시 리프래시 토큰 쿠키가 삭제된다.")
   void logout_Success_Will_Delete_RefreshTokenCookie() throws Exception {
     // given
-    Cookie requestCookie = new Cookie("refresh_token", "refreshToken");
+    Cookie requestCookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, "refreshToken");
     requestCookie.setMaxAge(500);
 
     // when
@@ -73,6 +74,6 @@ class LogoutTest {
     mockMvc.perform(post(LOGOUT_PATH)
             .cookie(requestCookie))
         .andExpect(status().isOk())
-        .andExpect(cookie().maxAge("refresh_token", 0));
+        .andExpect(cookie().maxAge(REFRESH_TOKEN_COOKIE_NAME, 0));
   }
 }

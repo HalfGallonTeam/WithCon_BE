@@ -1,6 +1,6 @@
 package com.halfgallon.withcon.domain.chat.service.impl;
 
-import static com.halfgallon.withcon.global.exception.ErrorCode.USER_NOT_FOUND;
+import static com.halfgallon.withcon.global.exception.ErrorCode.MEMBER_NOT_FOUND;
 
 import com.halfgallon.withcon.domain.chat.constant.MessageType;
 import com.halfgallon.withcon.domain.chat.dto.ChatMessageDto;
@@ -33,7 +33,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
   public ChatMessageDto enterMessage(ChatMessageDto request, Long roomId) {
 
     Member member = memberRepository.findById(request.getMemberId())
-        .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
 
     String message = member.getNickname() + "님이 입장하였습니다.";
 
@@ -50,7 +50,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
   public ChatMessageDto exitMessage(ChatMessageDto request, Long roomId) {
 
     Member member = memberRepository.findById(request.getMemberId())
-        .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
 
     String message = member.getNickname() + "님이 퇴장하였습니다.";
 
