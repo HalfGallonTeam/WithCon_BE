@@ -1,7 +1,22 @@
 version: '3.1'
 
 services:
-  withcon-mysql:
+  jenkins:
+    container_name: jenkins
+    environment:
+      - TZ=Asia/Seoul
+    build:
+      context: ./docker/jenkins
+      dockerfile: Dockerfile
+    user: root
+    ports:
+      - 9000:8080
+      - 50000:50000
+    volumes:
+      - /home/ec2-user/jenkins_data:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  mysql:
     image: mysql:latest
     command: --default-authentication-plugin=mysql_native_password
     restart: always
@@ -17,7 +32,7 @@ services:
     networks:
       - withcon
 
-  withcon-nginx:
+  nginx:
     image: nginx:latest
     container_name: withcon-nginx
     ports:
