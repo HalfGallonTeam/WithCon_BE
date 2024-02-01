@@ -19,7 +19,7 @@ public class TagController {
    * 태그 정보 조회(태그 갯수 많은 순으로 정렬)
    * @return : name(태그 이름), count(태그 생성 갯수)
    */
-  @GetMapping
+  @GetMapping("/search")
   public ResponseEntity<?> findTagOrderByCount() {
     return ResponseEntity.ok(tagService.findTagOrderByCount());
   }
