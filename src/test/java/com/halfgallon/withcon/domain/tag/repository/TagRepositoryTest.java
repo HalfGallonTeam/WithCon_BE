@@ -51,4 +51,36 @@ class TagRepositoryTest {
     assertThat(tagOrderByCount.get(0).getCount()).isEqualTo(5);
     assertThat(tagOrderByCount.get(0).getName()).isEqualTo("#1번채팅방");
   }
+
+
+  @Test
+  @DisplayName("태그 이름 검색 - 태그 갯수가 많은 순으로 정렬")
+  void findTagNameOrderByCount() {
+    //given
+    for (int i = 0; i < 2; i++) {
+      tagRepository.save(Tag.builder()
+          .name("위드콘")
+          .build());
+    }
+
+    tagRepository.save(Tag.builder()
+        .name("위드")
+        .build());
+
+    tagRepository.save(Tag.builder()
+        .name("콘서트")
+        .build());
+
+    tagRepository.save(Tag.builder()
+        .name("월드콘")
+        .build());
+
+    //when
+    List<TagCountDto> response = tagRepository.findTagNameOrderByCount("콘");
+
+    //then
+    assertThat(response.isEmpty()).isFalse();
+    assertThat(response.size()).isEqualTo(3);
+    assertThat(response.get(0).getName()).isEqualTo("위드콘");
+  }
 }
