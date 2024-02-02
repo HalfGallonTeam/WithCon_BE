@@ -28,4 +28,18 @@ public class CustomTagRepositoryImpl implements CustomTagRepository {
         .fetch();
   }
 
+  @Override
+  public List<TagCountDto> findTagNameOrderByCount(String name) {
+    return jpaQueryFactory.select(
+            Projections.fields(TagCountDto.class,
+                tag.name,
+                tag.count().as("count")))
+        .from(tag)
+        .where(tag.name.contains(name))
+        .groupBy(tag.name)
+        .orderBy(tag.count().desc())
+        .limit(10)
+        .fetch();
+  }
+
 }
