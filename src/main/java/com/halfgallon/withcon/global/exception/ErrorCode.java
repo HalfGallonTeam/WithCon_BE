@@ -1,8 +1,8 @@
 package com.halfgallon.withcon.global.exception;
 
-import static org.springframework.http.HttpStatus.CONTINUE;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.CONTINUE;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
@@ -21,7 +21,7 @@ public enum ErrorCode {
   USER_JUST_ONE_CREATE_CHATROOM(BAD_REQUEST.value(), "채팅방은 1인당 1개만 생성 가능합니다."),
   METHOD_NOT_SUPPORTED(BAD_REQUEST.value(), "잘못된 Method 요청입니다."),
   CONTENT_TYPE_NOT_SUPPORTED(BAD_REQUEST.value(), "잘못된 Content-type 요청입니다."),
-
+  LOGIN_FAILURE_MESSAGE(BAD_REQUEST.value(), "아이디 혹은 비밀번호가 올바르지 않습니다."),
 
   /**
    * 401 Unauthorized

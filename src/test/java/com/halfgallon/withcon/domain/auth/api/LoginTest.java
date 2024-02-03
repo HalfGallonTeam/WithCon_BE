@@ -16,6 +16,7 @@ import com.halfgallon.withcon.domain.auth.security.filter.LoginFilter.LoginReque
 import com.halfgallon.withcon.domain.member.constant.LoginType;
 import com.halfgallon.withcon.domain.member.entity.Member;
 import com.halfgallon.withcon.domain.member.repository.MemberRepository;
+import com.halfgallon.withcon.global.exception.ErrorCode;
 import com.halfgallon.withcon.global.exception.ErrorResponse;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -70,7 +71,8 @@ class LoginTest {
     LoginRequest loginRequest = new LoginRequest("error-username", "password");
 
     ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
-        "아이디 혹은 비밀번호가 올바르지 않습니다.");
+        ErrorCode.LOGIN_FAILURE_MESSAGE, ErrorCode.LOGIN_FAILURE_MESSAGE.getDescription());
+
     // when
     // then
     mockMvc.perform(post(LOGIN_PATH)
@@ -93,7 +95,7 @@ class LoginTest {
     LoginRequest loginRequest = new LoginRequest("username", "error-password");
 
     ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
-        "아이디 혹은 비밀번호가 올바르지 않습니다.");
+        ErrorCode.LOGIN_FAILURE_MESSAGE, ErrorCode.LOGIN_FAILURE_MESSAGE.getDescription());
     // when
     // then
     mockMvc.perform(post(LOGIN_PATH)

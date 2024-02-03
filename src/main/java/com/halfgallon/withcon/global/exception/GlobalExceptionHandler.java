@@ -12,21 +12,23 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(CustomException.class)
   public ResponseEntity<ErrorResponse> handleCustomException(CustomException e) {
-    ErrorResponse errorResponse = new ErrorResponse(e.getStatusCode(), e.getMessage());
+    ErrorResponse errorResponse = new ErrorResponse(
+        e.getErrorCode().getStatus(), e.getErrorCode(), e.getMessage());
     return ResponseEntity.status(errorResponse.status()).body(errorResponse);
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
       MethodArgumentNotValidException e) {
-    ErrorResponse errorResponse = new ErrorResponse(e.getStatusCode().value(), e.getMessage());
+    ErrorResponse errorResponse = new ErrorResponse(
+        e.getStatusCode().value(), ErrorCode.METHOD_NOT_SUPPORTED, e.getMessage());
     return ResponseEntity.status(errorResponse.status()).body(errorResponse);
   }
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponse> handleException(Exception e) {
-    ErrorResponse errorResponse = new ErrorResponse(INTERNAL_SERVER_ERROR.value(), e.getMessage());
-
+    ErrorResponse errorResponse = new ErrorResponse(
+        INTERNAL_SERVER_ERROR.value(), ErrorCode.INTERVAL_SERVER_ERROR, e.getMessage());
     return ResponseEntity.status(errorResponse.status()).body(errorResponse);
   }
 }
