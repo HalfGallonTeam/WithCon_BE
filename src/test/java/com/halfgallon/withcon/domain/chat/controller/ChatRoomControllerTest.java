@@ -14,6 +14,7 @@ import com.halfgallon.withcon.domain.chat.dto.ChatRoomEnterResponse;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomRequest;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomResponse;
 import com.halfgallon.withcon.domain.chat.service.impl.ChatRoomServiceImpl;
+import com.halfgallon.withcon.global.annotation.WithCustomMockUser;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -48,15 +49,16 @@ class ChatRoomControllerTest {
   }
 
   @Test
+  @WithCustomMockUser
   @DisplayName("채팅방 생성 완료 - 태그 추가")
   void createChatRoom_withTag_Success() throws Exception {
     //given
-    given(chatRoomService.createChatRoom(any()))
+    given(chatRoomService.createChatRoom(any(), any()))
         .willReturn(getChatRoomResponse());
 
     //when
     //then
-    ChatRoomRequest request = new ChatRoomRequest(1L, "1번 채팅방",
+    ChatRoomRequest request = new ChatRoomRequest("1번 채팅방",
         List.of("#1번방", "#2번방"));
 
     mockMvc.perform(post("/chatRoom")
@@ -67,15 +69,16 @@ class ChatRoomControllerTest {
   }
 
   @Test
+  @WithCustomMockUser
   @DisplayName("채팅방 생성 완료 - 태그 제외")
   void createChatRoom_Success() throws Exception {
     //given
-    given(chatRoomService.createChatRoom(any()))
+    given(chatRoomService.createChatRoom(any(), any()))
         .willReturn(getChatRoomResponse());
 
     //when
     //then
-    ChatRoomRequest request = new ChatRoomRequest(1L, "1번 채팅방", null);
+    ChatRoomRequest request = new ChatRoomRequest("1번 채팅방", null);
 
     mockMvc.perform(post("/chatRoom")
             .contentType(MediaType.APPLICATION_JSON)
@@ -107,10 +110,11 @@ class ChatRoomControllerTest {
   }
 
   @Test
+  @WithCustomMockUser
   @DisplayName("채팅방 입장 완료")
   void enterChatRoom_success() throws Exception {
     //given
-    given(chatRoomService.enterChatRoom(anyLong(), anyLong()))
+    given(chatRoomService.enterChatRoom(any(), anyLong()))
         .willReturn(ChatRoomEnterResponse.builder()
             .chatRoomId(1L)
             .chatRoomName("1번채팅방")
@@ -119,7 +123,6 @@ class ChatRoomControllerTest {
     //when
     //then
     mockMvc.perform(get("/chatRoom/{chatRoomId}/enter",1L)
-            .param("memberId","1")
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.chatRoomId").value(1L))
         .andExpect(status().isOk())
