@@ -1,5 +1,6 @@
 package com.halfgallon.withcon.domain.chat.service.impl;
 
+import com.halfgallon.withcon.domain.auth.security.service.CustomUserDetails;
 import com.halfgallon.withcon.domain.chat.dto.ChatParticipantResponse;
 import com.halfgallon.withcon.domain.chat.repository.ChatParticipantRepository;
 import com.halfgallon.withcon.domain.chat.service.ChatParticipantService;
@@ -17,8 +18,8 @@ public class ChatParticipantServiceImpl implements ChatParticipantService {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<ChatParticipantResponse> findMyChatRoom(Long memberId, Pageable pageable) {
-    return chatParticipantRepository.findAllMyChattingRoom(memberId, pageable)
+  public Page<ChatParticipantResponse> findMyChatRoom(CustomUserDetails customUserDetails, Pageable pageable) {
+    return chatParticipantRepository.findAllMyChattingRoom(customUserDetails.getId(), pageable)
         .map(ChatParticipantResponse::fromEntity);
   }
 

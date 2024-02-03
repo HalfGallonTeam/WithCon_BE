@@ -6,6 +6,7 @@ import static com.halfgallon.withcon.global.exception.ErrorCode.MEMBER_NOT_FOUND
 import static com.halfgallon.withcon.global.exception.ErrorCode.PARTICIPANT_NOT_FOUND;
 import static com.halfgallon.withcon.global.exception.ErrorCode.USER_JUST_ONE_CREATE_CHATROOM;
 
+import com.halfgallon.withcon.domain.auth.security.service.CustomUserDetails;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomEnterResponse;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomRequest;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomResponse;
@@ -38,12 +39,11 @@ public class ChatRoomServiceImpl implements ChatRoomService {
   private final TagRepository tagRepository;
 
   @Override
-  public ChatRoomResponse createChatRoom(ChatRoomRequest request) {
-    //멤버 조회 검사(@AuthenticationPrincipal) -> 임시로 memberRepository에서 들고와서 진행
-    Member member = memberRepository.findById(request.memberId())
+  public ChatRoomResponse createChatRoom(CustomUserDetails customUserDetails, ChatRoomRequest request) {
+    Member member = memberRepository.findById(customUserDetails.getId())
         .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
 
-    validationCreateChatroom(request);
+    validationCreateChatroom(request, member.getId());
 
     ChatRoom chatRoom = chatRoomRepository.save(request.toEntity());
 
@@ -83,16 +83,15 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
   @Override
   @Transactional
-  public ChatRoomEnterResponse enterChatRoom(Long chatRoomId, Long memberId) {
-    //멤버 조회 검사(@AuthenticationPrincipal) -> 임시 멤버 생성
-    Member member = memberRepository.findById(memberId)
+  public ChatRoomEnterResponse enterChatRoom(CustomUserDetails customUserDetails, Long chatRoomId) {
+    Member member = memberRepository.findById(customUserDetails.getId())
         .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
 
     ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
         .orElseThrow(() -> new CustomException(CHATROOM_NOT_FOUND));
 
     //채팅방 참여 인원 저장(첫 방문인 경우 데이터 저장)
-    participantRepository.findByMemberIdAndChatRoomId(memberId, chatRoomId)
+    participantRepository.findByMemberIdAndChatRoomId(customUserDetails.getId(), chatRoomId)
         .ifPresentOrElse(
             participant -> {},
             () -> chatRoom.addChatParticipant(participantRepository.save(
@@ -116,8 +115,9 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
   @Override
   @Transactional
-  public void exitChatRoom(Long chatRoomId, Long memberId) {
-    ChatParticipant participant = participantRepository.findByMemberIdAndChatRoomId(memberId, chatRoomId)
+  public void exitChatRoom(CustomUserDetails customUserDetails, Long chatRoomId) {
+    ChatParticipant participant
+        = participantRepository.findByMemberIdAndChatRoomId(customUserDetails.getId(), chatRoomId)
         .orElseThrow(() -> new CustomException(PARTICIPANT_NOT_FOUND));
 
     participantRepository.delete(participant);
@@ -132,13 +132,13 @@ public class ChatRoomServiceImpl implements ChatRoomService {
   /**
    * 채팅방 생성 유효성 검사
    */
-  private void validationCreateChatroom(ChatRoomRequest request) {
+  private void validationCreateChatroom(ChatRoomRequest request, Long memberId) {
     //채팅방 이름 검사
     if (chatRoomRepository.existsByName(request.name())) {
       throw new CustomException(DUPLICATE_CHATROOM);
     }
     //채팅방은 1인당 1개만 생성이 가능하다.
-    if (participantRepository.checkRoomManager(request.memberId())) {
+    if (participantRepository.checkRoomManager(memberId)) {
       throw new CustomException(USER_JUST_ONE_CREATE_CHATROOM);
     }
   }
