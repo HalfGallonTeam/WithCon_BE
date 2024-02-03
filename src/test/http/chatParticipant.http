@@ -1,3 +1,4 @@
 ### 나의 채팅방 조회
-GET http://localhost:8080/chatRoom/members/1
+GET http://localhost:8080/chatRoom/member
 Content-Type: application/json
+Authorization: {{accessToken}}
