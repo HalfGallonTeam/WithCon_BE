@@ -5,7 +5,7 @@ Content-Type: application/json
 
 ### 태그 이름 검색(태그 갯수가 많은 순으로 정렬)
 < {%
-  request.variables.set("tags", "번")
+  request.variables.set("tags", "위드")
 %}
 GET http://localhost:8080/tag/{{tags}}/search
 Content-Type: application/json
