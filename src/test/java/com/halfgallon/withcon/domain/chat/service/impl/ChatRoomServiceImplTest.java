@@ -12,6 +12,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
+import com.halfgallon.withcon.domain.auth.security.service.CustomUserDetails;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomEnterResponse;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomRequest;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomResponse;
@@ -58,6 +59,7 @@ class ChatRoomServiceImplTest {
   TagRepository tagRepository;
 
   private Member member;
+  private CustomUserDetails customUserDetails;
 
   @BeforeEach
   void setUp() {
@@ -68,13 +70,15 @@ class ChatRoomServiceImplTest {
         .password("12345")
         .email("test@test.com")
         .build();
+
+    customUserDetails = CustomUserDetails.fromEntity(member);
   }
 
   @Test
   @DisplayName("채팅방 생성 성공")
   void createChatRoom_Success() {
     //given
-    ChatRoomRequest request = new ChatRoomRequest(1L, "1번채팅방",
+    ChatRoomRequest request = new ChatRoomRequest("1번채팅방",
         List.of("#1번방", "#2번방"));
 
     ChatRoom chatRoom = ChatRoom.builder()
@@ -110,7 +114,7 @@ class ChatRoomServiceImplTest {
                 .build()));
 
     //when
-    ChatRoomResponse response = chatRoomService.createChatRoom(request);
+    ChatRoomResponse response = chatRoomService.createChatRoom(customUserDetails, request);
 
     //then
     assertThat(response.tagList().size()).isNotZero();
@@ -127,22 +131,22 @@ class ChatRoomServiceImplTest {
     given(chatRoomRepository.existsByName(anyString()))
         .willReturn(true);
 
-    ChatRoomRequest request = new ChatRoomRequest(1L, "1번 채팅방",
+    ChatRoomRequest request = new ChatRoomRequest("1번 채팅방",
         List.of("#1번방", "#2번방"));
 
     //when
     CustomException customException = Assertions.assertThrows(CustomException.class,
-        () -> chatRoomService.createChatRoom(request));
+        () -> chatRoomService.createChatRoom(customUserDetails, request));
 
     //then
-    assertThat(DUPLICATE_CHATROOM.getStatus()).isEqualTo(customException.getStatusCode());
+    assertThat(DUPLICATE_CHATROOM.getStatus()).isEqualTo(customException.getErrorCode().getStatus());
   }
 
   @Test
   @DisplayName("채팅방 생성 실패 - 1인당 1개만 생성 가능합니다.")
   void createChatRoom_FailByJustOne() {
     //given
-    ChatRoomRequest request = new ChatRoomRequest(1L, "1번 채팅방",
+    ChatRoomRequest request = new ChatRoomRequest("1번 채팅방",
         List.of("#1번방", "#2번방"));
 
     given(memberRepository.findById(anyLong()))
@@ -153,10 +157,10 @@ class ChatRoomServiceImplTest {
 
     //when
     CustomException customException = Assertions.assertThrows(CustomException.class,
-        () -> chatRoomService.createChatRoom(request));
+        () -> chatRoomService.createChatRoom(customUserDetails, request));
 
     //then
-    assertThat(USER_JUST_ONE_CREATE_CHATROOM.getStatus()).isEqualTo(customException.getStatusCode());
+    assertThat(USER_JUST_ONE_CREATE_CHATROOM.getStatus()).isEqualTo(customException.getErrorCode().getStatus());
   }
 
 
@@ -201,7 +205,7 @@ class ChatRoomServiceImplTest {
             .build());
 
     //when
-    ChatRoomEnterResponse response = chatRoomService.enterChatRoom(1L, 1L);
+    ChatRoomEnterResponse response = chatRoomService.enterChatRoom(customUserDetails, 1L);
 
     //then
     assertThat(chatRoom.getId()).isEqualTo(response.chatRoomId());
@@ -218,7 +222,7 @@ class ChatRoomServiceImplTest {
 
     //when
     CustomException customException = Assertions.assertThrows(CustomException.class,
-        () -> chatRoomService.exitChatRoom(1L, 1L));
+        () -> chatRoomService.exitChatRoom(customUserDetails, 1L));
 
     //then
     assertThat(ErrorCode.PARTICIPANT_NOT_FOUND.getDescription()).isEqualTo(customException.getMessage());
@@ -242,7 +246,7 @@ class ChatRoomServiceImplTest {
         .willReturn(Optional.of(participant));
 
     //when
-    chatRoomService.exitChatRoom(1L, 1L);
+    chatRoomService.exitChatRoom(customUserDetails, 1L);
 
     //then
     verify(chatParticipantRepository, times(1)).delete(participant);

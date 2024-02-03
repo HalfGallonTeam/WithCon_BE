@@ -1,12 +1,13 @@
 package com.halfgallon.withcon.domain.auth.security.handler;
 
+import static com.halfgallon.withcon.global.exception.ErrorCode.LOGIN_FAILURE_MESSAGE;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.halfgallon.withcon.global.exception.ErrorCode;
 import com.halfgallon.withcon.global.exception.ErrorResponse;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -20,14 +21,15 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 public class LoginFailureHandler implements AuthenticationFailureHandler {
 
   private final ObjectMapper objectMapper;
-  private static final String LOGIN_FAILURE_MESSAGE = "아이디 혹은 비밀번호가 올바르지 않습니다.";
 
   @Override
   public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
-      AuthenticationException exception) throws IOException, ServletException {
+      AuthenticationException exception) throws IOException {
     log.info("로그인 실패");
 
-    ErrorResponse errorResponse = new ErrorResponse(BAD_REQUEST.value(), LOGIN_FAILURE_MESSAGE);
+    //test
+    ErrorResponse errorResponse = new ErrorResponse(BAD_REQUEST.value(),
+        ErrorCode.LOGIN_FAILURE_MESSAGE, LOGIN_FAILURE_MESSAGE.getDescription());
 
     response.setContentType(APPLICATION_JSON_VALUE);
     response.setCharacterEncoding(UTF_8.name());
