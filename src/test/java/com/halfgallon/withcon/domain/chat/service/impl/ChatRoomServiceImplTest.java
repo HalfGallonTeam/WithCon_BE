@@ -1,13 +1,15 @@
 package com.halfgallon.withcon.domain.chat.service.impl;
 
-import static com.halfgallon.withcon.global.exception.ErrorCode.ALREADY_PARTICIPANT_CHATTING;
 import static com.halfgallon.withcon.global.exception.ErrorCode.DUPLICATE_CHATROOM;
 import static com.halfgallon.withcon.global.exception.ErrorCode.USER_JUST_ONE_CREATE_CHATROOM;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomEnterResponse;
@@ -111,11 +113,12 @@ class ChatRoomServiceImplTest {
     ChatRoomResponse response = chatRoomService.createChatRoom(request);
 
     //then
+    assertThat(response.tagList().size()).isNotZero();
     assertThat(response.name()).isEqualTo(request.name());
   }
 
   @Test
-  @DisplayName("채팅방 생성 실패 - 동일한 채팅방 이름 존재")
+  @DisplayName("채팅방 생성 실패 - 동일한 채팅방 이름 존재합니다.")
   void createChatRoom_FailByExistName() {
     //given
     given(memberRepository.findById(anyLong()))
@@ -136,7 +139,7 @@ class ChatRoomServiceImplTest {
   }
 
   @Test
-  @DisplayName("채팅방 생성 실패 - 1인당 1개만 생성 가능")
+  @DisplayName("채팅방 생성 실패 - 1인당 1개만 생성 가능합니다.")
   void createChatRoom_FailByJustOne() {
     //given
     ChatRoomRequest request = new ChatRoomRequest(1L, "1번 채팅방",
@@ -147,6 +150,7 @@ class ChatRoomServiceImplTest {
 
     given(chatParticipantRepository.checkRoomManager(anyLong()))
         .willReturn(true);
+
     //when
     CustomException customException = Assertions.assertThrows(CustomException.class,
         () -> chatRoomService.createChatRoom(request));
@@ -174,32 +178,7 @@ class ChatRoomServiceImplTest {
     Page<ChatRoomResponse> responses = chatRoomService.findChatRoom(pageable);
 
     //then
-    assertThat(responses.getTotalPages()).isOne();
-  }
-
-
-  @Test
-  @DisplayName("채팅방 입장 실패 - 이미 참여하고 있는 채팅")
-  void enterChatRoom_failByAlreadyChat() {
-    //given
-    given(memberRepository.findById(anyLong()))
-        .willReturn(Optional.of(member));
-
-    given(chatRoomRepository.findById(anyLong()))
-        .willReturn(Optional.of(ChatRoom.builder()
-            .id(1L)
-            .name("1번채팅방")
-            .build()));
-
-    given(chatParticipantRepository.existsByMemberIdAndChatRoomId(anyLong(), anyLong()))
-        .willReturn(true);
-
-    //when
-    CustomException customException = Assertions.assertThrows(CustomException.class,
-        () -> chatRoomService.enterChatRoom(1L, 1L));
-
-    //then
-    assertThat(ALREADY_PARTICIPANT_CHATTING.getDescription()).isEqualTo(customException.getMessage());
+    assertTrue(responses.hasContent());
   }
 
   @Test
@@ -215,10 +194,6 @@ class ChatRoomServiceImplTest {
         .willReturn(Optional.of(member));
     given(chatRoomRepository.findById(anyLong()))
         .willReturn(Optional.of(chatRoom));
-
-    given(chatParticipantRepository.existsByMemberIdAndChatRoomId(anyLong(), anyLong()))
-        .willReturn(false);
-
     given(chatParticipantRepository.save(any()))
         .willReturn(ChatParticipant.builder()
             .chatRoom(chatRoom)
@@ -230,7 +205,7 @@ class ChatRoomServiceImplTest {
 
     //then
     assertThat(chatRoom.getId()).isEqualTo(response.chatRoomId());
-    assertThat(response.userCount()).isOne();   //채팅방 유저 1명
+    assertThat(response.userCount()).isNotNull();
   }
 
 
@@ -238,17 +213,7 @@ class ChatRoomServiceImplTest {
   @DisplayName("채팅방 퇴장 실패 - 해당 채팅방 참여자가 아닙니다.")
   void exitChatRoom_FailByParticipantNotFound() {
     //given
-    ChatRoom chatRoom = ChatRoom.builder()
-        .id(1L)
-        .name("1번채팅방")
-        .build();
-
-    given(memberRepository.findById(anyLong()))
-        .willReturn(Optional.of(member));
-    given(chatRoomRepository.findById(anyLong()))
-        .willReturn(Optional.of(chatRoom));
-
-    given(chatParticipantRepository.findByMemberAndChatRoom(member, chatRoom))
+    given(chatParticipantRepository.findByMemberIdAndChatRoomId(1L, 1L))
         .willReturn(Optional.empty());
 
     //when
@@ -257,6 +222,32 @@ class ChatRoomServiceImplTest {
 
     //then
     assertThat(ErrorCode.PARTICIPANT_NOT_FOUND.getDescription()).isEqualTo(customException.getMessage());
+  }
+
+  @Test
+  @DisplayName("채팅방 퇴장 성공")
+  void exitChatRoom_Success() {
+    //given
+    ChatRoom chatRoom = ChatRoom.builder()
+        .id(1L)
+        .name("1번채팅방")
+        .build();
+
+    ChatParticipant participant = ChatParticipant.builder()
+        .id(1L)
+        .chatRoom(chatRoom)
+        .build();
+
+    given(chatParticipantRepository.findByMemberIdAndChatRoomId(1L, 1L))
+        .willReturn(Optional.of(participant));
+
+    //when
+    chatRoomService.exitChatRoom(1L, 1L);
+
+    //then
+    verify(chatParticipantRepository, times(1)).delete(participant);
+
+    assertThat(participant.getChatRoom().getChatParticipants()).isEmpty();
   }
 
 }

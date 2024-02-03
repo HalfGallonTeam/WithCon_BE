@@ -3,9 +3,9 @@ POST http://localhost:8080/chatRoom
 Content-Type: application/json
 
 {
-  "memberId": 7,
-  "name": "7번채팅방",
-  "tags": ["#3번", "#7번"]
+  "memberId": 8,
+  "name": "8번채팅방",
+  "tags": ["#3번", "#6번", "#10번"]
 }
 
 ### 채팅방 조회
@@ -13,9 +13,9 @@ GET http://localhost:8080/chatRoom
 Content-Type: application/json
 
 ### 채팅방 입장
-GET http://localhost:8080/chatRoom/7/enter?memberId=2
+GET http://localhost:8080/chatRoom/3/enter?memberId=7
 Content-Type: application/json
 
 ### 채팅방 퇴장
-DELETE http://localhost:8080/chatRoom/5/exit?memberId=1
+DELETE http://localhost:8080/chatRoom/3/exit?memberId=7
 Content-Type: application/json

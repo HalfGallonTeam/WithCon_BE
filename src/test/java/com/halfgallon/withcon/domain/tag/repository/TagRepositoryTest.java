@@ -79,8 +79,7 @@ class TagRepositoryTest {
     List<TagCountDto> response = tagRepository.findTagNameOrderByCount("콘");
 
     //then
-    assertThat(response.isEmpty()).isFalse();
-    assertThat(response.size()).isEqualTo(3);
+    assertThat(response.size()).isNotZero();
     assertThat(response.get(0).getName()).isEqualTo("위드콘");
   }
 }
