@@ -8,7 +8,6 @@ import com.halfgallon.withcon.domain.chat.entity.ChatMessage;
 import com.halfgallon.withcon.domain.chat.entity.ChatParticipant;
 import com.halfgallon.withcon.domain.chat.repository.ChatMessageRepository;
 import com.halfgallon.withcon.domain.chat.repository.ChatParticipantRepository;
-import com.halfgallon.withcon.domain.chat.repository.ChatRoomRepository;
 import com.halfgallon.withcon.domain.chat.service.ChatMessageService;
 import com.halfgallon.withcon.global.exception.CustomException;
 import java.time.LocalDateTime;
@@ -63,6 +62,19 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         .messageType(MessageType.EXIT)
         .sendAt(LocalDateTime.now())
         .build();
+  }
+
+  @Override
+  public void saveChatMessage(ChatMessageDto response) {
+    ChatParticipant chatParticipant = participantRepository.findByMemberIdAndChatRoomId(
+            response.getMemberId(), response.getRoomId())
+        .orElseThrow(() -> new CustomException(PARTICIPANT_NOT_FOUND));
+
+    ChatMessage message = response.toEntity();
+    message.updateChatParticipant(chatParticipant);
+    message.updateChatRoom(chatParticipant.getChatRoom());
+
+    chatMessageRepository.save(message);
   }
 
 }
