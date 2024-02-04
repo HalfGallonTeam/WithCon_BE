@@ -3,11 +3,11 @@ POST http://localhost:8080/auth/join
 Content-Type: application/json
 
 {
-  "username": "qwer1234",
+  "username": "abcd7787",
   "password": "1q2w3e4r!",
-  "email": "with00@test.com",
-  "nickname": "위드콘2",
-  "phoneNumber": "010-1924-4567"
+  "email": "wtit0822@test.com",
+  "nickname": "위콘2",
+  "phoneNumber": "010-7774-4567"
 }
 
 ### 로그인
@@ -15,7 +15,7 @@ POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
-  "username": "qwer1234",
+  "username": "abcd7787",
   "password": "1q2w3e4r!"
 }
 

@@ -4,9 +4,9 @@ Content-Type: application/json
 Authorization: {{accessToken}}
 
 {
-  "memberId": 8,
-  "name": "8번채팅방",
-  "tags": ["#3번", "#6번", "#10번"]
+  "memberId": 13,
+  "name": "13번채팅방",
+  "tags": ["#13번", "#19번", "위드"]
 }
 
 ### 채팅방 조회
@@ -14,11 +14,26 @@ GET http://localhost:8080/chatRoom
 Content-Type: application/json
 
 ### 채팅방 입장
-GET http://localhost:8080/chatRoom/5/enter
+< {%
+  request.variables.set("chatRoomId", "1")
+%}
+GET http://localhost:8080/chatRoom/{{chatRoomId}}/enter
 Content-Type: application/json
 Authorization: {{accessToken}}
 
 ### 채팅방 퇴장
-DELETE http://localhost:8080/chatRoom/3/exit
+< {%
+  request.variables.set("chatRoomId", "1")
+%}
+DELETE http://localhost:8080/chatRoom/{{chatRoomId}}/exit
 Content-Type: application/json
 Authorization: {{accessToken}}
+
+### 채팅방 메시지 조회
+< {%
+  request.variables.set("chatRoomId", "1")
+%}
+GET http://localhost:8080/chatRoom/{{chatRoomId}}/message?lastMsgId=12
+Content-Type: application/x-www-form-urlencoded
+Authorization: {{accessToken}}
+
