@@ -31,4 +31,14 @@ public class ChatMessageDto {
         .sendAt(this.sendAt)
         .build();
   }
+
+  public static ChatMessageDto fromEntity(ChatMessage chatMessage) {
+    return ChatMessageDto.builder()
+        .roomId(chatMessage.getRoom().getId())
+        .memberId(chatMessage.getChatParticipant().getId())
+        .message(chatMessage.getMessage())
+        .messageType(chatMessage.getMessageType())
+        .sendAt(chatMessage.getSendAt())
+        .build();
+  }
 }

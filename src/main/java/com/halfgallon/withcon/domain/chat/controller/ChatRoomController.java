@@ -1,6 +1,7 @@
 package com.halfgallon.withcon.domain.chat.controller;
 
 import com.halfgallon.withcon.domain.auth.security.service.CustomUserDetails;
+import com.halfgallon.withcon.domain.chat.dto.ChatMessageRequest;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomEnterResponse;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomRequest;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomResponse;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -54,4 +56,12 @@ public class ChatRoomController {
     return ResponseEntity.noContent().build();
   }
 
+  @GetMapping("/chatRoom/{chatRoomId}/message")
+  public ResponseEntity<?> findAllMessageChatRoom(
+      @AuthenticationPrincipal CustomUserDetails customUserDetails,
+      @ModelAttribute ChatMessageRequest chatMessageRequest,
+      @PathVariable("chatRoomId") Long chatRoomId) {
+    return ResponseEntity.ok(
+        chatRoomService.findAllMessageChatRoom(customUserDetails, chatMessageRequest, chatRoomId));
+  }
 }
