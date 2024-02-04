@@ -2,6 +2,7 @@ package com.halfgallon.withcon.domain.chat.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.halfgallon.withcon.domain.chat.constant.MessageType;
+import com.halfgallon.withcon.domain.chat.entity.ChatMessage;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -21,5 +22,13 @@ public class ChatMessageDto {
   private MessageType messageType;
 
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-  private LocalDateTime time;
+  private LocalDateTime sendAt;
+
+  public ChatMessage toEntity() {
+    return ChatMessage.builder()
+        .message(this.message)
+        .messageType(this.messageType)
+        .sendAt(this.sendAt)
+        .build();
+  }
 }

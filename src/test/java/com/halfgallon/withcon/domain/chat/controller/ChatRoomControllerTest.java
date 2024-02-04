@@ -90,7 +90,7 @@ class ChatRoomControllerTest {
   private static ChatRoomResponse getChatRoomResponse() {
     return ChatRoomResponse.builder()
         .chatRoomId(1L)
-        .name("1번 채팅방")
+        .roomName("1번 채팅방")
         .build();
   }
 
@@ -117,7 +117,7 @@ class ChatRoomControllerTest {
     given(chatRoomService.enterChatRoom(any(), anyLong()))
         .willReturn(ChatRoomEnterResponse.builder()
             .chatRoomId(1L)
-            .chatRoomName("1번채팅방")
+            .roomName("1번채팅방")
             .build());
 
     //when

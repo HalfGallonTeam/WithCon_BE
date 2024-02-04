@@ -106,7 +106,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         .map(p -> MemberDto.fromEntity(p.getMember())).toList();
 
     return ChatRoomEnterResponse.builder()
-        .chatRoomName(chatRoom.getName())
+        .roomName(chatRoom.getName())
         .chatRoomId(chatRoomId)
         .userCount(chatRoom.getUserCount())
         .members(members)

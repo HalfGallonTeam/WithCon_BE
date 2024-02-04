@@ -117,8 +117,8 @@ class ChatRoomServiceImplTest {
     ChatRoomResponse response = chatRoomService.createChatRoom(customUserDetails, request);
 
     //then
-    assertThat(response.tagList().size()).isNotZero();
-    assertThat(response.name()).isEqualTo(request.name());
+    assertThat(response.tags().size()).isNotZero();
+    assertThat(response.roomName()).isEqualTo(request.name());
   }
 
   @Test
