@@ -37,3 +37,11 @@ GET http://localhost:8080/chatRoom/{{chatRoomId}}/message?lastMsgId=12
 Content-Type: application/x-www-form-urlencoded
 Authorization: {{accessToken}}
 
+### 채팅방 강퇴
+< {%
+  request.variables.set("chatRoomId", "13")
+  request.variables.set("memberId", "12")
+%}
+DELETE http://localhost:8080/chatRoom/{{chatRoomId}}/kick/{{memberId}}
+Content-Type: application/json
+Authorization: {{accessToken}}

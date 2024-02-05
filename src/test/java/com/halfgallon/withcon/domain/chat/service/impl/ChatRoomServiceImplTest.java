@@ -31,6 +31,7 @@ import com.halfgallon.withcon.domain.tag.entity.Tag;
 import com.halfgallon.withcon.domain.tag.repository.TagRepository;
 import com.halfgallon.withcon.global.exception.CustomException;
 import com.halfgallon.withcon.global.exception.ErrorCode;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
@@ -297,5 +298,49 @@ class ChatRoomServiceImplTest {
 
     //then
     assertThat(messages.hasContent()).isTrue();
+  }
+
+
+  @Test
+  @DisplayName("채팅방 강퇴 성공 - 방장인 경우")
+  void kickChatRoom_Success() {
+    //given
+    List<ChatParticipant> participants = new ArrayList<>();
+    for (int i = 0; i < 9; i++) {
+      participants.add(ChatParticipant.builder()
+          .isManager(false)
+          .build());
+    }
+
+    Member user = Member.builder()
+        .id(2L)
+        .username("test1234")
+        .phoneNumber("010-1234-5678")
+        .password("12345")
+        .email("test@test.com")
+        .build();
+
+    ChatRoom chatRoom = ChatRoom.builder()
+        .id(1L)
+        .name("1번채팅방")
+        .userCount(10)
+        .chatParticipants(participants)
+        .build();
+
+
+    given(chatParticipantRepository.findByMemberIdAndChatRoomId(anyLong(), anyLong()))
+        .willReturn(Optional.of(ChatParticipant.builder()
+            .chatRoom(chatRoom)
+            .member(user)
+            .build()));
+
+    given(chatParticipantRepository.checkRoomManager(customUserDetails.getId()))
+        .willReturn(true);
+
+    //when
+    ChatRoomResponse response = chatRoomService.kickChatRoom(customUserDetails, chatRoom.getId(), user.getId());
+
+    //then
+    assertThat(response.userCount()).isEqualTo(9);
   }
 }

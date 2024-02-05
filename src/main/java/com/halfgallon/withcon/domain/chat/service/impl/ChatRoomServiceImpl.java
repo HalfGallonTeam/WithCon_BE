@@ -150,6 +150,22 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     return message.map(ChatMessageDto::fromEntity);
   }
 
+  @Override
+  @Transactional
+  public ChatRoomResponse kickChatRoom(CustomUserDetails customUserDetails, Long chatRoomId,
+      Long memberId) {
+    ChatParticipant chatParticipant = participantRepository.findByMemberIdAndChatRoomId(
+            memberId, chatRoomId)
+        .orElseThrow(() -> new CustomException(PARTICIPANT_NOT_FOUND));
+
+    if (participantRepository.checkRoomManager(customUserDetails.getId())) {
+      participantRepository.delete(chatParticipant);
+      chatParticipant.getChatRoom().removeChatParticipant(chatParticipant);
+    }
+
+    return ChatRoomResponse.fromEntity(chatParticipant.getChatRoom());
+  }
+
   /**
    * 채팅방 생성 유효성 검사
    */
