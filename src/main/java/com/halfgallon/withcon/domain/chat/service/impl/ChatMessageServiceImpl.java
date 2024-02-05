@@ -65,6 +65,22 @@ public class ChatMessageServiceImpl implements ChatMessageService {
   }
 
   @Override
+  public ChatMessageDto kickMessage(ChatMessageDto request, Long roomId) {
+    ChatParticipant chatParticipant = participantRepository.findById(request.getMemberId())
+        .orElseThrow(() -> new CustomException(PARTICIPANT_NOT_FOUND));
+
+    String message = chatParticipant.getMember().getNickname() + "님이 강퇴당했습니다.";
+
+    return ChatMessageDto.builder()
+        .roomId(roomId)
+        .memberId(request.getMemberId())
+        .message(message)
+        .messageType(MessageType.KICK)
+        .sendAt(LocalDateTime.now())
+        .build();
+  }
+
+  @Override
   public void saveChatMessage(ChatMessageDto response) {
     ChatParticipant chatParticipant = participantRepository.findByMemberIdAndChatRoomId(
             response.getMemberId(), response.getRoomId())

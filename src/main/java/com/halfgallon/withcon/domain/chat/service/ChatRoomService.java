@@ -20,6 +20,8 @@ public interface ChatRoomService {
 
   void exitChatRoom(CustomUserDetails customUserDetails, Long chatRoomId);
 
+  ChatRoomResponse kickChatRoom(CustomUserDetails customUserDetails, Long chatRoomId, Long memberId);
+
   Slice<ChatMessageDto> findAllMessageChatRoom(CustomUserDetails customUserDetails, ChatMessageRequest request,
       Long chatRoomId);
 }

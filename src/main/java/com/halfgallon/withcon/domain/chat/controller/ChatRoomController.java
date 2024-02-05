@@ -56,6 +56,13 @@ public class ChatRoomController {
     return ResponseEntity.noContent().build();
   }
 
+  @DeleteMapping("/chatRoom/{chatRoomId}/kick/{memberId}")
+  public ResponseEntity<?> kickChatRoom(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+      @PathVariable("chatRoomId") Long chatRoomId,
+      @PathVariable("memberId") Long memberId) {
+    return ResponseEntity.ok(chatRoomService.kickChatRoom(customUserDetails, chatRoomId, memberId));
+  }
+
   @GetMapping("/chatRoom/{chatRoomId}/message")
   public ResponseEntity<?> findAllMessageChatRoom(
       @AuthenticationPrincipal CustomUserDetails customUserDetails,

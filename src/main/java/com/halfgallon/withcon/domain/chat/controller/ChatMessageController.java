@@ -40,6 +40,12 @@ public class ChatMessageController {
         chatMessageService.exitMessage(chatDto, roomId));
   }
 
+  @MessageMapping("/chat/kick/{roomId}")
+  public void kickMember(@Payload ChatMessageDto chatDto, @DestinationVariable("roomId") Long roomId) {
+    rabbitTemplate.convertAndSend(CHAT_EXCHANGE_NAME, "room." + roomId,
+        chatMessageService.kickMessage(chatDto, roomId));
+  }
+
   //기본적으로 chat.queue가 exchange에 바인딩 되어있기 때문에 모든 메시지 처리
   @RabbitListener(queues = ChattingConstant.CHAT_QUEUE_NAME)
   public void receive(ChatMessageDto response) {
