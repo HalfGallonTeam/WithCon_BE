@@ -1,5 +1,6 @@
 package com.halfgallon.withcon.domain.chat.service.impl;
 
+import static com.halfgallon.withcon.domain.chat.constant.ChattingConstant.CHAT_MESSAGE_PAGE_SIZE;
 import static com.halfgallon.withcon.global.exception.ErrorCode.CHATROOM_NOT_FOUND;
 import static com.halfgallon.withcon.global.exception.ErrorCode.DUPLICATE_CHATROOM;
 import static com.halfgallon.withcon.global.exception.ErrorCode.MEMBER_NOT_FOUND;
@@ -7,11 +8,15 @@ import static com.halfgallon.withcon.global.exception.ErrorCode.PARTICIPANT_NOT_
 import static com.halfgallon.withcon.global.exception.ErrorCode.USER_JUST_ONE_CREATE_CHATROOM;
 
 import com.halfgallon.withcon.domain.auth.security.service.CustomUserDetails;
+import com.halfgallon.withcon.domain.chat.dto.ChatMessageDto;
+import com.halfgallon.withcon.domain.chat.dto.ChatMessageRequest;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomEnterResponse;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomRequest;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomResponse;
+import com.halfgallon.withcon.domain.chat.entity.ChatMessage;
 import com.halfgallon.withcon.domain.chat.entity.ChatParticipant;
 import com.halfgallon.withcon.domain.chat.entity.ChatRoom;
+import com.halfgallon.withcon.domain.chat.repository.ChatMessageRepository;
 import com.halfgallon.withcon.domain.chat.repository.ChatParticipantRepository;
 import com.halfgallon.withcon.domain.chat.repository.ChatRoomRepository;
 import com.halfgallon.withcon.domain.chat.service.ChatRoomService;
@@ -25,6 +30,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -37,6 +43,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
   private final ChatParticipantRepository participantRepository;
   private final MemberRepository memberRepository;
   private final TagRepository tagRepository;
+  private final ChatMessageRepository chatMessageRepository;
 
   @Override
   public ChatRoomResponse createChatRoom(CustomUserDetails customUserDetails, ChatRoomRequest request) {
@@ -106,7 +113,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         .map(p -> MemberDto.fromEntity(p.getMember())).toList();
 
     return ChatRoomEnterResponse.builder()
-        .chatRoomName(chatRoom.getName())
+        .roomName(chatRoom.getName())
         .chatRoomId(chatRoomId)
         .userCount(chatRoom.getUserCount())
         .members(members)
@@ -127,6 +134,20 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     if (participant.getChatRoom().getUserCount() <= 0 || participant.isManager()) {
       chatRoomRepository.delete(participant.getChatRoom());
     }
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Slice<ChatMessageDto> findAllMessageChatRoom(CustomUserDetails customUserDetails,
+      ChatMessageRequest request, Long chatRoomId) {
+
+    participantRepository.findByMemberIdAndChatRoomId(customUserDetails.getId(), chatRoomId)
+        .orElseThrow(() -> new CustomException(PARTICIPANT_NOT_FOUND));
+
+    Slice<ChatMessage> message = chatMessageRepository.findChatRoomMessage(
+        request.lastMsgId(), chatRoomId, Pageable.ofSize(CHAT_MESSAGE_PAGE_SIZE));
+
+    return message.map(ChatMessageDto::fromEntity);
   }
 
   /**

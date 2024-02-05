@@ -13,11 +13,16 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 import com.halfgallon.withcon.domain.auth.security.service.CustomUserDetails;
+import com.halfgallon.withcon.domain.chat.constant.MessageType;
+import com.halfgallon.withcon.domain.chat.dto.ChatMessageDto;
+import com.halfgallon.withcon.domain.chat.dto.ChatMessageRequest;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomEnterResponse;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomRequest;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomResponse;
+import com.halfgallon.withcon.domain.chat.entity.ChatMessage;
 import com.halfgallon.withcon.domain.chat.entity.ChatParticipant;
 import com.halfgallon.withcon.domain.chat.entity.ChatRoom;
+import com.halfgallon.withcon.domain.chat.repository.ChatMessageRepository;
 import com.halfgallon.withcon.domain.chat.repository.ChatParticipantRepository;
 import com.halfgallon.withcon.domain.chat.repository.ChatRoomRepository;
 import com.halfgallon.withcon.domain.member.entity.Member;
@@ -40,6 +45,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,6 +64,8 @@ class ChatRoomServiceImplTest {
   ChatParticipantRepository chatParticipantRepository;
   @Mock
   TagRepository tagRepository;
+  @Mock
+  ChatMessageRepository chatMessageRepository;
 
   private Member member;
   private CustomUserDetails customUserDetails;
@@ -117,8 +126,8 @@ class ChatRoomServiceImplTest {
     ChatRoomResponse response = chatRoomService.createChatRoom(customUserDetails, request);
 
     //then
-    assertThat(response.tagList().size()).isNotZero();
-    assertThat(response.name()).isEqualTo(request.name());
+    assertThat(response.tags().size()).isNotZero();
+    assertThat(response.roomName()).isEqualTo(request.name());
   }
 
   @Test
@@ -254,4 +263,39 @@ class ChatRoomServiceImplTest {
     assertThat(participant.getChatRoom().getChatParticipants()).isEmpty();
   }
 
+
+  @Test
+  @DisplayName("채팅 메시지 조회")
+  void findAllMessageChatRoom_firstPage() {
+    //given
+    ChatMessageRequest request = new ChatMessageRequest(null);
+
+    ChatRoom chatRoom = ChatRoom.builder()
+        .id(1L)
+        .name("1번채팅방")
+        .build();
+
+    ChatParticipant participant = ChatParticipant.builder()
+        .chatRoom(chatRoom)
+        .member(member)
+        .build();
+
+    given(chatParticipantRepository.findByMemberIdAndChatRoomId(member.getId(), chatRoom.getId()))
+        .willReturn(Optional.of(participant));
+
+    given(chatMessageRepository.findChatRoomMessage(request.lastMsgId(), 1L, Pageable.ofSize(10)))
+      .willReturn(new SliceImpl<>(List.of(ChatMessage.builder()
+          .room(chatRoom)
+          .chatParticipant(participant)
+          .message("test")
+          .messageType(MessageType.CHAT)
+          .build())));
+
+    //when
+    Slice<ChatMessageDto> messages = chatRoomService.findAllMessageChatRoom(
+        customUserDetails, request, 1L);
+
+    //then
+    assertThat(messages.hasContent()).isTrue();
+  }
 }
