@@ -1,6 +1,7 @@
 buildscript {
 	ext {
 		queryDslVersion = "5.0.0"
+		springCloudVersion = "2022.0.5"
 	}
 }
 
@@ -44,7 +45,7 @@ dependencies {
 	testImplementation 'com.h2database:h2'
 
 	//web-socket
-	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	 implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
 	//jwt
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
@@ -56,7 +57,7 @@ dependencies {
 
 	// querydsl
 	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
-	annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
+	annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}:jakarta"
 	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
 	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
@@ -64,6 +65,16 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-reactor-netty'
 	implementation 'org.springframework.boot:spring-boot-starter-amqp'
 
+	// Open-Feign
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
 }
 
 tasks.named('bootBuildImage') {
