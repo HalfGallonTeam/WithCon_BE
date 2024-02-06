@@ -1,3 +1,11 @@
-### 태그 정보 조회(태그 갯수 정렬)
-GET http://localhost:8080/tag
+### 태그 정보 조회(태그 갯수가 많은 순으로 정렬)
+GET http://localhost:8080/tag/search
+Content-Type: application/json
+
+
+### 태그 이름 검색(태그 갯수가 많은 순으로 정렬)
+< {%
+  request.variables.set("tags", "위드")
+%}
+GET http://localhost:8080/tag/{{tags}}/search
 Content-Type: application/json

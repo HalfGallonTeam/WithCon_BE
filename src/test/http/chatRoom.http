@@ -1,11 +1,12 @@
 ### 채팅방 생성
 POST http://localhost:8080/chatRoom
 Content-Type: application/json
+Authorization: {{accessToken}}
 
 {
-  "memberId": 7,
-  "name": "7번채팅방",
-  "tags": ["#3번", "#7번"]
+  "memberId": 13,
+  "name": "13번채팅방",
+  "tags": ["#13번", "#19번", "위드"]
 }
 
 ### 채팅방 조회
@@ -13,9 +14,34 @@ GET http://localhost:8080/chatRoom
 Content-Type: application/json
 
 ### 채팅방 입장
-GET http://localhost:8080/chatRoom/7/enter?memberId=2
+< {%
+  request.variables.set("chatRoomId", "1")
+%}
+GET http://localhost:8080/chatRoom/{{chatRoomId}}/enter
 Content-Type: application/json
+Authorization: {{accessToken}}
 
 ### 채팅방 퇴장
-DELETE http://localhost:8080/chatRoom/5/exit?memberId=1
+< {%
+  request.variables.set("chatRoomId", "1")
+%}
+DELETE http://localhost:8080/chatRoom/{{chatRoomId}}/exit
 Content-Type: application/json
+Authorization: {{accessToken}}
+
+### 채팅방 메시지 조회
+< {%
+  request.variables.set("chatRoomId", "1")
+%}
+GET http://localhost:8080/chatRoom/{{chatRoomId}}/message?lastMsgId=12
+Content-Type: application/x-www-form-urlencoded
+Authorization: {{accessToken}}
+
+### 채팅방 강퇴
+< {%
+  request.variables.set("chatRoomId", "13")
+  request.variables.set("memberId", "12")
+%}
+DELETE http://localhost:8080/chatRoom/{{chatRoomId}}/kick/{{memberId}}
+Content-Type: application/json
+Authorization: {{accessToken}}

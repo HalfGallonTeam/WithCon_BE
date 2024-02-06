@@ -6,4 +6,6 @@ import java.util.List;
 public interface TagService {
 
   List<TagCountDto> findTagOrderByCount();
+
+  List<TagCountDto> findTagNameOrderByCount(String tagName);
 }

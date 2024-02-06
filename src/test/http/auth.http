@@ -1,0 +1,25 @@
+### 회원가입
+POST http://localhost:8080/auth/join
+Content-Type: application/json
+
+{
+  "username": "abcd7787",
+  "password": "1q2w3e4r!",
+  "email": "wtit0822@test.com",
+  "nickname": "위콘2",
+  "phoneNumber": "010-7774-4567"
+}
+
+### 로그인
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "username": "abcd7787",
+  "password": "1q2w3e4r!"
+}
+
+> {%
+  client.global.set("accessToken", response.headers.valueOf("Authorization"))
+  client.log("엑세스 토큰: " + client.global.get("accessToken"));
+  %}
