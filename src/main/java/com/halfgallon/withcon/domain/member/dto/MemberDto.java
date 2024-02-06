@@ -16,7 +16,6 @@ public record MemberDto(
 
   public static MemberDto fromEntity(Member member) {
     return MemberDto.builder()
-        .email(member.getEmail())
         .username(member.getUsername())
         .password(member.getPassword())
         .loginType(member.getLoginType())

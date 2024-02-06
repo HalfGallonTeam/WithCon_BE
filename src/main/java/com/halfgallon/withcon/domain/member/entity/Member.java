@@ -28,12 +28,9 @@ public class Member extends BaseTimeEntity {
   private Long id;
 
   @Column(nullable = false)
-  private String email;
-
-  @Column(nullable = false)
   private String username;
 
-  @Column(nullable = false)
+  @Column
   private String password;
 
   @Column(nullable = false)
@@ -43,7 +40,7 @@ public class Member extends BaseTimeEntity {
   @Column(nullable = false)
   private String nickname;
 
-  @Column(nullable = false)
+  @Column
   private String phoneNumber;
 
 }

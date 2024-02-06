@@ -1,8 +1,5 @@
 package com.halfgallon.withcon.domain.auth.service;
 
-import static com.halfgallon.withcon.global.exception.ErrorCode.DUPLICATE_EMAIL;
-import static com.halfgallon.withcon.global.exception.ErrorCode.DUPLICATE_NICKNAME;
-import static com.halfgallon.withcon.global.exception.ErrorCode.DUPLICATE_PHONE_NUMBER;
 import static com.halfgallon.withcon.global.exception.ErrorCode.DUPLICATE_USERNAME;
 import static com.halfgallon.withcon.global.exception.ErrorCode.MEMBER_NOT_FOUND;
 import static com.halfgallon.withcon.global.exception.ErrorCode.REFRESH_TOKEN_COOKIE_IS_EMPTY;
@@ -17,10 +14,12 @@ import com.halfgallon.withcon.domain.auth.repository.RefreshTokenRepository;
 import com.halfgallon.withcon.domain.member.repository.MemberRepository;
 import com.halfgallon.withcon.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -36,29 +35,13 @@ public class AuthServiceImpl implements AuthService {
    */
   @Override
   public void join(AuthJoinRequest request) {
-    validateJoinRequest(request);
-
-    String encodedPassword = passwordEncoder.encode(request.getPassword());
-
-    memberRepository.save(request.toEntity(encodedPassword));
-  }
-
-  private void validateJoinRequest(AuthJoinRequest request) {
     if (memberRepository.existsByUsername(request.getUsername())) {
       throw new CustomException(DUPLICATE_USERNAME);
     }
 
-    if (memberRepository.existsByEmail(request.getEmail())) {
-      throw new CustomException(DUPLICATE_EMAIL);
-    }
+    String encodedPassword = passwordEncoder.encode(request.getPassword());
 
-    if (memberRepository.existsByNickname(request.getNickname())) {
-      throw new CustomException(DUPLICATE_NICKNAME);
-    }
-
-    if (memberRepository.existsByPhoneNumber(request.getPhoneNumber())) {
-      throw new CustomException(DUPLICATE_PHONE_NUMBER);
-    }
+    memberRepository.save(request.toEntity(encodedPassword));
   }
 
   /**
