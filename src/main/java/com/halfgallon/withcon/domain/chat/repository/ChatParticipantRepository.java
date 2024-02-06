@@ -1,7 +1,6 @@
 package com.halfgallon.withcon.domain.chat.repository;
 
 import com.halfgallon.withcon.domain.chat.entity.ChatParticipant;
-import com.halfgallon.withcon.domain.member.entity.Member;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
