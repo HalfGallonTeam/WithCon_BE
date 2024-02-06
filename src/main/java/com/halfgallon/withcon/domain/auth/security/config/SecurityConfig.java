@@ -13,6 +13,7 @@ import com.halfgallon.withcon.domain.auth.security.filter.OAuth2LoginFilter;
 import com.halfgallon.withcon.domain.auth.security.handler.CustomLogoutSuccessHandler;
 import com.halfgallon.withcon.domain.auth.security.handler.LoginFailureHandler;
 import com.halfgallon.withcon.domain.auth.security.handler.LoginSuccessHandler;
+import com.halfgallon.withcon.domain.auth.security.handler.OAuth2LoginFailureHandler;
 import com.halfgallon.withcon.domain.auth.security.handler.TokenClearingLogoutHandler;
 import com.halfgallon.withcon.domain.auth.security.provider.OAuth2LoginProvider;
 import com.halfgallon.withcon.domain.auth.security.service.CustomUserDetailsService;
@@ -102,7 +103,7 @@ public class SecurityConfig {
     );
     filter.setAuthenticationSuccessHandler(
         new LoginSuccessHandler(jwtManager, accessTokenRepository, refreshTokenRepository));
-    filter.setAuthenticationFailureHandler(new LoginFailureHandler(objectMapper));
+    filter.setAuthenticationFailureHandler(new OAuth2LoginFailureHandler(objectMapper));
 
     return filter;
   }
