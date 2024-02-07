@@ -160,7 +160,6 @@ class LoginTest {
   private static Member createDefaultMember(String encodedPassword) {
     return Member.builder()
         .username("username")
-        .email("test@example.com")
         .nickname("위드콘")
         .loginType(LoginType.HOME)
         .password(encodedPassword)

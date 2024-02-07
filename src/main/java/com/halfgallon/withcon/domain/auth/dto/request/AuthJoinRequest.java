@@ -31,13 +31,6 @@ public class AuthJoinRequest {
 
   @NotBlank
   @Pattern(
-      regexp = "^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+.[a-zA-Z]{2,}$",
-      message = "이메일 형식이 올바르지 않습니다."
-  )
-  private String email;
-
-  @NotBlank
-  @Pattern(
       regexp = "^[A-Za-z0-9ㄱ-힣]{2,6}$",
       message = "닉네임 형식이 올바르지 않습니다."
   )
@@ -51,7 +44,6 @@ public class AuthJoinRequest {
         .username(username)
         .password(encodedPassword)
         .nickname(nickname)
-        .email(email)
         .phoneNumber(phoneNumber)
         .loginType(LoginType.HOME)
         .build();

@@ -1,9 +1,9 @@
 package com.halfgallon.withcon.domain.auth.controller;
 
+import static com.halfgallon.withcon.domain.auth.constant.AuthConstant.ACCESS_TOKEN_HEADER_NAME;
 import static com.halfgallon.withcon.domain.auth.constant.AuthConstant.ACCESS_TOKEN_PREFIX;
 import static com.halfgallon.withcon.domain.auth.constant.AuthConstant.REFRESH_TOKEN_COOKIE_NAME;
 
-import com.halfgallon.withcon.domain.auth.constant.AuthConstant;
 import com.halfgallon.withcon.domain.auth.dto.request.AuthJoinRequest;
 import com.halfgallon.withcon.domain.auth.service.AuthService;
 import jakarta.validation.Valid;
@@ -34,7 +34,7 @@ public class AuthController {
     String newAccessToken = authService.reissueAccessToken(refreshToken);
 
     HttpHeaders headers = new HttpHeaders();
-    headers.add(AuthConstant.ACCESS_TOKEN_HEADER_NAME, ACCESS_TOKEN_PREFIX + newAccessToken);
+    headers.add(ACCESS_TOKEN_HEADER_NAME, ACCESS_TOKEN_PREFIX + newAccessToken);
 
     return new ResponseEntity<>(headers, HttpStatus.OK);
   }

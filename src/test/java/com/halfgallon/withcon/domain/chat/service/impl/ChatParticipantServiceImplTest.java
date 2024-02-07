@@ -63,7 +63,6 @@ class ChatParticipantServiceImplTest {
                 .id(1L)
                 .name("1번 채팅방")
                 .build())
-            .member(member)
             .build())));
 
     //when

@@ -58,7 +58,6 @@ class AuthControllerTest {
     AuthJoinRequest request = AuthJoinRequest.builder()
         .username("username")
         .password("1q2w3e4r!")
-        .email("test@example.com")
         .nickname("위드콘")
         .phoneNumber("01012345678")
         .build();

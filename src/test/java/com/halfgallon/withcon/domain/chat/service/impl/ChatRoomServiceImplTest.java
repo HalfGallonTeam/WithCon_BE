@@ -78,7 +78,6 @@ class ChatRoomServiceImplTest {
         .username("test1234")
         .phoneNumber("010-1234-5678")
         .password("12345")
-        .email("test@test.com")
         .build();
 
     customUserDetails = CustomUserDetails.fromEntity(member);
