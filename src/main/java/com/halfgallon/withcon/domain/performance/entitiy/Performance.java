@@ -12,6 +12,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AccessLevel;
@@ -34,10 +35,10 @@ public class Performance extends BaseTimeEntity {
   private String name;
 
   @Column(nullable = false)
-  private String startDate;
+  private LocalDate startDate;
 
   @Column(nullable = false)
-  private String endDate;
+  private LocalDate endDate;
 
   @Column(nullable = false)
   private String poster;

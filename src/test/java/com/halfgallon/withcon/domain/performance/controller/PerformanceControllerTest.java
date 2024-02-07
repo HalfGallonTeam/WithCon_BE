@@ -16,6 +16,7 @@ import com.halfgallon.withcon.domain.performance.dto.request.PerformanceRequest;
 import com.halfgallon.withcon.domain.performance.dto.response.PerformanceResponse;
 import com.halfgallon.withcon.domain.performance.service.impl.PerformanceServiceImpl;
 import com.halfgallon.withcon.global.annotation.WithCustomMockUser;
+import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -109,8 +110,8 @@ class PerformanceControllerTest {
     return PerformanceRequest.builder()
         .id("id")
         .name("name")
-        .startDate("2024-02-18")
-        .endDate("2024-02-20")
+        .startDate(LocalDate.ofEpochDay(2024-02-18))
+        .endDate(LocalDate.ofEpochDay(2024-02-20))
         .poster("asdfler")
         .facility("공연 장소")
         .status(Status.RUNNING)
@@ -122,8 +123,8 @@ class PerformanceControllerTest {
     return PerformanceResponse.builder()
         .id("id")
         .name("name")
-        .startDate("2024-02-18")
-        .endDate("2024-02-20")
+        .startDate(LocalDate.ofEpochDay(2024-02-18))
+        .endDate(LocalDate.ofEpochDay(2024-02-20))
         .poster("asdfler")
         .facility("공연 장소")
         .status(Status.RUNNING)

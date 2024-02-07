@@ -16,6 +16,7 @@ import com.halfgallon.withcon.domain.performance.entitiy.Performance;
 import com.halfgallon.withcon.domain.performance.repository.PerformanceRepository;
 import com.halfgallon.withcon.global.exception.CustomException;
 import com.halfgallon.withcon.global.exception.ErrorCode;
+import java.time.LocalDate;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -131,8 +132,8 @@ class PerformanceServiceImplTest {
     return PerformanceRequest.builder()
         .id("id")
         .name("name")
-        .startDate("2024-02-18")
-        .endDate("2024-02-20")
+        .startDate(LocalDate.ofEpochDay(2024-02-18))
+        .endDate(LocalDate.ofEpochDay(2024-02-20))
         .poster("asdfler")
         .facility("공연 장소")
         .status(Status.RUNNING)
@@ -144,8 +145,8 @@ class PerformanceServiceImplTest {
     return PerformanceResponse.builder()
         .id("id")
         .name("name")
-        .startDate("2024-02-18")
-        .endDate("2024-02-20")
+        .startDate(LocalDate.ofEpochDay(2024-02-18))
+        .endDate(LocalDate.ofEpochDay(2024-02-20))
         .poster("asdfler")
         .facility("공연 장소")
         .status(Status.RUNNING)

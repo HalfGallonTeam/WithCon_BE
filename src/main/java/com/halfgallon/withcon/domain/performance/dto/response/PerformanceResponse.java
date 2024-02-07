@@ -3,6 +3,7 @@ package com.halfgallon.withcon.domain.performance.dto.response;
 import com.halfgallon.withcon.domain.performance.constant.Status;
 import com.halfgallon.withcon.domain.performance.entitiy.Performance;
 import jakarta.persistence.Id;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,9 +16,9 @@ public class PerformanceResponse {
 
   private String name;
 
-  private String startDate;
+  private LocalDate startDate;
 
-  private String endDate;
+  private LocalDate endDate;
 
   private String poster;
 
