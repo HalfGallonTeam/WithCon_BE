@@ -1,6 +1,7 @@
 version: '3.1'
 
 services:
+
   jenkins:
     container_name: jenkins
     environment:
@@ -50,6 +51,20 @@ services:
     container_name: redis
     ports:
       - "6379:6379"
+
+  rabbitmq:
+    build:
+      context: ./rabbitMQ
+      dockerfile: Dockerfile
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+      - "61613:61613"
+    environment:
+      RABBITMQ_ERLANG_COOKIE: "RabbitMQ-My-Cookies"
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "guest"
     networks:
       - withcon
     restart: always
