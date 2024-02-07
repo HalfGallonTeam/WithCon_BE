@@ -1,5 +1,6 @@
 package com.halfgallon.withcon.domain.chat.entity;
 
+import com.halfgallon.withcon.domain.performance.entitiy.Performance;
 import com.halfgallon.withcon.domain.tag.entity.Tag;
 import com.halfgallon.withcon.global.entity.BaseTimeEntity;
 import jakarta.persistence.CascadeType;
@@ -8,6 +9,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +43,10 @@ public class ChatRoom extends BaseTimeEntity {
   @Builder.Default
   @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
   List<Tag> tags = new ArrayList<>();
+
+  @ManyToOne
+  @JoinColumn(name = "performance_id")
+  Performance performance;
 
   public void updateUserCount() {
     this.userCount = this.chatParticipants.size();
