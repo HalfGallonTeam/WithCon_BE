@@ -2,12 +2,18 @@ package com.halfgallon.withcon.domain.notification.entity;
 
 import com.halfgallon.withcon.domain.member.entity.Member;
 import com.halfgallon.withcon.domain.notification.constant.NotificationType;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.time.LocalDateTime;
 import lombok.NoArgsConstructor;
 
 @Getter
@@ -31,11 +37,13 @@ public class Notification {
     private NotificationType notificationType;
 
     @Column(nullable = false)
-    private boolean isRead;
+    @Builder.Default private boolean readStatus = false;
 
-    private LocalDateTime createdAt;
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
+
+    public void setReadStatus() {
+        this.readStatus = true;
+    }
 }
