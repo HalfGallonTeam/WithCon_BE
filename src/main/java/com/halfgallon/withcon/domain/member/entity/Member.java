@@ -3,6 +3,7 @@ package com.halfgallon.withcon.domain.member.entity;
 import static lombok.AccessLevel.PROTECTED;
 
 import com.halfgallon.withcon.domain.member.constant.LoginType;
+import com.halfgallon.withcon.domain.performance.entitiy.PerformanceLike;
 import com.halfgallon.withcon.global.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,6 +12,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -46,4 +49,6 @@ public class Member extends BaseTimeEntity {
   @Column(nullable = false)
   private String phoneNumber;
 
+  @OneToMany
+  private List<PerformanceLike> likes;
 }
