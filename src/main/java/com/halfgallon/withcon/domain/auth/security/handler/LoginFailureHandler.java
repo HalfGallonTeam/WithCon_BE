@@ -6,7 +6,6 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.halfgallon.withcon.global.exception.ErrorCode;
 import com.halfgallon.withcon.global.exception.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -29,7 +28,7 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
 
     //test
     ErrorResponse errorResponse = new ErrorResponse(BAD_REQUEST.value(),
-        ErrorCode.LOGIN_FAILURE_MESSAGE, LOGIN_FAILURE_MESSAGE.getDescription());
+        LOGIN_FAILURE_MESSAGE, LOGIN_FAILURE_MESSAGE.getDescription());
 
     response.setContentType(APPLICATION_JSON_VALUE);
     response.setCharacterEncoding(UTF_8.name());

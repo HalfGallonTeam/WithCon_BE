@@ -5,9 +5,8 @@ Content-Type: application/json
 {
   "username": "abcd7787",
   "password": "1q2w3e4r!",
-  "email": "wtit0822@test.com",
   "nickname": "위콘2",
-  "phoneNumber": "010-7774-4567"
+  "phoneNumber": "01077744567"
 }
 
 ### 로그인

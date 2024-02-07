@@ -1,5 +1,6 @@
 package com.halfgallon.withcon.domain.auth.security.handler;
 
+import static com.halfgallon.withcon.global.exception.ErrorCode.OAUTH2_LOGIN_FAILURE_MESSAGE;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -20,7 +21,6 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 public class OAuth2LoginFailureHandler implements AuthenticationFailureHandler {
 
   private final ObjectMapper objectMapper;
-  private static final String OAUTH2_LOGIN_FAILURE_MESSAGE = "소셜 로그인에 실패했습니다.";
 
   @Override
   public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
@@ -28,7 +28,8 @@ public class OAuth2LoginFailureHandler implements AuthenticationFailureHandler {
     log.info("소셜 로그인 실패");
 
     ErrorResponse errorResponse = new ErrorResponse(BAD_REQUEST.value(),
-        OAUTH2_LOGIN_FAILURE_MESSAGE);
+        OAUTH2_LOGIN_FAILURE_MESSAGE,
+        OAUTH2_LOGIN_FAILURE_MESSAGE.getDescription());
 
     response.setContentType(APPLICATION_JSON_VALUE);
     response.setCharacterEncoding(UTF_8.name());
