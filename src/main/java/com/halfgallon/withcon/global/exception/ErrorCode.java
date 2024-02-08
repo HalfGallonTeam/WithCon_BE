@@ -39,6 +39,7 @@ public enum ErrorCode {
   MEMBER_NOT_FOUND(NOT_FOUND.value(), "존재하지 않는 회원입니다."),
   CHATROOM_NOT_FOUND(NOT_FOUND.value(), "채팅방이 생성되지 않았습니다."),
   PARTICIPANT_NOT_FOUND(NOT_FOUND.value(), "해당 채팅방 참여자가 아닙니다."),
+  PERFORMANCE_NOT_FOUND(NOT_FOUND.value(), "존재하지 않는 공연입니다."),
 
   /**
    * 409 conflict
