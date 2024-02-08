@@ -24,7 +24,9 @@ import com.halfgallon.withcon.domain.member.dto.MemberDto;
 import com.halfgallon.withcon.domain.member.entity.Member;
 import com.halfgallon.withcon.domain.member.repository.MemberRepository;
 import com.halfgallon.withcon.domain.tag.entity.Tag;
+import com.halfgallon.withcon.domain.tag.entity.TagSearch;
 import com.halfgallon.withcon.domain.tag.repository.TagRepository;
+import com.halfgallon.withcon.domain.tag.repository.TagSearchRepository;
 import com.halfgallon.withcon.global.exception.CustomException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +46,8 @@ public class ChatRoomServiceImpl implements ChatRoomService {
   private final MemberRepository memberRepository;
   private final TagRepository tagRepository;
   private final ChatMessageRepository chatMessageRepository;
+  private final TagSearchRepository tagSearchRepository;
+
 
   @Override
   public ChatRoomResponse createChatRoom(CustomUserDetails customUserDetails, ChatRoomRequest request) {
@@ -77,10 +81,40 @@ public class ChatRoomServiceImpl implements ChatRoomService {
       for (Tag tag : tagList) {
         chatRoom.addTag(tag);
       }
+
+      //태그 기록(ElasticSearch 저장)
+      upsertTagSearch(tagList);
     }
 
     return ChatRoomResponse.fromEntity(chatRoom);
   }
+
+  private void upsertTagSearch(List<Tag> tagList) {
+    List<TagSearch> searches = tagList.stream()
+        .map(tag -> {
+          TagSearch tagSearch = tagSearchRepository.findByName(tag.getName()).orElse(null);
+
+          if (tagSearch == null) {
+            return TagSearch.builder()
+              .id(tag.getId().toString())
+              .name(tag.getName())
+              .tagCount(1)
+              .build();
+          } else {
+            Integer count = tagRepository.countTagByName(tag.getName());
+            tagSearchRepository.updateTagCount(tagSearch.getId(), tag.getName(), count);
+
+            return TagSearch.builder()
+                .id(tag.getId().toString())
+                .name(tag.getName())
+                .tagCount(count)
+                .build();
+          }
+        }).toList();
+
+    tagSearchRepository.saveAll(searches);
+  }
+
 
   @Override
   @Transactional(readOnly = true)
