@@ -1,7 +1,13 @@
 package com.halfgallon.withcon.domain.notification.constant;
 
-public enum NotificationType {
-  CHATROOM,
-  PERFORMANCE
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
+@Getter
+@AllArgsConstructor
+public enum NotificationType {
+  CHATROOM("/chatRoom"),
+  PERFORMANCE("/performance");
+
+  private final String description;
 }

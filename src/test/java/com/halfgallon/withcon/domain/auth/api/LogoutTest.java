@@ -18,6 +18,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,11 +71,16 @@ class LogoutTest {
     Cookie requestCookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, "refreshToken");
     requestCookie.setMaxAge(500);
 
+    SecurityContext context = SecurityContextHolder.getContext();
+
     // when
     // then
+    assertThat(context.getAuthentication()).isNotNull();
     mockMvc.perform(post(LOGOUT_PATH)
             .cookie(requestCookie))
         .andExpect(status().isOk())
         .andExpect(cookie().maxAge(REFRESH_TOKEN_COOKIE_NAME, 0));
+
+    assertThat(context.getAuthentication()).isNull();
   }
 }

@@ -49,6 +49,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     // 리프래시 토큰 쿠키 생성
     Cookie refreshTokenCookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken);
+    refreshTokenCookie.setPath("/");
     refreshTokenCookie.setHttpOnly(true);
     refreshTokenCookie.setSecure(true);
     refreshTokenCookie.setMaxAge(REFRESH_TOKEN_COOKIE_EXPIRY);

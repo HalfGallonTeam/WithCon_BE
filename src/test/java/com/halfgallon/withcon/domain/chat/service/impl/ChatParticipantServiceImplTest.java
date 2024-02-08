@@ -43,7 +43,6 @@ class ChatParticipantServiceImplTest {
         .username("test1234")
         .phoneNumber("010-1234-5678")
         .password("12345")
-        .email("test@test.com")
         .build();
 
     customUserDetails = CustomUserDetails.fromEntity(member);
@@ -63,7 +62,6 @@ class ChatParticipantServiceImplTest {
                 .id(1L)
                 .name("1번 채팅방")
                 .build())
-            .member(member)
             .build())));
 
     //when

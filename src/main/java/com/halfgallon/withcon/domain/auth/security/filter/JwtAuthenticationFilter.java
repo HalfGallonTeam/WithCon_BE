@@ -28,13 +28,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   private final MemberRepository memberRepository;
   private final AccessTokenRepository accessTokenRepository;
 
+  private static final String ACCESS_TOKEN_REISSUE_PATH = "/auth/reissue";
+
   @Override
   public void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
       FilterChain filterChain) throws ServletException, IOException {
 
     String accessTokenHeader = request.getHeader(ACCESS_TOKEN_HEADER_NAME);
 
-    if (!StringUtils.hasText(accessTokenHeader)) {
+    if (!StringUtils.hasText(accessTokenHeader) ||
+        request.getServletPath().equals(ACCESS_TOKEN_REISSUE_PATH)) {
       filterChain.doFilter(request, response);
       return;
     }

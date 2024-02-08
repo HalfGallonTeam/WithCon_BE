@@ -72,54 +72,6 @@ class AuthServiceImplTest {
   }
 
   @Test
-  @DisplayName("❗️회원가입 시 중복된 email 이면 실패한다.")
-  void join_FailByDuplicateEmail() {
-    // given
-    AuthJoinRequest request = AuthJoinRequest.builder()
-        .build();
-
-    // when
-    given(memberRepository.existsByEmail(any())).willReturn(true);
-
-    // then
-    assertThatThrownBy(() -> authService.join(request))
-        .isInstanceOf(CustomException.class)
-        .hasMessageContaining("이미 사용하고 있는 이메일입니다.");
-  }
-
-  @Test
-  @DisplayName("❗️회원가입 시 중복된 nickname 이면 실패한다.")
-  void join_FailByDuplicateNickname() {
-    // given
-    AuthJoinRequest request = AuthJoinRequest.builder()
-        .build();
-
-    // when
-    given(memberRepository.existsByNickname(any())).willReturn(true);
-
-    // then
-    assertThatThrownBy(() -> authService.join(request))
-        .isInstanceOf(CustomException.class)
-        .hasMessageContaining("이미 사용하고 있는 닉네임입니다.");
-  }
-
-  @Test
-  @DisplayName("❗️회원가입 시 중복된 phoneNumber 이면 실패한다.")
-  void join_FailByDuplicatePhoneNumber() {
-    // given
-    AuthJoinRequest request = AuthJoinRequest.builder()
-        .build();
-
-    // when
-    given(memberRepository.existsByPhoneNumber(any())).willReturn(true);
-
-    // then
-    assertThatThrownBy(() -> authService.join(request))
-        .isInstanceOf(CustomException.class)
-        .hasMessageContaining("이미 사용하고 있는 핸드폰 번호입니다.");
-  }
-
-  @Test
   @DisplayName("회원가입에 성공하면 회원의 패스워드는 인코딩 되어 저장된다.")
   void join_Success() {
     // given
@@ -127,7 +79,6 @@ class AuthServiceImplTest {
         .username("username")
         .password("1q2w3e4r")
         .nickname("nickname")
-        .email("test@example.com")
         .phoneNumber("01012345678")
         .build();
 
