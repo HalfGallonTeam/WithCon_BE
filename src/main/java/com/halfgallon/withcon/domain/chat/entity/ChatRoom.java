@@ -6,6 +6,7 @@ import com.halfgallon.withcon.global.entity.BaseTimeEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -44,9 +45,9 @@ public class ChatRoom extends BaseTimeEntity {
   @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
   List<Tag> tags = new ArrayList<>();
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "performance_id")
-  Performance performance;
+  private Performance performance;
 
   public void updateUserCount() {
     this.userCount = this.chatParticipants.size();
@@ -64,5 +65,9 @@ public class ChatRoom extends BaseTimeEntity {
 
   public void addTag(Tag tag) {
     this.tags.add(tag);
+  }
+
+  public void updatePerformance(Performance performance) {
+    this.performance = performance;
   }
 }
