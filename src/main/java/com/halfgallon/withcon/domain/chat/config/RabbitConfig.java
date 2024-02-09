@@ -16,6 +16,7 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -23,6 +24,22 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @RequiredArgsConstructor
 public class RabbitConfig {
+
+  @Value("${rabbitmq.host}")
+  private String rabbitmqHost;
+
+  @Value("${rabbitmq.port}")
+  private int rabbitmqPort;
+
+  @Value("${rabbitmq.username}")
+  private String rabbitmqUsername;
+
+  @Value("${rabbitmq.password}")
+  private String rabbitmqPassword;
+
+  @Value("${rabbitmq.virtualHost}")
+  private String rabbitmqVirtualHost;
+
 
   /**
    * Queue 등록
@@ -56,11 +73,11 @@ public class RabbitConfig {
   @Bean
   public ConnectionFactory connectionFactory() {
     CachingConnectionFactory factory = new CachingConnectionFactory();
-    factory.setHost("localhost");
-    factory.setPort(5672);
-    factory.setVirtualHost("/");
-    factory.setUsername("guest");
-    factory.setPassword("guest");
+    factory.setHost(rabbitmqHost);
+    factory.setPort(rabbitmqPort);
+    factory.setVirtualHost(rabbitmqVirtualHost);
+    factory.setUsername(rabbitmqUsername);
+    factory.setPassword(rabbitmqPassword);
     return factory;
   }
 
