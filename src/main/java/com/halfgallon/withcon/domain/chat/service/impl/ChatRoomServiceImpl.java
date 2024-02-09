@@ -10,6 +10,7 @@ import static com.halfgallon.withcon.global.exception.ErrorCode.USER_JUST_ONE_CR
 import com.halfgallon.withcon.domain.auth.security.service.CustomUserDetails;
 import com.halfgallon.withcon.domain.chat.dto.ChatMessageDto;
 import com.halfgallon.withcon.domain.chat.dto.ChatMessageRequest;
+import com.halfgallon.withcon.domain.chat.dto.ChatParticipantDto;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomEnterResponse;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomRequest;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomResponse;
@@ -20,7 +21,6 @@ import com.halfgallon.withcon.domain.chat.repository.ChatMessageRepository;
 import com.halfgallon.withcon.domain.chat.repository.ChatParticipantRepository;
 import com.halfgallon.withcon.domain.chat.repository.ChatRoomRepository;
 import com.halfgallon.withcon.domain.chat.service.ChatRoomService;
-import com.halfgallon.withcon.domain.member.dto.MemberDto;
 import com.halfgallon.withcon.domain.member.entity.Member;
 import com.halfgallon.withcon.domain.member.repository.MemberRepository;
 import com.halfgallon.withcon.domain.tag.entity.Tag;
@@ -109,14 +109,15 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         );
 
     //채팅방 참여하고 있는 인원 리스트
-    List<MemberDto> members = chatRoom.getChatParticipants().stream()
-        .map(p -> MemberDto.fromEntity(p.getMember())).toList();
+    List<ChatParticipantDto> chatParticipants = chatRoom.getChatParticipants()
+        .stream()
+        .map(ChatParticipantDto::fromEntity).toList();
 
     return ChatRoomEnterResponse.builder()
         .roomName(chatRoom.getName())
         .chatRoomId(chatRoomId)
         .userCount(chatRoom.getUserCount())
-        .members(members)
+        .chatParticipants(chatParticipants)
         .build();
   }
 
