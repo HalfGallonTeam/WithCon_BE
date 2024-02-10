@@ -12,6 +12,8 @@ import lombok.Getter;
 @Getter
 public class PerformanceResponse {
 
+  private String id;
+
   private String name;
 
   private LocalDate startDate;
