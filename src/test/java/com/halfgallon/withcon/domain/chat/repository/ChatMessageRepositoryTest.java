@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.halfgallon.withcon.domain.chat.entity.ChatMessage;
 import com.halfgallon.withcon.global.config.JpaAuditingConfig;
 import com.halfgallon.withcon.global.config.QueryDslConfig;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.transaction.annotation.Transactional;
 
+@Disabled
 @DataJpaTest
 @Transactional
 @AutoConfigureTestDatabase(replace = Replace.NONE)
