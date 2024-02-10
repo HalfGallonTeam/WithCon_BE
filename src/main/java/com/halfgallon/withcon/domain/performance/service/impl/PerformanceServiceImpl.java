@@ -3,10 +3,14 @@ package com.halfgallon.withcon.domain.performance.service.impl;
 import com.halfgallon.withcon.domain.performance.dto.request.PerformanceRequest;
 import com.halfgallon.withcon.domain.performance.dto.response.PerformanceResponse;
 import com.halfgallon.withcon.domain.performance.entitiy.Performance;
+import com.halfgallon.withcon.domain.performance.entitiy.QPerformance;
+import com.halfgallon.withcon.domain.performance.entitiy.QPerformanceDetail;
 import com.halfgallon.withcon.domain.performance.repository.PerformanceRepository;
 import com.halfgallon.withcon.domain.performance.service.PerformanceService;
 import com.halfgallon.withcon.global.exception.CustomException;
 import com.halfgallon.withcon.global.exception.ErrorCode;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PerformanceServiceImpl implements PerformanceService {
 
   private final PerformanceRepository performanceRepository;
+  private final JPAQueryFactory jpaQueryFactory;
 
   @Override
   @Transactional
@@ -50,5 +55,11 @@ public class PerformanceServiceImpl implements PerformanceService {
     performanceRepository.deleteById(performanceId);
 
     return PerformanceResponse.fromEntity(performance);
+  }
+
+  @Override
+  public List<PerformanceResponse> searchPerformance(String keyword) {
+    return performanceRepository.searchPerformance(keyword)
+        .stream().map(PerformanceResponse::fromEntity).toList();
   }
 }

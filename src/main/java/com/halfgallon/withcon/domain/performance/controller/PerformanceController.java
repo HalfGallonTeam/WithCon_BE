@@ -3,6 +3,7 @@ package com.halfgallon.withcon.domain.performance.controller;
 import com.halfgallon.withcon.domain.performance.dto.request.PerformanceRequest;
 import com.halfgallon.withcon.domain.performance.dto.response.PerformanceResponse;
 import com.halfgallon.withcon.domain.performance.service.PerformanceService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -39,5 +41,10 @@ public class PerformanceController {
   @DeleteMapping("/{performanceId}")
   public ResponseEntity<PerformanceResponse> deletePerformance(@PathVariable String performanceId) {
     return ResponseEntity.ok(performanceService.deletePerformance(performanceId));
+  }
+
+  @GetMapping
+  public ResponseEntity<List<PerformanceResponse>> searchPerformance(@RequestParam String keyword) {
+    return ResponseEntity.ok(performanceService.searchPerformance(keyword));
   }
 }
