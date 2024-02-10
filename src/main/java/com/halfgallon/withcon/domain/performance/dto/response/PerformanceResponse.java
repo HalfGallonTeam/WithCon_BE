@@ -12,8 +12,6 @@ import lombok.Getter;
 @Getter
 public class PerformanceResponse {
 
-  private String id;
-
   private String name;
 
   private LocalDate startDate;
@@ -30,7 +28,6 @@ public class PerformanceResponse {
 
   public static PerformanceResponse fromEntity(Performance performance) {
     return PerformanceResponse.builder()
-        .id(performance.getId())
         .name(performance.getName())
         .startDate(performance.getStartDate())
         .endDate(performance.getEndDate())
