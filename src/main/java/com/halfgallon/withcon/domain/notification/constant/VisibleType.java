@@ -6,6 +6,6 @@ import lombok.Getter;
 public enum VisibleType {
   VISIBLE,
 
-  HIDDEN;
+  HIDDEN
 
 }
