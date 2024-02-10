@@ -11,6 +11,7 @@ import lombok.Builder;
 public record ChatRoomResponse(
     Long chatRoomId,
     String roomName,
+    Long performanceId,
     Integer userCount,
     List<String> tags,
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -21,6 +22,7 @@ public record ChatRoomResponse(
     return ChatRoomResponse.builder()
         .chatRoomId(chatRoom.getId())
         .roomName(chatRoom.getName())
+        .performanceId(Long.valueOf(chatRoom.getPerformance().getId()))
         .userCount(chatRoom.getUserCount())
         .tags(chatRoom.getTags().stream().map(Tag::getName).toList())
         .createdAt(chatRoom.getCreatedAt())

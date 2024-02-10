@@ -1,14 +1,19 @@
 package com.halfgallon.withcon.domain.performance.entitiy;
 
+import com.halfgallon.withcon.domain.performance.constant.Genre;
 import com.halfgallon.withcon.global.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
+import lombok.Getter;
 
 @Entity
+@Getter
 public class PerformanceDetail extends BaseTimeEntity {
 
   @Id
@@ -27,10 +32,8 @@ public class PerformanceDetail extends BaseTimeEntity {
   private String run_time;
 
   @Column(nullable = false)
-  private String genre;
-
-  @Column(nullable = false)
-  private String sty;
+  @Enumerated(EnumType.STRING)
+  private Genre genre;
 
   @Column(nullable = false)
   private String time;

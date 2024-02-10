@@ -4,9 +4,10 @@ Content-Type: application/json
 Authorization: {{accessToken}}
 
 {
-  "memberId": 13,
-  "name": "13번채팅방",
-  "tags": ["#13번", "#19번", "위드"]
+  "memberId": 2,
+  "roomName": "채팅방2",
+  "performanceId": 1,
+  "tags": ["#123", "#서울", "위드"]
 }
 
 ### 채팅방 조회

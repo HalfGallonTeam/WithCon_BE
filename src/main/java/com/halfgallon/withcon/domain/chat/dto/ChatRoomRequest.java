@@ -4,12 +4,13 @@ import com.halfgallon.withcon.domain.chat.entity.ChatRoom;
 import java.util.List;
 
 public record ChatRoomRequest(
-    String name,
+    String roomName,
+    Long performanceId,
     List<String> tags
 ) {
   public ChatRoom toEntity() {
     return ChatRoom.builder()
-        .name(this.name)
+        .name(this.roomName)
         .build();
   }
 }
