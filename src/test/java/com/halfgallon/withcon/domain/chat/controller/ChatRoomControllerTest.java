@@ -62,7 +62,7 @@ class ChatRoomControllerTest {
     //when
     //then
     ChatRoomRequest request = new ChatRoomRequest("1번 채팅방",
-        List.of("#1번방", "#2번방"));
+        1L, List.of("#1번방", "#2번방"));
 
     mockMvc.perform(post("/chatRoom")
         .contentType(MediaType.APPLICATION_JSON)
@@ -81,7 +81,7 @@ class ChatRoomControllerTest {
 
     //when
     //then
-    ChatRoomRequest request = new ChatRoomRequest("1번 채팅방", null);
+    ChatRoomRequest request = new ChatRoomRequest("1번 채팅방", 1L, null);
 
     mockMvc.perform(post("/chatRoom")
             .contentType(MediaType.APPLICATION_JSON)
