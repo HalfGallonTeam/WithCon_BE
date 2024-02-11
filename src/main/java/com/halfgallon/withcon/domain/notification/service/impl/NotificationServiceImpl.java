@@ -184,7 +184,7 @@ public class NotificationServiceImpl implements NotificationService {
     if (messageType.equals(MessageType.KICK)) {
       return username + NotificationMessage.DROP_CHATROOM.getDescription();
     }
-    throw new IllegalArgumentException("잘못된 요청입니다: " + messageType);
+    throw new CustomException(ErrorCode.INVALID_PARAMETER);
   }
 
   // URL 생성

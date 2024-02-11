@@ -9,6 +9,7 @@ import com.halfgallon.withcon.domain.notification.service.NotificationService;
 import com.halfgallon.withcon.domain.notification.service.RedisNotificationService;
 import com.halfgallon.withcon.domain.notification.service.handler.ChatRoomRedisSubscriber;
 import com.halfgallon.withcon.domain.notification.service.handler.GenerateEvent;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +47,7 @@ public class NotificationController {
   // 채팅방 관련 알림 생성 및 전송
   @PostMapping("/notification/chatRoom-event")
   public ResponseEntity<Void> createNotification(
-      @RequestBody ChatRoomNotificationRequest request) {
+      @RequestBody @Valid ChatRoomNotificationRequest request) {
 
     notificationService.createNotificationChatRoom(request);
     return ResponseEntity.ok().build();
@@ -55,7 +56,7 @@ public class NotificationController {
   // 채팅방 생성시 redis 구독
   @PostMapping("/notification/subscribe-channel")
   public ResponseEntity<Void> subscribeChatRoomChannel(
-      @RequestBody RedisChannelRequest request) {
+      @RequestBody @Valid RedisChannelRequest request) {
       chatRoomRedisSubscriber.
           subscribeChatRoomChannel(request.getPerformanceId(), request.getChatRoomId());
       return ResponseEntity.ok().build();
@@ -64,7 +65,7 @@ public class NotificationController {
   // 채팅방 폭파시 redis 해지
   @PostMapping("/notification/unsubscribe-channel")
   public ResponseEntity<Void> unsubscribeChatRoomChannel(
-      @RequestBody RedisChannelRequest request) {
+      @RequestBody @Valid RedisChannelRequest request) {
       chatRoomRedisSubscriber.
           unSubscribeChatRoomChannel(request.getPerformanceId(), request.getChatRoomId());
       return ResponseEntity.ok().build();
@@ -74,6 +75,7 @@ public class NotificationController {
   @GetMapping("/notifications")
   public ResponseEntity<List<NotificationResponse>> findNotification(
       @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
     return ResponseEntity.ok(
         notificationService.findNotification(customUserDetails.getId()));
   }
@@ -82,7 +84,7 @@ public class NotificationController {
   @PostMapping("/notification/visible")
   public ResponseEntity<Void> visibleChatRoom(
       @AuthenticationPrincipal CustomUserDetails customUserDetails,
-      @RequestBody VisibleRequest request) {
+      @RequestBody @Valid VisibleRequest request) {
 
     redisNotificationService.createVisibleCache(
         customUserDetails.getId(), request);
@@ -92,7 +94,7 @@ public class NotificationController {
   // 채팅방 visible 이슈가 발생
   @PostMapping("/notification/event")
   public ResponseEntity<Void> generateEvent(
-      @RequestBody RedisChannelRequest request) {
+      @RequestBody @Valid RedisChannelRequest request) {
 
     event.doSomething(request.getPerformanceId(), request.getChatRoomId());
       return ResponseEntity.ok().build();
