@@ -1,0 +1,14 @@
+{
+  "properties": {
+    "id": {
+      "type": "keyword"
+    },
+    "name": {
+      "type": "text",
+      "analyzer": "nori"
+    },
+    "tag_count": {
+      "type": "integer"
+    }
+  }
+}
