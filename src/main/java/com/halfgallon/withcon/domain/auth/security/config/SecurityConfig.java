@@ -84,6 +84,7 @@ public class SecurityConfig {
                 .logoutSuccessHandler(new CustomLogoutSuccessHandler()))
         .authorizeHttpRequests((request) -> request
             .requestMatchers(LOGOUT_ANT_PATH_REQUEST_MATCHER).hasRole("USER")
+            .requestMatchers("/member/**").hasRole("USER")
             .anyRequest().permitAll()
         )
         .addFilterBefore(

@@ -10,6 +10,7 @@ import com.halfgallon.withcon.domain.chat.entity.ChatParticipant;
 import com.halfgallon.withcon.domain.chat.entity.ChatRoom;
 import com.halfgallon.withcon.domain.chat.repository.ChatParticipantRepository;
 import com.halfgallon.withcon.domain.member.entity.Member;
+import com.halfgallon.withcon.domain.performance.entitiy.Performance;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,7 +25,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 @ExtendWith(MockitoExtension.class)
 class ChatParticipantServiceImplTest {
 
@@ -58,9 +61,14 @@ class ChatParticipantServiceImplTest {
     given(chatParticipantRepository.findAllMyChattingRoom(1L, pageable))
         .willReturn(new PageImpl<>(List.of(ChatParticipant.builder()
             .id(1L)
+            .member(member)
             .chatRoom(ChatRoom.builder()
                 .id(1L)
                 .name("1번 채팅방")
+                .performance(Performance.builder()
+                    .id("123456")
+                    .name("1번 공연")
+                    .build())
                 .build())
             .build())));
 

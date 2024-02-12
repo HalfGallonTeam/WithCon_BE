@@ -27,6 +27,8 @@ import com.halfgallon.withcon.domain.chat.repository.ChatParticipantRepository;
 import com.halfgallon.withcon.domain.chat.repository.ChatRoomRepository;
 import com.halfgallon.withcon.domain.member.entity.Member;
 import com.halfgallon.withcon.domain.member.repository.MemberRepository;
+import com.halfgallon.withcon.domain.performance.entitiy.Performance;
+import com.halfgallon.withcon.domain.performance.repository.PerformanceRepository;
 import com.halfgallon.withcon.domain.tag.entity.Tag;
 import com.halfgallon.withcon.domain.tag.repository.TagRepository;
 import com.halfgallon.withcon.global.exception.CustomException;
@@ -67,6 +69,8 @@ class ChatRoomServiceImplTest {
   TagRepository tagRepository;
   @Mock
   ChatMessageRepository chatMessageRepository;
+  @Mock
+  PerformanceRepository performanceRepository;
 
   private Member member;
   private CustomUserDetails customUserDetails;
@@ -87,7 +91,7 @@ class ChatRoomServiceImplTest {
   @DisplayName("채팅방 생성 성공")
   void createChatRoom_Success() {
     //given
-    ChatRoomRequest request = new ChatRoomRequest("1번채팅방",
+    ChatRoomRequest request = new ChatRoomRequest("1번채팅방", 1L,
         List.of("#1번방", "#2번방"));
 
     ChatRoom chatRoom = ChatRoom.builder()
@@ -103,6 +107,14 @@ class ChatRoomServiceImplTest {
 
     given(chatParticipantRepository.checkRoomManager(anyLong()))
         .willReturn(false);
+
+    Performance performance = Performance.builder()
+        .id("123456")
+        .name("1번 공연")
+        .build();
+
+    given(performanceRepository.findById(any()))
+        .willReturn(Optional.of(performance));
 
     given(chatRoomRepository.save(any()))
         .willReturn(ChatRoom.builder()
@@ -127,7 +139,7 @@ class ChatRoomServiceImplTest {
 
     //then
     assertThat(response.tags().size()).isNotZero();
-    assertThat(response.roomName()).isEqualTo(request.name());
+    assertThat(response.roomName()).isEqualTo(request.roomName());
   }
 
   @Test
@@ -140,7 +152,7 @@ class ChatRoomServiceImplTest {
     given(chatRoomRepository.existsByName(anyString()))
         .willReturn(true);
 
-    ChatRoomRequest request = new ChatRoomRequest("1번 채팅방",
+    ChatRoomRequest request = new ChatRoomRequest("1번 채팅방", 1L,
         List.of("#1번방", "#2번방"));
 
     //when
@@ -155,7 +167,7 @@ class ChatRoomServiceImplTest {
   @DisplayName("채팅방 생성 실패 - 1인당 1개만 생성 가능합니다.")
   void createChatRoom_FailByJustOne() {
     //given
-    ChatRoomRequest request = new ChatRoomRequest("1번 채팅방",
+    ChatRoomRequest request = new ChatRoomRequest("1번 채팅방", 1L,
         List.of("#1번방", "#2번방"));
 
     given(memberRepository.findById(anyLong()))
@@ -180,6 +192,10 @@ class ChatRoomServiceImplTest {
     ChatRoom chatRoom = ChatRoom.builder()
         .id(1L)
         .name("1번 채팅방")
+        .performance(Performance.builder()
+            .id("123456")
+            .name("1번 공연")
+            .build())
         .build();
 
     Pageable pageable = PageRequest.of(0, 10, Sort.by(DESC, "createdAt"));
@@ -316,13 +332,16 @@ class ChatRoomServiceImplTest {
         .username("test1234")
         .phoneNumber("010-1234-5678")
         .password("12345")
-        .email("test@test.com")
         .build();
 
     ChatRoom chatRoom = ChatRoom.builder()
         .id(1L)
         .name("1번채팅방")
         .userCount(10)
+        .performance(Performance.builder()
+            .id("123456")
+            .name("1번 공연")
+            .build())
         .chatParticipants(participants)
         .build();
 

@@ -3,6 +3,7 @@ package com.halfgallon.withcon.domain.member.entity;
 import static lombok.AccessLevel.PROTECTED;
 
 import com.halfgallon.withcon.domain.member.constant.LoginType;
+import com.halfgallon.withcon.domain.member.dto.request.UpdateMemberRequest;
 import com.halfgallon.withcon.domain.performance.entitiy.PerformanceLike;
 import com.halfgallon.withcon.global.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
@@ -45,7 +46,12 @@ public class Member extends BaseTimeEntity {
 
   @Column
   private String phoneNumber;
-
+  
   @OneToMany
   private List<PerformanceLike> likes;
+
+  public void update(UpdateMemberRequest request) {
+    this.nickname = request.nickname();
+    this.phoneNumber = request.phoneNumber();
+  }
 }
