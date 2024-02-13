@@ -101,7 +101,7 @@ services:
       - "9200:9200"     #엘라스틱 서치가 접속하는 포트
       - "9300:9300"     #내부 노드가 통신하는 포트
     volumes:
-      - elasticsearch-data:/usr/share/elasticsearch/data
+      - /home/ec2-user/elasticsearch_data:/usr/share/elasticsearch/data
     networks:
       - withcon
     restart: always
@@ -118,9 +118,6 @@ services:
     restart: always
     networks:
       - withcon
-
-volumes:
-  elasticsearch-data:
 
 networks:
   withcon:
