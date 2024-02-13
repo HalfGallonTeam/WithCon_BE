@@ -12,7 +12,6 @@ import static org.mockito.Mockito.when;
 import com.halfgallon.withcon.domain.auth.dto.request.AuthJoinRequest;
 import com.halfgallon.withcon.domain.auth.entity.RefreshToken;
 import com.halfgallon.withcon.domain.auth.manager.JwtManager;
-import com.halfgallon.withcon.domain.auth.repository.AccessTokenRepository;
 import com.halfgallon.withcon.domain.auth.repository.RefreshTokenRepository;
 import com.halfgallon.withcon.domain.member.entity.Member;
 import com.halfgallon.withcon.domain.member.repository.MemberRepository;
@@ -45,9 +44,6 @@ class AuthServiceImplTest {
 
   @Mock
   private PasswordEncoder passwordEncoder;
-
-  @Mock
-  private AccessTokenRepository accessTokenRepository;
 
   @Mock
   private RefreshTokenRepository refreshTokenRepository;
