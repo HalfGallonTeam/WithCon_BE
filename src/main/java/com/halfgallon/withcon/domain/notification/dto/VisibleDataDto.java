@@ -6,34 +6,31 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import com.halfgallon.withcon.domain.notification.entity.Notification;
+import com.halfgallon.withcon.domain.notification.constant.VisibleType;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class NotificationResponse implements Serializable {
-  private Long memberId;
+@AllArgsConstructor
+public class VisibleDataDto implements Serializable {
 
-  private String message;
+  @Enumerated(value = EnumType.STRING)
+  private VisibleType visibleType;
 
-  private String url;
-
-  private boolean readStatus;
-
-  @JsonProperty("createdAt")
+  @JsonProperty("generatedAt")
   @JsonSerialize(using = LocalDateTimeSerializer.class)
   @JsonDeserialize(using = LocalDateTimeDeserializer.class)
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-  private LocalDateTime createdAt;
+  private LocalDateTime generatedAt;
 
-  public NotificationResponse(Notification notification) {
-    this.memberId = notification.getMember().getId();
-    this.message = notification.getMessage();
-    this.url = notification.getUrl();
-    this.readStatus = notification.isReadStatus();
-    this.createdAt = notification.getCreatedAt();
+  public VisibleDataDto(VisibleRequest request) {
+    this.visibleType = request.getVisibleType();
+    this.generatedAt = LocalDateTime.now();
   }
 }

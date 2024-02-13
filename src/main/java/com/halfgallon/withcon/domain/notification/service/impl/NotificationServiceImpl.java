@@ -1,33 +1,35 @@
 package com.halfgallon.withcon.domain.notification.service.impl;
 
+import com.halfgallon.withcon.domain.chat.constant.MessageType;
 import com.halfgallon.withcon.domain.chat.entity.ChatParticipant;
 import com.halfgallon.withcon.domain.chat.repository.ChatParticipantRepository;
 import com.halfgallon.withcon.domain.member.entity.Member;
 import com.halfgallon.withcon.domain.member.repository.MemberRepository;
 import com.halfgallon.withcon.domain.notification.constant.Channel;
-import com.halfgallon.withcon.domain.notification.constant.ChatRoomGenerateType;
 import com.halfgallon.withcon.domain.notification.constant.NotificationMessage;
 import com.halfgallon.withcon.domain.notification.constant.NotificationType;
+import com.halfgallon.withcon.domain.notification.constant.RedisCacheType;
 import com.halfgallon.withcon.domain.notification.dto.ChatRoomNotificationRequest;
 import com.halfgallon.withcon.domain.notification.dto.NotificationResponse;
 import com.halfgallon.withcon.domain.notification.entity.Notification;
-import com.halfgallon.withcon.domain.notification.entity.NotificationCache;
-import com.halfgallon.withcon.domain.notification.repository.NotificationCacheRepository;
 import com.halfgallon.withcon.domain.notification.repository.NotificationRepository;
 import com.halfgallon.withcon.domain.notification.repository.SseEmitterRepository;
 import com.halfgallon.withcon.domain.notification.service.NotificationService;
+import com.halfgallon.withcon.domain.notification.service.RedisCacheService;
 import com.halfgallon.withcon.domain.notification.service.RedisNotificationService;
 import com.halfgallon.withcon.domain.notification.service.SseEmitterService;
 import com.halfgallon.withcon.global.exception.CustomException;
 import com.halfgallon.withcon.global.exception.ErrorCode;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @Slf4j
@@ -38,13 +40,13 @@ public class NotificationServiceImpl implements NotificationService {
   private static final long TIME_OUT = 30L * 1000 * 60;
 
   private final NotificationRepository notificationRepository;
-  private final NotificationCacheRepository notificationCacheRepository;
   private final SseEmitterRepository sseEmitterRepository;
   private final MemberRepository memberRepository;
   private final ChatParticipantRepository chatParticipantRepository;
 
   private final SseEmitterService sseEmitterService;
   private final RedisNotificationService redisNotificationService;
+  private final RedisCacheService redisCacheService;
 
   @Override
   public SseEmitter subscribe(Long memberId, String lastEventId) {
@@ -73,7 +75,7 @@ public class NotificationServiceImpl implements NotificationService {
       redisNotificationService.unsubscribe(emitterId);
     });
 
-    if (!lastEventId.isEmpty()) { // true -> 있으면 유실 데이터 존재
+    if (StringUtils.hasText(lastEventId)) { // true -> 있으면 유실 데이터 존재
       sendLostNotification(sseEmitter, lastEventId);
     }
 
@@ -90,22 +92,23 @@ public class NotificationServiceImpl implements NotificationService {
    */
   private void sendLostNotification(SseEmitter sseEmitter, String lastEventId) {
     String[] parts = lastEventId.split("_");
-    Long memberId = Long.parseLong(parts[0]);
+    String hashKey = RedisCacheType.NOTIFICATION_CACHE.getDescription() + parts[0];
 
-    Optional<NotificationCache> notificationCache =
-        notificationCacheRepository.findByMemberId(memberId);
-    log.info("Service : 캐시 리스트 조회");
+    Map<Object, Object> cache = redisCacheService.getHashByKey(hashKey);
+    log.info("Service : 캐시 리스트 조회: " + cache);
 
-    if(notificationCache.isEmpty()) {
+    if(cache == null || cache.isEmpty()) {
       log.info("Service : 캐시 데이터가 없음.");
       return;
     }
 
-    notificationCache.get().getNotifications().entrySet().stream()
-        .filter(entry -> lastEventId.compareTo(entry.getKey()) < 0)
+    cache.entrySet().stream()
+        .filter(entry -> lastEventId.compareTo((String)entry.getKey()) < 0)
         .forEach(entry -> sseEmitterService.send(
-            sseEmitter, entry.getKey(), entry.getValue()
-        ));
+            sseEmitter, (String)entry.getKey(), entry.getValue())
+        );
+
+    redisCacheService.deleteToHash(hashKey);
   }
 
   @Override
@@ -136,51 +139,52 @@ public class NotificationServiceImpl implements NotificationService {
         .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     log.info("Service : Target 맴버 조회 성공");
     String message = createChatRoomMessage(member.getUsername(),
-        request.getChatRoomGenerateType()); // 메세지 생성
+        request.getMessageType()); // 메세지 생성
     log.info("Service : 알림 메세지 생성");
     String url = createChatRoomUrl(request.getChatRoomId());
     log.info("Service : url 생성");
 
-    /** TODO
-     *  내가 퇴장했을 때 알림 구현 필요
-     */
     for (ChatParticipant chatParticipant : chatParticipants) {
       Member participantMember = chatParticipant.getMember();
       if (Objects.equals(participantMember.getId(), request.getTargetId())) {
         log.info("Service : Target은 제외");
         continue;
       }
-
-      Notification notification = Notification.builder()
-          .message(message)
-          .url(url)
-          .notificationType(NotificationType.CHATROOM)
-          .member(participantMember)
-          .build();
-      notificationRepository.save(notification);
-      log.info("Service : 알림 저장 성공");
-
-      redisNotificationService.publish(
-          Channel.makeChannel(request.getPerformanceId(), request.getChatRoomId()),
-          new NotificationResponse(notification));
+      notificationSaveAndPublish(request, message, url, participantMember);
     }
   }
 
+  private void notificationSaveAndPublish(ChatRoomNotificationRequest request, String message, String url,
+      Member participantMember) {
+    Notification notification = Notification.builder()
+        .message(message)
+        .url(url)
+        .notificationType(NotificationType.CHATROOM)
+        .createdAt(LocalDateTime.now())
+        .member(participantMember)
+        .build();
+    notificationRepository.save(notification);
+    log.info("Service : 알림 저장 성공");
+
+    redisNotificationService.publish(
+        Channel.makeChannel(request.getPerformanceId(), request.getChatRoomId()),
+        new NotificationResponse(notification));
+  }
+
   // 알림 메세지 반환
-  private String createChatRoomMessage(
-      String username, String chatRoomGenerateType) {
-    if (chatRoomGenerateType.equals(ChatRoomGenerateType.ENTER.getDescription())) {
+  private String createChatRoomMessage(String username, MessageType messageType) {
+    if (messageType.equals(MessageType.ENTER)) {
       return username + NotificationMessage.ENTER_CHATROOM.getDescription();
     }
 
-    if (chatRoomGenerateType.equals(ChatRoomGenerateType.EXIT.getDescription())) {
+    if (messageType.equals(MessageType.EXIT)) {
       return username + NotificationMessage.EXIT_CHATROOM.getDescription();
     }
 
-    if (chatRoomGenerateType.equals(ChatRoomGenerateType.KICK.getDescription())) {
+    if (messageType.equals(MessageType.KICK)) {
       return username + NotificationMessage.DROP_CHATROOM.getDescription();
     }
-    throw new IllegalArgumentException("잘못된 요청입니다: " + chatRoomGenerateType);
+    throw new CustomException(ErrorCode.INVALID_PARAMETER);
   }
 
   // URL 생성

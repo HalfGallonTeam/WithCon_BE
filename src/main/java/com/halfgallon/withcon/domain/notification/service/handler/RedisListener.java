@@ -1,7 +1,7 @@
 package com.halfgallon.withcon.domain.notification.service.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.hibernate5.jakarta.Hibernate5JakartaModule;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.halfgallon.withcon.domain.notification.dto.NotificationResponse;
 import com.halfgallon.withcon.domain.notification.service.SseEmitterService;
@@ -25,7 +25,7 @@ public class RedisListener implements MessageListener {
     this.sseEmitterService = sseEmitterService;
 
     objectMapper.registerModule(new JavaTimeModule());
-    objectMapper.registerModule(new Hibernate5JakartaModule());
+    objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
   }
 
   @Override
@@ -33,6 +33,7 @@ public class RedisListener implements MessageListener {
     try {
       NotificationResponse notificationResponse =
           objectMapper.readValue(message.getBody(), NotificationResponse.class);
+      log.info("매핑 데이터 역직렬화");
 
       sseEmitterService.sendNotificationToClient(notificationResponse);
       log.info("redis 메세지 전송");
