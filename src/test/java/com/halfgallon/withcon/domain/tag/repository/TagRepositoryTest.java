@@ -5,6 +5,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.halfgallon.withcon.domain.tag.dto.TagCountDto;
 import com.halfgallon.withcon.domain.tag.entity.Tag;
+import com.halfgallon.withcon.global.config.ElasticSearchConfig;
+import com.halfgallon.withcon.global.config.JpaAuditingConfig;
+import com.halfgallon.withcon.global.config.QueryDslConfig;
 import java.util.List;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -12,12 +15,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 @Disabled
 @Transactional
 @SpringBootTest
+@Import({JpaAuditingConfig.class, QueryDslConfig.class, ElasticSearchConfig.class})
 @ExtendWith(SpringExtension.class)
 class TagRepositoryTest {
 
