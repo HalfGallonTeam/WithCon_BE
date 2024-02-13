@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 @Import({JpaAuditingConfig.class, QueryDslConfig.class, ElasticSearchConfig.class})
 @ExtendWith(SpringExtension.class)
+@Import({JpaAuditingConfig.class, QueryDslConfig.class, ElasticSearchConfig.class})
 class TagRepositoryTest {
 
   @Autowired
