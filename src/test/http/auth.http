@@ -18,6 +18,30 @@ Content-Type: application/json
   "password": "1q2w3e4r!"
 }
 
+### 네이버 로그인 테스트(인증코드로 요청)
+POST http://localhost:8080/auth/naver
+Content-Type: text/plain
+
+fkcdtW9su2RL29FaRY
+
+### 네이버 로그인 필터 테스트
+POST http://localhost:8080/auth/oauth2/login
+Content-Type: application/json
+
+{
+  "registrationId": "naver",
+  "authorizationCode": "VtEIvX59f6cEbZmBwq"
+}
+
+### 카카오 로그인 필터 테스트
+POST http://localhost:8080/auth/oauth2/login
+Content-Type: application/json
+
+{
+  "registrationId": "kakao",
+  "authorizationCode": "rY0ijkxxrIgHpWBFPZteh-Ur0DYby7pypAoC9MVIkTwUAdwr9-WxE6dT3OwKPXWaAAABjX-XxTH-oZq-Jypvmw"
+}
+
 > {%
   client.global.set("accessToken", response.headers.valueOf("Authorization"))
   client.log("엑세스 토큰: " + client.global.get("accessToken"));

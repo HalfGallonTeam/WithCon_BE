@@ -1,9 +1,5 @@
 package com.halfgallon.withcon.domain.auth.manager;
 
-import com.halfgallon.withcon.global.exception.CustomException;
-import com.halfgallon.withcon.global.exception.ErrorCode;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Jwts.SIG;
 import io.jsonwebtoken.security.Keys;
