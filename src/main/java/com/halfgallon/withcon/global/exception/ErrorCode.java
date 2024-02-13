@@ -45,7 +45,7 @@ public enum ErrorCode {
    * 409 conflict
    */
   DUPLICATE_CHATROOM(CONFLICT.value(), "이미 존재하는 채팅방입니다."),
-  DUPLICATE_USERNAME(CONTINUE.value(), "이미 사용하고 있는 ID 입니다."),
+  DUPLICATE_USERNAME(CONFLICT.value(), "이미 사용하고 있는 ID 입니다."),
 
   /**
    * 500 Internal Server Error
