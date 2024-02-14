@@ -42,6 +42,7 @@ services:
       - "80:80"
     volumes:
       - /home/ec2-user/config/nginx.conf:/etc/nginx/nginx.conf
+      - /home/ec2-user/ssl_data:/etc/nginx/ssl_data
     restart: always
     networks:
       - withcon
