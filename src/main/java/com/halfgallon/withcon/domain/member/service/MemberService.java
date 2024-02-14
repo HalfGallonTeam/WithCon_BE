@@ -2,6 +2,7 @@ package com.halfgallon.withcon.domain.member.service;
 
 import com.halfgallon.withcon.domain.member.dto.request.UpdateMemberRequest;
 import com.halfgallon.withcon.domain.member.dto.response.MemberMyInfoResponse;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface MemberService {
 
@@ -16,7 +17,14 @@ public interface MemberService {
   void updateMember(Long memberId, UpdateMemberRequest request);
 
   /**
+   * 회원 프로필 사진 업로드
+   */
+  void uploadProfileImage(Long memberId, MultipartFile image);
+
+  /**
    * 회원 탈퇴
    */
   void deleteMember(Long memberId);
+
+
 }
