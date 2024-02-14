@@ -42,6 +42,7 @@ services:
       - "80:80"
     volumes:
       - /home/ec2-user/config/nginx.conf:/etc/nginx/nginx.conf
+      - /home/ec2-user/ssl_data:/etc/nginx/ssl_data
     restart: always
     networks:
       - withcon
@@ -75,6 +76,49 @@ services:
     networks:
       - withcon
     restart: always
+
+  elasticsearch:
+    build:
+      context: ./elastic_search
+      dockerfile: Dockerfile
+      args:
+        VERSION: 8.6.2
+    container_name: elasticsearch
+    environment:
+      - cluster.name=es-docker
+      - node.name=es01
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    ulimits:            #컨테이너 리소스 제한
+      memlock:          #메모리 잠금 제한
+        soft: -1
+        hard: -1
+      nofile:           #열려 있는 파일 설명자의 최대 갯수
+        soft: 65536
+        hard: 65536
+    cap_add:
+      - IPC_LOCK        #메모리를 잠글 수 있는 기능
+    ports:
+      - "9200:9200"     #엘라스틱 서치가 접속하는 포트
+      - "9300:9300"     #내부 노드가 통신하는 포트
+    volumes:
+      - /home/ec2-user/elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - withcon
+    restart: always
+
+  kibana:
+    container_name: kibana
+    image: docker.elastic.co/kibana/kibana:8.6.2
+    environment:
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    restart: always
+    networks:
+      - withcon
 
 networks:
   withcon:
