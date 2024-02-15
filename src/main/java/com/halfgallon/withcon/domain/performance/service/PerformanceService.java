@@ -2,7 +2,8 @@ package com.halfgallon.withcon.domain.performance.service;
 
 import com.halfgallon.withcon.domain.performance.dto.request.PerformanceRequest;
 import com.halfgallon.withcon.domain.performance.dto.response.PerformanceResponse;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface PerformanceService {
 
@@ -10,5 +11,5 @@ public interface PerformanceService {
   PerformanceResponse findPerformance(String performanceId);
   PerformanceResponse updatePerformance(PerformanceRequest request);
   PerformanceResponse deletePerformance(String performanceId);
-  List<PerformanceResponse> searchPerformance(String keyword);
+  Page<PerformanceResponse> searchPerformance(String keyword, Pageable pageable);
 }

@@ -1,6 +1,8 @@
 package com.halfgallon.withcon.domain.performance.controller;
 
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -25,6 +27,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -111,14 +116,18 @@ class PerformanceControllerTest {
   @DisplayName("공연 검색 완료")
   void searchPerformance_Success() throws Exception {
     String keyword = "keyword";
+    Pageable pageable = PageRequest.of(0, 10);
+    Page<PerformanceResponse> performancePage = Page.empty(pageable);
 
-    given(performanceService.searchPerformance(keyword)).willReturn(getPerformanceResponses());
+    given(performanceService.searchPerformance(keyword, pageable)).willReturn(performancePage);
 
     mockMvc.perform(get("/performance")
         .contentType(MediaType.APPLICATION_JSON)
         .param("keyword", keyword))
+        .andExpect(jsonPath("$.totalPages").exists())
+        .andExpect(jsonPath("$.totalElements").exists())
+        .andExpect(jsonPath("$.content", is(empty())))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(3)))
         .andDo(print());
   }
 
@@ -145,13 +154,5 @@ class PerformanceControllerTest {
         .status(Status.RUNNING)
         .likes(4000L)
         .build();
-  }
-
-  private List<PerformanceResponse> getPerformanceResponses() {
-    return Arrays.asList(
-        getPerformanceResponse(),
-        getPerformanceResponse(),
-        getPerformanceResponse()
-    );
   }
 }

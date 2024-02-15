@@ -1,10 +1,11 @@
 package com.halfgallon.withcon.domain.performance.repository;
 
 import com.halfgallon.withcon.domain.performance.entitiy.Performance;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface CustomPerformanceRepository {
 
-  List<Performance> searchPerformance(String keyword);
+  Page<Performance> searchPerformance(String keyword, Pageable pageable);
 
 }

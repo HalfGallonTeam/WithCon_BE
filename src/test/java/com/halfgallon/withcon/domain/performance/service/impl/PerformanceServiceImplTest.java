@@ -26,6 +26,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 class PerformanceServiceImplTest {
@@ -136,18 +139,16 @@ class PerformanceServiceImplTest {
     //given
     PerformanceRequest request = getPerformanceRequest();
     String keyword = "keyword";
-    List<PerformanceResponse> expectedResponse = getPerformances().stream()
-        .map(PerformanceResponse::fromEntity).toList();
+    Pageable pageable = PageRequest.of(0, 10);
+    Page<Performance> expectedResponse = Page.empty(pageable);
 
-    // PerformanceRepository의 searchPerformance 메소드가 호출되면 PerformanceResponse 객체의 리스트를 반환하도록 설정합니다.
-    given(performanceRepository.searchPerformance(keyword)).willReturn(getPerformances());
+    given(performanceRepository.searchPerformance(keyword, pageable)).willReturn(expectedResponse);
 
-    List<PerformanceResponse> actualResponse = performanceService.searchPerformance(
-        keyword);
+    Page<PerformanceResponse> actualResponse = performanceService.searchPerformance(keyword, pageable);
 
-    assertThat(expectedResponse.stream().map(PerformanceResponse::getId)
-        .collect(Collectors.toList())).containsExactlyElementsOf(
-        expectedResponse.stream().map(PerformanceResponse::getId).toList());
+    assertThat(actualResponse.getTotalElements()).isEqualTo(expectedResponse.getTotalElements());
+    assertThat(actualResponse.getTotalPages()).isEqualTo(expectedResponse.getTotalPages());
+    assertThat(actualResponse.getContent().size()).isEqualTo(expectedResponse.getContent().size());
   }
 
   private PerformanceRequest getPerformanceRequest() {
@@ -174,13 +175,5 @@ class PerformanceServiceImplTest {
         .status(Status.RUNNING)
         .likes(4000L)
         .build();
-  }
-
-  private List<Performance> getPerformances() {
-    return Arrays.asList(
-        getPerformanceRequest().toEntity(),
-        getPerformanceRequest().toEntity(),
-        getPerformanceRequest().toEntity()
-    );
   }
 }
