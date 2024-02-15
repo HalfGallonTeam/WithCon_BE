@@ -191,22 +191,24 @@ class ChatRoomServiceImplTest {
   @DisplayName("채팅방 조회 성공 - 페이징 처리")
   void findChatRoom() {
     //given
+    Performance performance = Performance.builder()
+        .id("123456")
+        .name("1번 공연")
+        .build();
+
     ChatRoom chatRoom = ChatRoom.builder()
         .id(1L)
         .name("1번 채팅방")
-        .performance(Performance.builder()
-            .id("123456")
-            .name("1번 공연")
-            .build())
+        .performance(performance)
         .build();
 
     Pageable pageable = PageRequest.of(0, 10, Sort.by(DESC, "createdAt"));
 
-    given(chatRoomRepository.findAll(pageable))
+    given(chatRoomRepository.findAllByPerformance_Id(performance.getId(), pageable))
         .willReturn(new PageImpl<>(List.of(chatRoom)));
 
     //when
-    Page<ChatRoomResponse> responses = chatRoomService.findChatRoom(pageable);
+    Page<ChatRoomResponse> responses = chatRoomService.findChatRoom("123456", pageable);
 
     //then
     assertTrue(responses.hasContent());
@@ -216,9 +218,15 @@ class ChatRoomServiceImplTest {
   @DisplayName("채팅방 입장 성공")
   void enterChatRoom_Success() {
     //given
+    Performance performance = Performance.builder()
+        .id("123456")
+        .name("1번 공연")
+        .build();
+
     ChatRoom chatRoom = ChatRoom.builder()
         .id(1L)
         .name("1번채팅방")
+        .performance(performance)
         .build();
 
     given(memberRepository.findById(anyLong()))
@@ -232,7 +240,8 @@ class ChatRoomServiceImplTest {
             .build());
 
     //when
-    ChatRoomEnterResponse response = chatRoomService.enterChatRoom(customUserDetails, 1L);
+    ChatRoomEnterResponse response = chatRoomService.enterChatRoom(customUserDetails, 1L
+    );
 
     //then
     assertThat(chatRoom.getId()).isEqualTo(response.chatRoomId());
