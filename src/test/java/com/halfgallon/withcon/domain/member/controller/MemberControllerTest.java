@@ -1,9 +1,12 @@
 package com.halfgallon.withcon.domain.member.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -18,10 +21,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.multipart.MultipartFile;
 
 @WebMvcTest(MemberController.class)
 class MemberControllerTest {
@@ -82,6 +87,29 @@ class MemberControllerTest {
 
     // then
     verify(memberService).updateMember(memberId, request);
+  }
+
+  @Test
+  @DisplayName("회원 프로필 사진 업로드")
+  @WithCustomMockUser
+  void updateProfileImage() throws Exception {
+    // given
+    MockMultipartFile image = new MockMultipartFile("image", "test.jpg", "image/jpeg",
+        "테스트이미지 내용".getBytes());
+
+    CustomUserDetails principal = (CustomUserDetails) SecurityContextHolder.getContext()
+        .getAuthentication().getPrincipal();
+
+    Long memberId = principal.getId();
+
+    doNothing().when(memberService).uploadProfileImage(any(Long.class), any(MultipartFile.class));
+
+    // when
+    mockMvc.perform(multipart("/member/profile-image").file(image))
+        .andExpect(status().isOk());
+
+    // then
+    verify(memberService).uploadProfileImage(memberId, image);
   }
 
   @Test

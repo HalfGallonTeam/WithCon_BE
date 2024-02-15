@@ -46,12 +46,19 @@ public class Member extends BaseTimeEntity {
 
   @Column
   private String phoneNumber;
-  
+
+  @Column
+  private String profileImage;
+
   @OneToMany
   private List<PerformanceLike> likes;
 
   public void update(UpdateMemberRequest request) {
     this.nickname = request.nickname();
     this.phoneNumber = request.phoneNumber();
+  }
+
+  public void updateProfileImage(String profileImageUrl) {
+    this.profileImage = profileImageUrl;
   }
 }
