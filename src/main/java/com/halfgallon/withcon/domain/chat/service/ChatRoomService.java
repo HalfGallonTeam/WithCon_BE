@@ -14,7 +14,7 @@ public interface ChatRoomService {
 
   ChatRoomResponse createChatRoom(CustomUserDetails customUserDetails, ChatRoomRequest request);
 
-  Page<ChatRoomResponse> findChatRoom(Pageable pageable);
+  Page<ChatRoomResponse> findChatRoom(String performanceId, Pageable pageable);
 
   ChatRoomEnterResponse enterChatRoom(CustomUserDetails customUserDetails, Long chatRoomId);
 

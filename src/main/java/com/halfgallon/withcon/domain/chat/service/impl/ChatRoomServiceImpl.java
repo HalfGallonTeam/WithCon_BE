@@ -124,8 +124,8 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<ChatRoomResponse> findChatRoom(Pageable pageable) {
-    return chatRoomRepository.findAll(pageable).map(ChatRoomResponse::fromEntity);
+  public Page<ChatRoomResponse> findChatRoom(String performanceId, Pageable pageable) {
+    return chatRoomRepository.findAllByPerformance_Id(performanceId, pageable).map(ChatRoomResponse::fromEntity);
   }
 
   @Override
@@ -158,6 +158,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         .chatRoomId(chatRoomId)
         .userCount(chatRoom.getUserCount())
         .chatParticipants(chatParticipants)
+        .performanceId(Long.valueOf(chatRoom.getPerformance().getId()))
         .build();
   }
 

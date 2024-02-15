@@ -6,6 +6,7 @@ import lombok.Builder;
 @Builder
 public record ChatRoomEnterResponse(
     Long chatRoomId,
+    Long performanceId,
     String roomName,
     Integer userCount,
     List<ChatParticipantDto> chatParticipants
