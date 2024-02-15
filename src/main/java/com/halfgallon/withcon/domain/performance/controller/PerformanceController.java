@@ -4,6 +4,9 @@ import com.halfgallon.withcon.domain.performance.dto.request.PerformanceRequest;
 import com.halfgallon.withcon.domain.performance.dto.response.PerformanceResponse;
 import com.halfgallon.withcon.domain.performance.service.PerformanceService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -39,5 +43,11 @@ public class PerformanceController {
   @DeleteMapping("/{performanceId}")
   public ResponseEntity<PerformanceResponse> deletePerformance(@PathVariable String performanceId) {
     return ResponseEntity.ok(performanceService.deletePerformance(performanceId));
+  }
+
+  @GetMapping
+  public ResponseEntity<Page<PerformanceResponse>> searchPerformance(@RequestParam String keyword, @PageableDefault(size = 10)
+      Pageable pageable) {
+    return ResponseEntity.ok(performanceService.searchPerformance(keyword, pageable));
   }
 }

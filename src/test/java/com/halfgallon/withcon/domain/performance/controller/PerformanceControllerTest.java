@@ -1,28 +1,35 @@
 package com.halfgallon.withcon.domain.performance.controller;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.halfgallon.withcon.domain.chat.dto.ChatRoomResponse;
 import com.halfgallon.withcon.domain.performance.constant.Status;
 import com.halfgallon.withcon.domain.performance.dto.request.PerformanceRequest;
 import com.halfgallon.withcon.domain.performance.dto.response.PerformanceResponse;
 import com.halfgallon.withcon.domain.performance.service.impl.PerformanceServiceImpl;
 import com.halfgallon.withcon.global.annotation.WithCustomMockUser;
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -71,8 +78,7 @@ class PerformanceControllerTest {
   void findPerformance_Success() throws Exception {
     String id = "id";
 
-    given(performanceService.createPerformance(getPerformanceRequest())).willReturn(getPerformanceResponse());
-
+    given(performanceService.findPerformance(id)).willReturn(getPerformanceResponse());
 
     mockMvc.perform(get("/performance/" + id)
           .contentType(MediaType.APPLICATION_JSON))
@@ -84,7 +90,7 @@ class PerformanceControllerTest {
   @DisplayName("공연 수정 완료")
   void updatePerformance_Success() throws Exception {
 
-    given(performanceService.createPerformance(getPerformanceRequest())).willReturn(getPerformanceResponse());
+    given(performanceService.updatePerformance(getPerformanceRequest())).willReturn(getPerformanceResponse());
 
     mockMvc.perform(put("/performance")
         .contentType(MediaType.APPLICATION_JSON)
@@ -98,7 +104,7 @@ class PerformanceControllerTest {
   void deletePerformance_Success() throws Exception {
     String id = "id";
 
-    given(performanceService.createPerformance(getPerformanceRequest())).willReturn(getPerformanceResponse());
+    given(performanceService.deletePerformance(id)).willReturn(getPerformanceResponse());
 
     mockMvc.perform(delete("/performance/" + id)
         .contentType(MediaType.APPLICATION_JSON))
@@ -106,7 +112,26 @@ class PerformanceControllerTest {
         .andDo(print());
   }
 
-  private static PerformanceRequest getPerformanceRequest() {
+  @Test
+  @DisplayName("공연 검색 완료")
+  void searchPerformance_Success() throws Exception {
+    String keyword = "keyword";
+    Pageable pageable = PageRequest.of(0, 10);
+    Page<PerformanceResponse> performancePage = Page.empty(pageable);
+
+    given(performanceService.searchPerformance(keyword, pageable)).willReturn(performancePage);
+
+    mockMvc.perform(get("/performance")
+        .contentType(MediaType.APPLICATION_JSON)
+        .param("keyword", keyword))
+        .andExpect(jsonPath("$.totalPages").exists())
+        .andExpect(jsonPath("$.totalElements").exists())
+        .andExpect(jsonPath("$.content", is(empty())))
+        .andExpect(status().isOk())
+        .andDo(print());
+  }
+
+  private PerformanceRequest getPerformanceRequest() {
     return PerformanceRequest.builder()
         .id("id")
         .name("name")
@@ -119,9 +144,8 @@ class PerformanceControllerTest {
         .build();
   }
 
-  private static PerformanceResponse getPerformanceResponse() {
+  private PerformanceResponse getPerformanceResponse() {
     return PerformanceResponse.builder()
-        .id("id")
         .name("name")
         .startDate(LocalDate.ofEpochDay(2024-02-18))
         .endDate(LocalDate.ofEpochDay(2024-02-20))
@@ -131,5 +155,4 @@ class PerformanceControllerTest {
         .likes(4000L)
         .build();
   }
-
 }

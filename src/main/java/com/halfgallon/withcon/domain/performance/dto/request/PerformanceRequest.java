@@ -2,9 +2,7 @@ package com.halfgallon.withcon.domain.performance.dto.request;
 
 import com.halfgallon.withcon.domain.performance.constant.Status;
 import com.halfgallon.withcon.domain.performance.entitiy.Performance;
-import jakarta.persistence.Id;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -26,8 +24,6 @@ public class PerformanceRequest {
 
   private Status status;
 
-  private Long likes;
-
   public Performance toEntity() {
     return Performance.builder()
         .id(id)
@@ -37,7 +33,6 @@ public class PerformanceRequest {
         .poster(poster)
         .facility(facility)
         .status(status)
-        .likes(likes)
         .build();
   }
 }

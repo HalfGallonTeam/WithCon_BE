@@ -7,7 +7,13 @@ import com.halfgallon.withcon.domain.performance.repository.PerformanceRepositor
 import com.halfgallon.withcon.domain.performance.service.PerformanceService;
 import com.halfgallon.withcon.global.exception.CustomException;
 import com.halfgallon.withcon.global.exception.ErrorCode;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PerformanceServiceImpl implements PerformanceService {
 
   private final PerformanceRepository performanceRepository;
+  private final JPAQueryFactory jpaQueryFactory;
 
   @Override
   @Transactional
@@ -50,5 +57,16 @@ public class PerformanceServiceImpl implements PerformanceService {
     performanceRepository.deleteById(performanceId);
 
     return PerformanceResponse.fromEntity(performance);
+  }
+
+  @Override
+  public Page<PerformanceResponse> searchPerformance(String keyword, Pageable pageable) {
+    Page<Performance> performancePage = performanceRepository.searchPerformance(keyword, pageable);
+    List<PerformanceResponse> performanceResponseList = performancePage.getContent()
+        .stream()
+        .map(PerformanceResponse::fromEntity)
+        .collect(Collectors.toList());
+
+    return new PageImpl<>(performanceResponseList, pageable, performancePage.getTotalElements());
   }
 }
