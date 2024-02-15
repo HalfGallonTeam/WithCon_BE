@@ -4,9 +4,8 @@ Content-Type: application/json
 Authorization: {{accessToken}}
 
 {
-  "memberId": 2,
-  "roomName": "채팅방2",
-  "performanceId": 1,
+  "roomName": "채팅방7",
+  "performanceId": 7,
   "tags": ["#123", "#서울", "위드"]
 }
 
@@ -19,7 +18,7 @@ Content-Type: application/json
 
 ### 채팅방 입장
 < {%
-  request.variables.set("chatRoomId", "1")
+  request.variables.set("chatRoomId", "5")
 %}
 GET http://localhost:8080/chatRoom/{{chatRoomId}}/enter
 Content-Type: application/json
@@ -27,7 +26,7 @@ Authorization: {{accessToken}}
 
 ### 채팅방 퇴장
 < {%
-  request.variables.set("chatRoomId", "1")
+  request.variables.set("chatRoomId", "5")
 %}
 DELETE http://localhost:8080/chatRoom/{{chatRoomId}}/exit
 Content-Type: application/json
@@ -43,8 +42,8 @@ Authorization: {{accessToken}}
 
 ### 채팅방 강퇴
 < {%
-  request.variables.set("chatRoomId", "13")
-  request.variables.set("memberId", "12")
+  request.variables.set("chatRoomId", "5")
+  request.variables.set("memberId", "6")
 %}
 DELETE http://localhost:8080/chatRoom/{{chatRoomId}}/kick/{{memberId}}
 Content-Type: application/json
