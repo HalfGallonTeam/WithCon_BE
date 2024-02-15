@@ -8,16 +8,18 @@ import lombok.Builder;
 public record ChatParticipantDto(
     String username,
     String password,
+    String userProfile,
     LoginType loginType,
     String nickName,
     String phoneNumber,
     boolean isManager
 ) {
 
-  public static ChatParticipantDto fromEntity(ChatParticipant chatParticipant) {
+  public static ChatParticipantDto fromEntity(ChatParticipant chatParticipant, String userProfile) {
     return ChatParticipantDto.builder()
         .username(chatParticipant.getMember().getUsername())
         .password(chatParticipant.getMember().getPassword())
+        .userProfile(userProfile)
         .loginType(chatParticipant.getMember().getLoginType())
         .nickName(chatParticipant.getMember().getNickname())
         .phoneNumber(chatParticipant.getMember().getPhoneNumber())
