@@ -11,7 +11,10 @@ Authorization: {{accessToken}}
 }
 
 ### 채팅방 조회
-GET http://localhost:8080/chatRoom
+< {%
+  request.variables.set("performanceId", "1")
+%}
+GET http://localhost:8080/chatRoom/performance/{{performanceId}}
 Content-Type: application/json
 
 ### 채팅방 입장
