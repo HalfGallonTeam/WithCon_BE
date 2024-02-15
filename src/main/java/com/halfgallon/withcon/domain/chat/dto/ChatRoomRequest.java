@@ -8,9 +8,10 @@ public record ChatRoomRequest(
     Long performanceId,
     List<String> tags
 ) {
-  public ChatRoom toEntity() {
+  public ChatRoom toEntity(String username) {
     return ChatRoom.builder()
         .name(this.roomName)
+        .managerName(username)
         .build();
   }
 }

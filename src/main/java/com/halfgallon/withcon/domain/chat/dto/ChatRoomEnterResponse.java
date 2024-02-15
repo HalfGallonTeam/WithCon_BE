@@ -8,6 +8,7 @@ public record ChatRoomEnterResponse(
     Long chatRoomId,
     Long performanceId,
     String roomName,
+    String managerName,
     Integer userCount,
     List<ChatParticipantDto> chatParticipants
 ) {
