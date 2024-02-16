@@ -60,7 +60,7 @@ public class PerformanceLikeController {
   @GetMapping("/favorite")
   public ResponseEntity<Page<PerformanceResponse>> findLikes(
       @AuthenticationPrincipal CustomUserDetails customUserDetails,
-      @PageableDefault(size = 10) Pageable pageable) {
+      @PageableDefault() Pageable pageable) {
 
     return ResponseEntity.ok(
         performanceLikeService.findLikes(customUserDetails.getId(), pageable));
