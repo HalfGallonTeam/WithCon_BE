@@ -2,7 +2,6 @@ package com.halfgallon.withcon.global.exception;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
-import static org.springframework.http.HttpStatus.CONTINUE;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
@@ -24,6 +23,8 @@ public enum ErrorCode {
   CONTENT_TYPE_NOT_SUPPORTED(BAD_REQUEST.value(), "잘못된 Content-type 요청입니다."),
   LOGIN_FAILURE_MESSAGE(BAD_REQUEST.value(), "아이디 혹은 비밀번호가 올바르지 않습니다."),
   OAUTH2_LOGIN_FAILURE_MESSAGE(BAD_REQUEST.value(), "소셜 로그인에 실패하셨습니다."),
+  ALREADY_LIKE_EXIST(BAD_REQUEST.value(), "이미 찜한 공연입니다."),
+  NOT_EXIST_LIKE(BAD_REQUEST.value(), "찜이 존재하지 않습니다."),
 
   /**
    * 401 Unauthorized

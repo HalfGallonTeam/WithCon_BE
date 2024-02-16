@@ -3,7 +3,7 @@ package com.halfgallon.withcon.domain.notification.dto;
 import com.halfgallon.withcon.domain.notification.constant.VisibleType;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,13 +13,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class VisibleRequest {
 
-  @NotBlank
+  @NotNull
   private Long performanceId;
 
-  @NotBlank
+  @NotNull
   private Long chatRoomId;
 
-  @NotBlank
+  @NotNull
   @Enumerated(value = EnumType.STRING)
   private VisibleType visibleType;
 }
