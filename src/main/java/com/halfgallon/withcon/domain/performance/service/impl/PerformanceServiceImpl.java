@@ -1,8 +1,10 @@
 package com.halfgallon.withcon.domain.performance.service.impl;
 
+import com.halfgallon.withcon.domain.performance.constant.Genre;
 import com.halfgallon.withcon.domain.performance.dto.request.PerformanceRequest;
 import com.halfgallon.withcon.domain.performance.dto.response.PerformanceResponse;
 import com.halfgallon.withcon.domain.performance.entitiy.Performance;
+import com.halfgallon.withcon.domain.performance.repository.PerformanceLikeRepository;
 import com.halfgallon.withcon.domain.performance.repository.PerformanceRepository;
 import com.halfgallon.withcon.domain.performance.service.PerformanceService;
 import com.halfgallon.withcon.global.exception.CustomException;
@@ -60,13 +62,32 @@ public class PerformanceServiceImpl implements PerformanceService {
   }
 
   @Override
-  public Page<PerformanceResponse> searchPerformance(String keyword, Pageable pageable) {
-    Page<Performance> performancePage = performanceRepository.searchPerformance(keyword, pageable);
+  public Page<PerformanceResponse> searchPerformance(String keyword, String genre,
+      Pageable pageable) {
+    Page<Performance> performancePage;
+    validateGenre(genre);
+
+    if (genre.equals(Genre.ALL.name())) {
+      performancePage = performanceRepository.searchByKeyword(keyword,
+          pageable);
+    } else {
+        performancePage = performanceRepository.searchByKeywordAndGenre(keyword, genre,
+            pageable);
+    }
+
     List<PerformanceResponse> performanceResponseList = performancePage.getContent()
         .stream()
         .map(PerformanceResponse::fromEntity)
         .collect(Collectors.toList());
 
     return new PageImpl<>(performanceResponseList, pageable, performancePage.getTotalElements());
+  }
+
+  private void validateGenre(String genre) {
+    try {
+      Genre.valueOf(genre.toUpperCase());
+    } catch (IllegalArgumentException e) {
+      throw new CustomException(ErrorCode.GENRE_NOT_FOUND);
+    }
   }
 }

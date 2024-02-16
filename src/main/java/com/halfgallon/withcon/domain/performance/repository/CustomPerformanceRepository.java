@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface CustomPerformanceRepository {
-
-  Page<Performance> searchPerformance(String keyword, Pageable pageable);
+  Page<Performance> searchByKeyword(String keyword, Pageable pageable);
+  Page<Performance> searchByKeywordAndGenre(String keyword, String genre, Pageable pageable);
 
 }
