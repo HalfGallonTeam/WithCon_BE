@@ -6,6 +6,7 @@ import com.halfgallon.withcon.domain.member.constant.LoginType;
 import com.halfgallon.withcon.domain.member.dto.request.UpdateMemberRequest;
 import com.halfgallon.withcon.domain.performance.entitiy.PerformanceLike;
 import com.halfgallon.withcon.global.entity.BaseTimeEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -14,6 +15,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -46,12 +48,12 @@ public class Member extends BaseTimeEntity {
 
   @Column
   private String phoneNumber;
+  
+  @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+  @Builder.Default private List<PerformanceLike> likes = new ArrayList<>();
 
   @Column
   private String profileImage;
-
-  @OneToMany
-  private List<PerformanceLike> likes;
 
   public void update(UpdateMemberRequest request) {
     this.nickname = request.nickname();
