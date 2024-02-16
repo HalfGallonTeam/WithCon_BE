@@ -11,4 +11,6 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
   boolean existsByName(String name);
 
   Page<ChatRoom> findAllByPerformance_Id(String performanceId, Pageable pageable);
+
+  boolean existsByManagerName(String managerName);
 }

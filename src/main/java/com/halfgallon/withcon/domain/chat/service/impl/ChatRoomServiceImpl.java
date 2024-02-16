@@ -56,9 +56,9 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     Member member = memberRepository.findById(customUserDetails.getId())
         .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
 
-    validationCreateChatroom(request, member.getId());
+    validationCreateChatroom(request, member.getUsername());
 
-    ChatRoom chatRoom = chatRoomRepository.save(request.toEntity());
+    ChatRoom chatRoom = chatRoomRepository.save(request.toEntity(member.getUsername()));
 
     //채팅방 생성 시에 공연 정보 추가
     chatRoom.updatePerformance(performanceRepository.findById(String.valueOf(request.performanceId()))
@@ -69,7 +69,6 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         ChatParticipant.builder()
             .chatRoom(chatRoom)
             .member(member)
-            .isManager(true)
             .build()));
 
     //태그가 있는 경우에만 - 해당 태그 저장
@@ -102,10 +101,10 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
           if (tagSearch == null) {
             return TagSearch.builder()
-              .id(tag.getId().toString())
-              .name(tag.getName())
-              .tagCount(1)
-              .build();
+                .id(tag.getId().toString())
+                .name(tag.getName())
+                .tagCount(1)
+                .build();
           } else {
             Integer count = tagRepository.countTagByName(tag.getName());
             tagSearchRepository.updateTagCount(tagSearch.getId(), tag.getName(), count);
@@ -156,6 +155,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     return ChatRoomEnterResponse.builder()
         .roomName(chatRoom.getName())
         .chatRoomId(chatRoomId)
+        .managerName(chatRoom.getManagerName())
         .userCount(chatRoom.getUserCount())
         .chatParticipants(chatParticipants)
         .performanceId(Long.valueOf(chatRoom.getPerformance().getId()))
@@ -172,8 +172,10 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     participantRepository.delete(participant);
     participant.getChatRoom().removeChatParticipant(participant);
 
+    ChatRoomResponse response = ChatRoomResponse.fromEntity(participant.getChatRoom());
+
     //채팅방 인원이 전부 나간 경우 or 채팅방 방장이 방을 없앤 경우
-    if (participant.getChatRoom().getUserCount() <= 0 || participant.isManager()) {
+    if (response.userCount() <= 0 || response.managerName().equals(customUserDetails.getUsername())) {
       chatRoomRepository.delete(participant.getChatRoom());
     }
   }
@@ -196,11 +198,12 @@ public class ChatRoomServiceImpl implements ChatRoomService {
   @Transactional
   public ChatRoomResponse kickChatRoom(CustomUserDetails customUserDetails, Long chatRoomId,
       Long memberId) {
+    //현재 채팅방에서 강퇴할 인원 참여 여부 체크
     ChatParticipant chatParticipant = participantRepository.findByMemberIdAndChatRoomId(
             memberId, chatRoomId)
         .orElseThrow(() -> new CustomException(PARTICIPANT_NOT_FOUND));
 
-    if (participantRepository.checkRoomManager(customUserDetails.getId())) {
+    if (participantRepository.checkRoomManagerName(customUserDetails.getUsername())) {
       participantRepository.delete(chatParticipant);
       chatParticipant.getChatRoom().removeChatParticipant(chatParticipant);
     }
@@ -211,13 +214,13 @@ public class ChatRoomServiceImpl implements ChatRoomService {
   /**
    * 채팅방 생성 유효성 검사
    */
-  private void validationCreateChatroom(ChatRoomRequest request, Long memberId) {
+  private void validationCreateChatroom(ChatRoomRequest request, String username) {
     //채팅방 이름 검사
     if (chatRoomRepository.existsByName(request.roomName())) {
       throw new CustomException(DUPLICATE_CHATROOM);
     }
     //채팅방은 1인당 1개만 생성이 가능하다.
-    if (participantRepository.checkRoomManager(memberId)) {
+    if (chatRoomRepository.existsByManagerName(username)) {
       throw new CustomException(USER_JUST_ONE_CREATE_CHATROOM);
     }
   }

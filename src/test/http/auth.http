@@ -3,10 +3,10 @@ POST http://localhost:8080/auth/join
 Content-Type: application/json
 
 {
-  "username": "abcd7787",
+  "username": "part1",
   "password": "1q2w3e4r!",
-  "nickname": "위콘2",
-  "phoneNumber": "01077744567"
+  "nickname": "위콘1",
+  "phoneNumber": "0102132147"
 }
 
 ### 로그인
@@ -14,15 +14,20 @@ POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
-  "username": "abcd7787",
+  "username": "manager1",
   "password": "1q2w3e4r!"
 }
+
+> {%
+  client.global.set("accessToken", response.headers.valueOf("Authorization"))
+  client.log("엑세스 토큰: " + client.global.get("accessToken"));
+%}
+
 
 ### 네이버 로그인 테스트(인증코드로 요청)
 POST http://localhost:8080/auth/naver
 Content-Type: text/plain
 
-fkcdtW9su2RL29FaRY
 
 ### 네이버 로그인 필터 테스트
 POST http://localhost:8080/auth/oauth2/login
@@ -42,7 +47,3 @@ Content-Type: application/json
   "authorizationCode": "rY0ijkxxrIgHpWBFPZteh-Ur0DYby7pypAoC9MVIkTwUAdwr9-WxE6dT3OwKPXWaAAABjX-XxTH-oZq-Jypvmw"
 }
 
-> {%
-  client.global.set("accessToken", response.headers.valueOf("Authorization"))
-  client.log("엑세스 토큰: " + client.global.get("accessToken"));
-  %}

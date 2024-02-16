@@ -11,8 +11,7 @@ public record ChatParticipantDto(
     String userProfile,
     LoginType loginType,
     String nickName,
-    String phoneNumber,
-    boolean isManager
+    String phoneNumber
 ) {
 
   public static ChatParticipantDto fromEntity(ChatParticipant chatParticipant, String userProfile) {
@@ -23,7 +22,6 @@ public record ChatParticipantDto(
         .loginType(chatParticipant.getMember().getLoginType())
         .nickName(chatParticipant.getMember().getNickname())
         .phoneNumber(chatParticipant.getMember().getPhoneNumber())
-        .isManager(chatParticipant.isManager())
         .build();
   }
 }
