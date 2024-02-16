@@ -1,7 +1,6 @@
 package com.halfgallon.withcon.domain.performance.controller;
 
 import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -19,8 +18,6 @@ import com.halfgallon.withcon.domain.performance.dto.response.PerformanceRespons
 import com.halfgallon.withcon.domain.performance.service.impl.PerformanceServiceImpl;
 import com.halfgallon.withcon.global.annotation.WithCustomMockUser;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -140,7 +137,6 @@ class PerformanceControllerTest {
         .poster("asdfler")
         .facility("공연 장소")
         .status(Status.RUNNING)
-        .likes(4000L)
         .build();
   }
 

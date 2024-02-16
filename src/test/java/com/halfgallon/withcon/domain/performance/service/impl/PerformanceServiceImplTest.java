@@ -15,10 +15,7 @@ import com.halfgallon.withcon.domain.performance.repository.PerformanceRepositor
 import com.halfgallon.withcon.global.exception.CustomException;
 import com.halfgallon.withcon.global.exception.ErrorCode;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -160,7 +157,6 @@ class PerformanceServiceImplTest {
         .poster("asdfler")
         .facility("공연 장소")
         .status(Status.RUNNING)
-        .likes(4000L)
         .build();
   }
 
