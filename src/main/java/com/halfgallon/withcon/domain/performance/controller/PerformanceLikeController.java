@@ -30,11 +30,11 @@ public class PerformanceLikeController {
   // 장르별 찜 많은순 5개 조회
   @GetMapping("/best")
   public ResponseEntity<MainPagePerformanceResponse> bestPerformance(
-      @RequestParam String category,
+      @RequestParam String genre,
       @RequestParam int size) {
 
     return ResponseEntity.ok(
-        performanceLikeService.bestPerformance(category, size));
+        performanceLikeService.bestPerformance(genre, size));
   }
 
   // 찜 하기

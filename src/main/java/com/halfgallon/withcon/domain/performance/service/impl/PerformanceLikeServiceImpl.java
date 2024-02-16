@@ -35,15 +35,15 @@ public class PerformanceLikeServiceImpl implements PerformanceLikeService {
   // 장르별 베스트 5개씩 조회
   @Override
   @Transactional(readOnly = true)
-  public MainPagePerformanceResponse bestPerformance(String category, int size) {
-    String[] genres = category.split(",");
+  public MainPagePerformanceResponse bestPerformance(String genre, int size) {
+    String[] category = genre.split(",");
 
     List<Integer> parts = new ArrayList<>();
 
-    List<PerformanceResponse> responses = Arrays.stream(genres)
-        .flatMap(genre -> {
+    List<PerformanceResponse> responses = Arrays.stream(category)
+        .flatMap(value -> {
           List<Performance> performances = performanceRepository
-              .findBestByPerformance(Genre.valueOf(genre), size);
+              .findBestByPerformance(Genre.valueOf(value), size);
           parts.add(performances.size());
           return performances.stream();
         })

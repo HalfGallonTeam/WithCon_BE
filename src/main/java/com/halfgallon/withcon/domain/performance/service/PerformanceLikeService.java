@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface PerformanceLikeService {
 
-  MainPagePerformanceResponse bestPerformance(String category, int size);
+  MainPagePerformanceResponse bestPerformance(String genre, int size);
 
   String likePerformance(Long memberId, String performanceId);
 
