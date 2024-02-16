@@ -14,11 +14,4 @@ public enum Genre {
   THEATER("연극");
 
   private final String description;
-
-  public static Genre fromDescription(String description) {
-    return Arrays.stream(Genre.values())
-        .filter(genre ->  genre.getDescription().equals(description))
-        .findFirst()
-        .orElseThrow(() -> new CustomException(ErrorCode.INVALID_PARAMETER));
-  }
 }

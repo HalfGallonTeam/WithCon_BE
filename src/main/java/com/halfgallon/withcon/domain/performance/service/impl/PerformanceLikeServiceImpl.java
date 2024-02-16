@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,7 +43,7 @@ public class PerformanceLikeServiceImpl implements PerformanceLikeService {
     List<PerformanceResponse> responses = Arrays.stream(genres)
         .flatMap(genre -> {
           List<Performance> performances = performanceRepository
-              .findBestByPerformance(Genre.fromDescription(genre), size);
+              .findBestByPerformance(Genre.valueOf(genre), size);
           parts.add(performances.size());
           return performances.stream();
         })
@@ -112,14 +114,12 @@ public class PerformanceLikeServiceImpl implements PerformanceLikeService {
 
   // 나의 찜 공연 목록
   @Override
-  public List<PerformanceResponse> findLikes(Long memberId) {
-    List<PerformanceLike> performanceLikes = performanceLikeRepository.
-        findPerformanceLikeByMember_Id(memberId);
+  public Page<PerformanceResponse> findLikes(Long memberId, Pageable pageable) {
+    Page<PerformanceLike> performanceLikes = performanceLikeRepository.
+        findPerformanceLikeByMember_Id(memberId, pageable);
 
-    return performanceLikes.stream()
-        .map(PerformanceLike::getPerformance)
-        .map(PerformanceResponse::fromEntity)
-        .collect(Collectors.toList());
+    return performanceLikes.map(
+        performanceLike -> PerformanceResponse.fromEntity(performanceLike.getPerformance()));
   }
 
   // 나의 찜 공연Id 목록
