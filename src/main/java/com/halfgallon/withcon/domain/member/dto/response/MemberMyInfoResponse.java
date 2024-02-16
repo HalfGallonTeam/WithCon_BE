@@ -12,7 +12,7 @@ public record MemberMyInfoResponse(
     String profileImage,
     LoginType loginType
 ) {
-가
+
   public static MemberMyInfoResponse fromEntity(Member member) {
     return MemberMyInfoResponse.builder()
         .username(member.getUsername())
