@@ -150,7 +150,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     //채팅방 참여하고 있는 인원 리스트
     List<ChatParticipantDto> chatParticipants = chatRoom.getChatParticipants()
         .stream()
-        .map(part -> ChatParticipantDto.fromEntity(part, member.getProfileImage())).toList();
+        .map(ChatParticipantDto::fromEntity).toList();
 
     return ChatRoomEnterResponse.builder()
         .roomName(chatRoom.getName())
