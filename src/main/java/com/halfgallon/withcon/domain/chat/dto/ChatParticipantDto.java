@@ -14,11 +14,11 @@ public record ChatParticipantDto(
     String phoneNumber
 ) {
 
-  public static ChatParticipantDto fromEntity(ChatParticipant chatParticipant, String userProfile) {
+  public static ChatParticipantDto fromEntity(ChatParticipant chatParticipant) {
     return ChatParticipantDto.builder()
         .username(chatParticipant.getMember().getUsername())
         .password(chatParticipant.getMember().getPassword())
-        .userProfile(userProfile)
+        .userProfile(chatParticipant.getMember().getProfileImage())
         .loginType(chatParticipant.getMember().getLoginType())
         .nickName(chatParticipant.getMember().getNickname())
         .phoneNumber(chatParticipant.getMember().getPhoneNumber())
