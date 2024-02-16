@@ -6,7 +6,7 @@ import lombok.Builder;
 @Builder
 public record ChatRoomEnterResponse(
     Long chatRoomId,
-    Long performanceId,
+    String performanceName,
     String roomName,
     String managerName,
     Integer userCount,

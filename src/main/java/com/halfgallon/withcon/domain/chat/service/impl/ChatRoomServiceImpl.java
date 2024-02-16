@@ -158,7 +158,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         .managerName(chatRoom.getManagerName())
         .userCount(chatRoom.getUserCount())
         .chatParticipants(chatParticipants)
-        .performanceId(Long.valueOf(chatRoom.getPerformance().getId()))
+        .performanceName(chatRoom.getPerformance().getName())
         .build();
   }
 
