@@ -7,6 +7,7 @@ import com.halfgallon.withcon.domain.auth.client.OAuth2Client;
 import com.halfgallon.withcon.domain.auth.manager.JwtManager;
 import com.halfgallon.withcon.domain.auth.repository.AccessTokenRepository;
 import com.halfgallon.withcon.domain.auth.repository.RefreshTokenRepository;
+import com.halfgallon.withcon.domain.auth.security.filter.ExceptionHandlingFilter;
 import com.halfgallon.withcon.domain.auth.security.filter.JwtAuthenticationFilter;
 import com.halfgallon.withcon.domain.auth.security.filter.LoginFilter;
 import com.halfgallon.withcon.domain.auth.security.filter.OAuth2LoginFilter;
@@ -89,6 +90,7 @@ public class SecurityConfig {
         )
         .addFilterBefore(new JwtAuthenticationFilter(memberRepository, accessTokenRepository),
             LogoutFilter.class)
+        .addFilterBefore(new ExceptionHandlingFilter(objectMapper), JwtAuthenticationFilter.class)
         .addFilterBefore(loginFilter(), UsernamePasswordAuthenticationFilter.class)
         .addFilterBefore(oAuth2LoginFilter(), UsernamePasswordAuthenticationFilter.class)
     ;
