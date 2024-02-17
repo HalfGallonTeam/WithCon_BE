@@ -11,5 +11,5 @@ public interface PerformanceService {
   PerformanceResponse findPerformance(String performanceId);
   PerformanceResponse updatePerformance(PerformanceRequest request);
   PerformanceResponse deletePerformance(String performanceId);
-  Page<PerformanceResponse> searchPerformance(String keyword, Pageable pageable);
+  Page<PerformanceResponse> searchPerformance(String keyword, String genre, Pageable pageable);
 }

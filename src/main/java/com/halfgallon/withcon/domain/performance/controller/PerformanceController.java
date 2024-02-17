@@ -46,8 +46,9 @@ public class PerformanceController {
   }
 
   @GetMapping
-  public ResponseEntity<Page<PerformanceResponse>> searchPerformance(@RequestParam String keyword, @PageableDefault(size = 10)
+  public ResponseEntity<Page<PerformanceResponse>> searchPerformance(@RequestParam String keyword, @RequestParam String genre, @PageableDefault(size = 10)
       Pageable pageable) {
-    return ResponseEntity.ok(performanceService.searchPerformance(keyword, pageable));
+    return ResponseEntity.ok(performanceService.searchPerformance(keyword, genre, pageable));
+
   }
 }

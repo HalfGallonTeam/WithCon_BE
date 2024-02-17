@@ -20,12 +20,29 @@ public class CustomPerformanceRepositoryImpl implements CustomPerformanceReposit
   private final JPAQueryFactory jpaQueryFactory;
 
   @Override
-  public Page<Performance> searchPerformance(String keyword, Pageable pageable) {
+  public Page<Performance> searchByKeyword(String keyword, Pageable pageable) {
     QueryResults<Performance> results = jpaQueryFactory
         .selectFrom(performance)
         .leftJoin(performance.performanceDetail, performanceDetail)
         .where(performance.name.contains(keyword)
             .or(performanceDetail.actors.contains(keyword)))
+        .distinct()
+        .orderBy(performance.createdAt.asc())
+        .offset(pageable.getOffset())
+        .limit(pageable.getPageSize())
+        .fetchResults();
+
+    return new PageImpl<>(results.getResults(), pageable, results.getTotal());
+  }
+
+  @Override
+  public Page<Performance> searchByKeywordAndGenre(String keyword, String genre, Pageable pageable) {
+    QueryResults<Performance> results = jpaQueryFactory
+        .selectFrom(performance)
+        .leftJoin(performance.performanceDetail, performanceDetail)
+        .where(performance.name.contains(keyword)
+            .or(performanceDetail.actors.contains(keyword)))
+        .where(performanceDetail.genre.eq(Genre.valueOf(genre)))
         .distinct()
         .orderBy(performance.createdAt.asc())
         .offset(pageable.getOffset())
