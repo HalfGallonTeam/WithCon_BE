@@ -5,6 +5,7 @@ import static com.halfgallon.withcon.domain.auth.constant.AuthConstant.ACCESS_TO
 import static com.halfgallon.withcon.domain.auth.constant.AuthConstant.REFRESH_TOKEN_COOKIE_NAME;
 
 import com.halfgallon.withcon.domain.auth.dto.request.AuthJoinRequest;
+import com.halfgallon.withcon.domain.auth.dto.request.DuplicationCheckRequest;
 import com.halfgallon.withcon.domain.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,14 +32,14 @@ public class AuthController {
   }
 
   @PostMapping("/username-duplication-check")
-  public ResponseEntity<?> usernameDuplicationCheck(@RequestBody String username) {
-    authService.usernameDuplicationCheck(username);
+  public ResponseEntity<?> usernameDuplicationCheck(@RequestBody DuplicationCheckRequest request) {
+    authService.usernameDuplicationCheck(request.getUsername());
     return ResponseEntity.ok().build();
   }
 
   @PostMapping("/phone-number-duplication-check")
-  public ResponseEntity<?> phoneNumberDuplicationCheck(@RequestBody String phoneNumber) {
-    authService.phoneNumberDuplicationCheck(phoneNumber);
+  public ResponseEntity<?> phoneNumberDuplicationCheck(@RequestBody DuplicationCheckRequest request) {
+    authService.phoneNumberDuplicationCheck(request.getPhoneNumber());
     return ResponseEntity.ok().build();
   }
 
