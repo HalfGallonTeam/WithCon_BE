@@ -8,6 +8,7 @@ import com.halfgallon.withcon.domain.performance.entitiy.Performance;
 import com.halfgallon.withcon.domain.performance.repository.CustomPerformanceRepository;
 import com.querydsl.core.QueryResults;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -41,7 +42,7 @@ public class CustomPerformanceRepositoryImpl implements CustomPerformanceReposit
         .leftJoin(performance.performanceDetail, performanceDetail)
         .where(performance.name.contains(keyword)
             .or(performanceDetail.actors.contains(keyword)))
-        .where(performanceDetail.genre.eq(Genre.valueOf(genre))) // genre와 일치하는 Performance만 추가적으로 필터링합니다.
+        .where(performanceDetail.genre.eq(Genre.valueOf(genre)))
         .distinct()
         .orderBy(performance.createdAt.asc())
         .offset(pageable.getOffset())
@@ -49,5 +50,15 @@ public class CustomPerformanceRepositoryImpl implements CustomPerformanceReposit
         .fetchResults();
 
     return new PageImpl<>(results.getResults(), pageable, results.getTotal());
+  }
+
+  public List<Performance> findBestByPerformance(Genre genre, int size) {
+    return jpaQueryFactory.select(performance)
+        .from(performanceDetail)
+        .join(performanceDetail.performance, performance)
+        .where(performanceDetail.genre.eq(genre))
+        .orderBy(performance.likes.desc())
+        .limit(size)
+        .fetch();
   }
 }

@@ -87,8 +87,7 @@ public class SecurityConfig {
             .requestMatchers("/member/**").hasRole("USER")
             .anyRequest().permitAll()
         )
-        .addFilterBefore(
-            new JwtAuthenticationFilter(memberRepository, accessTokenRepository),
+        .addFilterBefore(new JwtAuthenticationFilter(memberRepository, accessTokenRepository),
             LogoutFilter.class)
         .addFilterBefore(loginFilter(), UsernamePasswordAuthenticationFilter.class)
         .addFilterBefore(oAuth2LoginFilter(), UsernamePasswordAuthenticationFilter.class)
@@ -100,8 +99,8 @@ public class SecurityConfig {
   @Bean
   public OAuth2LoginFilter oAuth2LoginFilter() {
     OAuth2LoginFilter filter = new OAuth2LoginFilter(
-        OAUTH2_LOGIN_ANT_PATH_REQUEST_MATCHER, authenticationManager(), objectMapper
-    );
+        OAUTH2_LOGIN_ANT_PATH_REQUEST_MATCHER, authenticationManager(), objectMapper);
+
     filter.setAuthenticationSuccessHandler(
         new LoginSuccessHandler(jwtManager, accessTokenRepository, refreshTokenRepository));
     filter.setAuthenticationFailureHandler(new OAuth2LoginFailureHandler(objectMapper));
@@ -116,6 +115,7 @@ public class SecurityConfig {
     filter.setAuthenticationSuccessHandler(
         new LoginSuccessHandler(jwtManager, accessTokenRepository, refreshTokenRepository));
     filter.setAuthenticationFailureHandler(new LoginFailureHandler(objectMapper));
+
     return filter;
   }
 

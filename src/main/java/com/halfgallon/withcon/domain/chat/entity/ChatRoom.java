@@ -49,6 +49,9 @@ public class ChatRoom extends BaseTimeEntity {
   @JoinColumn(name = "performance_id")
   private Performance performance;
 
+  @Column(nullable = false)
+  private String managerName;
+
   public void updateUserCount() {
     this.userCount = this.chatParticipants.size();
   }
@@ -70,4 +73,5 @@ public class ChatRoom extends BaseTimeEntity {
   public void updatePerformance(Performance performance) {
     this.performance = performance;
   }
+
 }

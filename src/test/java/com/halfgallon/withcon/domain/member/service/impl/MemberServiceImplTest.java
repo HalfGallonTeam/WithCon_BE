@@ -51,8 +51,10 @@ class MemberServiceImplTest {
     Long memberId = 1L;
     Member findMember = Member.builder()
         .id(memberId)
+        .username("username")
         .nickname("위드콘")
         .phoneNumber("010-1234-5678")
+        .profileImage("image-url")
         .loginType(HOME)
         .build();
 
@@ -62,8 +64,10 @@ class MemberServiceImplTest {
     MemberMyInfoResponse response = memberService.getMyInformation(memberId);
 
     // then
+    assertThat(response.username()).isEqualTo("username");
     assertThat(response.nickname()).isEqualTo("위드콘");
     assertThat(response.phoneNumber()).isEqualTo("010-1234-5678");
+    assertThat(response.profileImage()).isEqualTo("image-url");
     assertThat(response.loginType()).isEqualTo(HOME);
   }
 

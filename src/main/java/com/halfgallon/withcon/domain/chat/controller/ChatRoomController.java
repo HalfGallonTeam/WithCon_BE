@@ -36,10 +36,11 @@ public class ChatRoomController {
         chatRoomService.createChatRoom(customUserDetails ,request));
   }
 
-  @GetMapping("/chatRoom")
+  @GetMapping("/chatRoom/performance/{performanceId}")
   public ResponseEntity<Page<ChatRoomResponse>> findChatRoom(
+      @PathVariable("performanceId") String performanceId,
       @PageableDefault(size = 5, sort = "createdAt", direction = Direction.DESC) Pageable pageable) {
-    return ResponseEntity.ok(chatRoomService.findChatRoom(pageable));
+    return ResponseEntity.ok(chatRoomService.findChatRoom(performanceId, pageable));
   }
 
   @GetMapping("/chatRoom/{chatRoomId}/enter")

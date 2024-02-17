@@ -2,6 +2,7 @@ package com.halfgallon.withcon.domain.chat.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -62,7 +63,7 @@ class ChatRoomControllerTest {
     //when
     //then
     ChatRoomRequest request = new ChatRoomRequest("1번 채팅방",
-        List.of("#1번방", "#2번방"));
+        1L, List.of("#1번방", "#2번방"));
 
     mockMvc.perform(post("/chatRoom")
         .contentType(MediaType.APPLICATION_JSON)
@@ -81,7 +82,7 @@ class ChatRoomControllerTest {
 
     //when
     //then
-    ChatRoomRequest request = new ChatRoomRequest("1번 채팅방", null);
+    ChatRoomRequest request = new ChatRoomRequest("1번 채팅방", 1L, null);
 
     mockMvc.perform(post("/chatRoom")
             .contentType(MediaType.APPLICATION_JSON)
@@ -92,6 +93,7 @@ class ChatRoomControllerTest {
 
   private static ChatRoomResponse getChatRoomResponse() {
     return ChatRoomResponse.builder()
+        .performanceId(12345L)
         .chatRoomId(1L)
         .roomName("1번 채팅방")
         .build();
@@ -101,12 +103,12 @@ class ChatRoomControllerTest {
   @DisplayName("채팅방 목록 전체 조회 완료")
   void findChatRoom_Success() throws Exception {
     //given
-    given(chatRoomService.findChatRoom(any()))
+    given(chatRoomService.findChatRoom(anyString(), any()))
         .willReturn(new PageImpl<>(List.of(getChatRoomResponse())));
 
     //when
     //then
-    mockMvc.perform(get("/chatRoom")
+    mockMvc.perform(get("/chatRoom/performance/{performanceId}","12345")
         .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andDo(print());

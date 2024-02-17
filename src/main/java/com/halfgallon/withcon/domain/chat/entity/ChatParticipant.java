@@ -32,8 +32,4 @@ public class ChatParticipant {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "chatRoom_id")
   private ChatRoom chatRoom;
-
-  @Builder.Default
-  private boolean isManager = false;
-
 }

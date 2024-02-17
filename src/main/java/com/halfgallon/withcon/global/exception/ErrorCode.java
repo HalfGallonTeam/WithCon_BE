@@ -2,7 +2,6 @@ package com.halfgallon.withcon.global.exception;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
-import static org.springframework.http.HttpStatus.CONTINUE;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
@@ -20,9 +19,12 @@ public enum ErrorCode {
   ALREADY_PARTICIPANT_CHATTING(BAD_REQUEST.value(), "이미 참여하고 있는 채팅입니다."),
   USER_JUST_ONE_CREATE_CHATROOM(BAD_REQUEST.value(), "채팅방은 1인당 1개만 생성 가능합니다."),
   METHOD_NOT_SUPPORTED(BAD_REQUEST.value(), "잘못된 Method 요청입니다."),
+  INVALID_PARAMETER(BAD_REQUEST.value(), "유효하지 않은 파라미터 값입니다."),
   CONTENT_TYPE_NOT_SUPPORTED(BAD_REQUEST.value(), "잘못된 Content-type 요청입니다."),
   LOGIN_FAILURE_MESSAGE(BAD_REQUEST.value(), "아이디 혹은 비밀번호가 올바르지 않습니다."),
   OAUTH2_LOGIN_FAILURE_MESSAGE(BAD_REQUEST.value(), "소셜 로그인에 실패하셨습니다."),
+  ALREADY_LIKE_EXIST(BAD_REQUEST.value(), "이미 찜한 공연입니다."),
+  NOT_EXIST_LIKE(BAD_REQUEST.value(), "찜이 존재하지 않습니다."),
 
   /**
    * 401 Unauthorized
@@ -46,7 +48,8 @@ public enum ErrorCode {
    * 409 conflict
    */
   DUPLICATE_CHATROOM(CONFLICT.value(), "이미 존재하는 채팅방입니다."),
-  DUPLICATE_USERNAME(CONTINUE.value(), "이미 사용하고 있는 ID 입니다."),
+  DUPLICATE_USERNAME(CONFLICT.value(), "이미 사용하고 있는 ID 입니다."),
+  DUPLICATE_PHONE_NUMBER(CONFLICT.value(), "이미 사용하고 있는 핸드폰 번호입니다."),
 
   /**
    * 500 Internal Server Error

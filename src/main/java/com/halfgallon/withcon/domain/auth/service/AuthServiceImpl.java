@@ -1,5 +1,6 @@
 package com.halfgallon.withcon.domain.auth.service;
 
+import static com.halfgallon.withcon.global.exception.ErrorCode.DUPLICATE_PHONE_NUMBER;
 import static com.halfgallon.withcon.global.exception.ErrorCode.DUPLICATE_USERNAME;
 import static com.halfgallon.withcon.global.exception.ErrorCode.MEMBER_NOT_FOUND;
 import static com.halfgallon.withcon.global.exception.ErrorCode.REFRESH_TOKEN_COOKIE_IS_EMPTY;
@@ -35,13 +36,35 @@ public class AuthServiceImpl implements AuthService {
    */
   @Override
   public void join(AuthJoinRequest request) {
-    if (memberRepository.existsByUsername(request.getUsername())) {
-      throw new CustomException(DUPLICATE_USERNAME);
-    }
+    usernameDuplicationValidate(request.getUsername());
 
     String encodedPassword = passwordEncoder.encode(request.getPassword());
 
     memberRepository.save(request.toEntity(encodedPassword));
+  }
+
+  /**
+   * username 중복 체크
+   */
+  @Override
+  public void usernameDuplicationCheck(String username) {
+    usernameDuplicationValidate(username);
+  }
+
+  private void usernameDuplicationValidate(String username) {
+    if (memberRepository.existsByUsername(username)) {
+      throw new CustomException(DUPLICATE_USERNAME);
+    }
+  }
+
+  /**
+   * phoneNumber 중복 체크
+   */
+  @Override
+  public void phoneNumberDuplicationCheck(String phoneNumber) {
+    if (memberRepository.existsByPhoneNumber(phoneNumber)) {
+      throw new CustomException(DUPLICATE_PHONE_NUMBER);
+    }
   }
 
   /**

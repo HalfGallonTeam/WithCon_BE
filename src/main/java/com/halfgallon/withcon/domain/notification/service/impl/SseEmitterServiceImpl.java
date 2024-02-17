@@ -1,14 +1,13 @@
 package com.halfgallon.withcon.domain.notification.service.impl;
 
+import com.halfgallon.withcon.domain.notification.constant.RedisCacheType;
 import com.halfgallon.withcon.domain.notification.dto.NotificationResponse;
-import com.halfgallon.withcon.domain.notification.entity.NotificationCache;
-import com.halfgallon.withcon.domain.notification.repository.NotificationCacheRepository;
 import com.halfgallon.withcon.domain.notification.repository.SseEmitterRepository;
+import com.halfgallon.withcon.domain.notification.service.RedisCacheService;
 import com.halfgallon.withcon.domain.notification.service.SseEmitterService;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -20,8 +19,8 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 @RequiredArgsConstructor
 public class SseEmitterServiceImpl implements SseEmitterService {
 
+  private final RedisCacheService redisCacheService;
   private final SseEmitterRepository sseEmitterRepository;
-  private final NotificationCacheRepository notificationCacheRepository;
 
   @Override
   public void sendNotificationToClient(NotificationResponse notificationResponse) {
@@ -51,22 +50,20 @@ public class SseEmitterServiceImpl implements SseEmitterService {
   }
 
   private void saveNotificationCache(String emitterId,NotificationResponse response) {
-    Optional<NotificationCache> cache = notificationCacheRepository.findByMemberId(
-        response.getMemberId());
-    if(cache.isPresent()) { // 값이 이미 있다면
-      NotificationCache existCache = cache.get();
-      existCache.getNotifications().put(emitterId, response);
-      notificationCacheRepository.save(existCache);
-      log.info("Service : 이미 존재하는 member key : 저장 성공 " + existCache.getMemberId());
+    String hashKey = RedisCacheType.NOTIFICATION_CACHE.getDescription()
+        + response.getMemberId();
+
+    Map<Object, Object> cache = redisCacheService.getHashByKey(hashKey);
+    log.info("cache " + cache);
+
+    if(cache != null) { // Map이 있다면
+      redisCacheService.updateToHash(hashKey, emitterId, response);
+      log.info("Service : 이미 존재하는 member key : 저장 성공 " + response.getMemberId());
     }else {
-      NotificationCache newCache = NotificationCache.builder()
-          .memberId(response.getMemberId())
-          .notifications(new HashMap<>() {{
-            put(emitterId, response);
-          }})
-          .build();
-      notificationCacheRepository.save(newCache);
-      log.info("Service : 새로운 member key : 저장 성공 " + newCache.getMemberId());
+      Map<Object, Object> newObject = new HashMap<>();
+      newObject.put(emitterId, response);
+      redisCacheService.saveToHash(hashKey, newObject, 1);
+      log.info("Service : 새로운 member key : 저장 성공 " + response.getMemberId());
     }
   }
 }

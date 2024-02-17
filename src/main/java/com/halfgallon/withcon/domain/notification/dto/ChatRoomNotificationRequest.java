@@ -1,7 +1,9 @@
 package com.halfgallon.withcon.domain.notification.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import com.halfgallon.withcon.domain.chat.constant.MessageType;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,17 +13,17 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ChatRoomNotificationRequest {
 
-  @NotBlank
+  @NotNull
   private Long chatRoomId;
 
-  @NotBlank
+  @NotNull
   private Long performanceId;
 
-  @NotBlank
+  @NotNull
   private Long targetId; // 입장/퇴장/강퇴의 대상이 된 사람
 
-  @NotBlank
-  @Pattern(regexp = "^(입장|퇴장|강퇴)$")
-  private String chatRoomGenerateType;
+  @NotNull
+  @Enumerated(value = EnumType.STRING)
+  private MessageType messageType;
 
 }

@@ -71,6 +71,32 @@ class AuthControllerTest {
   }
 
   @Test
+  @DisplayName("username 중복 체크 요청")
+  void usernameDuplicationCheck_Success() throws Exception {
+    String username = "username";
+
+    mockMvc.perform(post("/auth/username-duplication-check")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(username))
+        .andExpect(status().isOk());
+
+    verify(authService, times(1)).usernameDuplicationCheck(username);
+  }
+
+  @Test
+  @DisplayName("phoneNumber 중복 체크 요청")
+  void phoneNumberDuplicationCheck_Success() throws Exception {
+    String phoneNumber = "010-1234-5678";
+
+    mockMvc.perform(post("/auth/phone-number-duplication-check")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(phoneNumber))
+        .andExpect(status().isOk());
+
+    verify(authService, times(1)).phoneNumberDuplicationCheck(phoneNumber);
+  }
+
+  @Test
   @DisplayName("액세스토큰 재발급 요청")
   void reissueAccessToken_Success() throws Exception {
     String refreshToken = "RefreshToken";

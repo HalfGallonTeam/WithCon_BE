@@ -1,5 +1,6 @@
 package com.halfgallon.withcon.domain.notification.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -7,8 +8,10 @@ import lombok.Getter;
 @AllArgsConstructor
 public class RedisChannelRequest {
 
+  @NotNull
   private Long performanceId;
 
+  @NotNull
   private Long chatRoomId;
 
 }
