@@ -10,10 +10,11 @@ import com.halfgallon.withcon.domain.chat.repository.ChatMessageRepository;
 import com.halfgallon.withcon.domain.chat.repository.ChatParticipantRepository;
 import com.halfgallon.withcon.domain.chat.service.ChatMessageService;
 import com.halfgallon.withcon.global.exception.CustomException;
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatMessageServiceImpl implements ChatMessageService {
@@ -28,7 +29,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         .roomId(roomId)
         .message(request.getMessage())
         .messageType(MessageType.CHAT)
-        .sendAt(LocalDateTime.now())
+        .sendAt(System.currentTimeMillis())
         .build();
   }
 
@@ -44,7 +45,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         .memberId(request.getMemberId())
         .message(message)
         .messageType(MessageType.ENTER)
-        .sendAt(LocalDateTime.now())
+        .sendAt(System.currentTimeMillis())
         .build();
   }
 
@@ -60,7 +61,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         .memberId(request.getMemberId())
         .message(message)
         .messageType(MessageType.EXIT)
-        .sendAt(LocalDateTime.now())
+        .sendAt(System.currentTimeMillis())
         .build();
   }
 
@@ -76,21 +77,21 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         .memberId(request.getMemberId())
         .message(message)
         .messageType(MessageType.KICK)
-        .sendAt(LocalDateTime.now())
+        .sendAt(System.currentTimeMillis())
         .build();
   }
 
   @Override
   public void saveChatMessage(ChatMessageDto response) {
-    ChatParticipant chatParticipant = participantRepository.findByMemberIdAndChatRoomId(
-            response.getMemberId(), response.getRoomId())
-        .orElseThrow(() -> new CustomException(PARTICIPANT_NOT_FOUND));
+    participantRepository.findByMemberIdAndChatRoomId(response.getMemberId(), response.getRoomId())
+        .ifPresent(e -> {
+          ChatMessage message = response.toEntity();
+          message.updateChatParticipant(e);
+          message.updateChatRoom(e.getChatRoom());
 
-    ChatMessage message = response.toEntity();
-    message.updateChatParticipant(chatParticipant);
-    message.updateChatRoom(chatParticipant.getChatRoom());
-
-    chatMessageRepository.save(message);
+          chatMessageRepository.save(message);
+          log.info("saveChatMessage -> message.getMessage() : {}", message.getMessage());
+        });
   }
 
 }
