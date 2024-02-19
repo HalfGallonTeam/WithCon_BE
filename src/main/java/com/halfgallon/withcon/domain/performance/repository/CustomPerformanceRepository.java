@@ -11,5 +11,5 @@ public interface CustomPerformanceRepository {
 
   Page<Performance> searchByKeyword(String keyword, Pageable pageable);
   
-  Page<Performance> searchByKeywordAndGenre(String keyword, String genre, Pageable pageable);
+  Page<Performance> searchByKeywordAndGenre(String keyword, Genre genre, Pageable pageable);
 }
