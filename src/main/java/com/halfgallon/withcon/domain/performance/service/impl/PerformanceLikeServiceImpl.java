@@ -98,36 +98,40 @@ public class PerformanceLikeServiceImpl implements PerformanceLikeService {
         .orElseThrow(() -> new CustomException(ErrorCode.PERFORMANCE_NOT_FOUND));
 
     PerformanceLike performanceLike = performanceLikeRepository
-        .findByMember_idAndPerformance_Id(memberId, performanceId)
+        .findByMember_IdAndPerformance_Id(memberId, performanceId)
         .orElseThrow(() -> new CustomException(ErrorCode.NOT_EXIST_LIKE));
 
     performance.subLikes();
+
+    performanceLikeRepository.deletePerformanceLikeById(performanceLike.getId());
     log.info("Service : 공연 찜 해제");
 
-    performanceLikeRepository.deleteByMember_IdAndPerformance_Id(
-        memberId, performanceId);
+    performance.getPerformanceLikes().remove(performanceLike);
+    member.getLikes().remove(performanceLike);
 
-    performance.getPerformanceLikes().add(performanceLike);
-    member.getLikes().add(performanceLike);
     return performanceId;
   }
 
   // 나의 찜 공연 목록
   @Override
+  @Transactional(readOnly = true)
   public Page<PerformanceResponse> findLikes(Long memberId, Pageable pageable) {
     Page<PerformanceLike> performanceLikes = performanceLikeRepository.
         findPerformanceLikeByMember_Id(memberId, pageable);
 
+    log.info("Service : 찜 목록 조회");
     return performanceLikes.map(
         performanceLike -> PerformanceResponse.fromEntity(performanceLike.getPerformance()));
   }
 
   // 나의 찜 공연Id 목록
   @Override
+  @Transactional(readOnly = true)
   public List<String> findLikesId(Long memberId) {
     List<PerformanceLike> performanceLikes = performanceLikeRepository.
         findPerformanceLikeByMember_Id(memberId);
 
+    log.info("Service : 찜 목록 조회");
     return performanceLikes.stream()
         .map(performanceLike -> performanceLike.getPerformance().getId())
         .collect(Collectors.toList());

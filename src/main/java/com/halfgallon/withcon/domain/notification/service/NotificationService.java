@@ -15,4 +15,6 @@ public interface NotificationService {
 
   void createNotificationChatRoom(ChatRoomNotificationRequest request);
 
+  void readNotification(Long notificationId);
+
 }

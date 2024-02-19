@@ -110,7 +110,7 @@ class PerformanceLikeServiceImplTest {
         .performance(performance)
         .build();
 
-    given(performanceLikeRepository.findByMember_idAndPerformance_Id(
+    given(performanceLikeRepository.findByMember_IdAndPerformance_Id(
         memberId, performanceId))
         .willReturn(Optional.of(performanceLike));
 
