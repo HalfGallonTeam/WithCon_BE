@@ -57,7 +57,8 @@ public class Performance extends BaseTimeEntity {
   private List<ChatRoom> chatRoom;
 
   @OneToMany(mappedBy = "performance", cascade = CascadeType.ALL, orphanRemoval = true)
-  @Builder.Default private List<PerformanceLike> performanceLikes = new ArrayList<>();
+  @Builder.Default
+  private List<PerformanceLike> performanceLikes = new ArrayList<>();
 
   @OneToOne(mappedBy = "performance", cascade = CascadeType.ALL, orphanRemoval = true)
   private PerformanceDetail performanceDetail;

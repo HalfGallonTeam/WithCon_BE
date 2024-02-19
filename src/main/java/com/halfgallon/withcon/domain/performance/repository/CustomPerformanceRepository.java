@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 public interface CustomPerformanceRepository {
   List<Performance> findBestByPerformance(Genre genre, int size);
 
-  Page<Performance> searchPerformance(String keyword, Pageable pageable);
-
+  Page<Performance> searchByKeyword(String keyword, Pageable pageable);
+  
+  Page<Performance> searchByKeywordAndGenre(String keyword, String genre, Pageable pageable);
 }
