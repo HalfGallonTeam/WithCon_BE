@@ -5,5 +5,5 @@ import lombok.Getter;
 @Getter
 public class Channel {
 
-  public static String CHATROOM_CHANNEL = "chatRoom:";
+  public static final String CHATROOM_CHANNEL = "chatRoom:";
 }
