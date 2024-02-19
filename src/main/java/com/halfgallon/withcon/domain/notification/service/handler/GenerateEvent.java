@@ -13,9 +13,9 @@ public class GenerateEvent {
 
   private final ApplicationEventPublisher eventPublisher;
 
-  public void doSomething(Long performanceId, Long chatRoomId) {
+  public void doSomething(Long chatRoomId) {
     this.eventPublisher.publishEvent(
-        new NewMessageEvent(this, performanceId,chatRoomId));
+        new NewMessageEvent(this, chatRoomId));
     log.info("Event 발행");
   }
 }

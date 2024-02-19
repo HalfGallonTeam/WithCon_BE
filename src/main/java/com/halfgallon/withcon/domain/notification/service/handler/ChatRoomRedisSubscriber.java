@@ -18,9 +18,8 @@ public class ChatRoomRedisSubscriber {
   /**
    * 방장이 채팅방 생성시에 채팅방 ID로 redis 채널 생성
    */
-  public void subscribeChatRoomChannel(Long performanceId, Long chatRoomId) {
-    ChannelTopic topic = new ChannelTopic(
-        Channel.makeChannel(performanceId, chatRoomId));
+  public void subscribeChatRoomChannel(Long chatRoomId) {
+    ChannelTopic topic = new ChannelTopic(Channel.CHATROOM_CHANNEL + chatRoomId);
     container.addMessageListener(subscriber, topic);
     log.info("redis 채팅방 채널 생성");
   }
@@ -28,9 +27,8 @@ public class ChatRoomRedisSubscriber {
   /**
    * 공연이 삭제되거나 채팅방이 없어졌을 때 채널 해지
    */
-  public void unSubscribeChatRoomChannel(Long performanceId, Long chatRoomId) {
-    ChannelTopic topic = new ChannelTopic(
-        Channel.makeChannel(performanceId, chatRoomId));
+  public void unSubscribeChatRoomChannel(Long chatRoomId) {
+    ChannelTopic topic = new ChannelTopic(Channel.CHATROOM_CHANNEL + chatRoomId);
     container.removeMessageListener(subscriber, topic);
     log.info("redis 채팅방 채널 해지");
   }

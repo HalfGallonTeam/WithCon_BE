@@ -7,7 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum NotificationType {
   CHATROOM("/chatRoom"),
-  PERFORMANCE("/performance");
+  PERFORMANCE("/performanceDetail");
 
   private final String description;
 }

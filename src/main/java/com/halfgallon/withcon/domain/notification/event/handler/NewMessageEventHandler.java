@@ -2,7 +2,6 @@ package com.halfgallon.withcon.domain.notification.event.handler;
 
 import com.halfgallon.withcon.domain.member.entity.Member;
 import com.halfgallon.withcon.domain.member.repository.MemberRepository;
-import com.halfgallon.withcon.domain.notification.constant.Channel;
 import com.halfgallon.withcon.domain.notification.constant.NotificationMessage;
 import com.halfgallon.withcon.domain.notification.constant.NotificationType;
 import com.halfgallon.withcon.domain.notification.constant.RedisCacheType;
@@ -25,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Component
@@ -39,10 +37,9 @@ public class NewMessageEventHandler {
 
   @Async
   @EventListener
-  @Transactional
   public void handleNewMessageEvent(NewMessageEvent event) {
     String visibleKey = RedisCacheType.VISIBLE_CACHE.getDescription()
-        + Channel.makeChannel(event.getPerformanceId(), event.getChatRoomId());
+        + event.getChatRoomId();
     log.info("Event Handle : 채널 KEY: " + visibleKey);
 
     Map<Object, Object> cache = redisCacheService.getHashByKey(visibleKey);
@@ -59,7 +56,7 @@ public class NewMessageEventHandler {
           Member member = memberRepository.findById(Long.parseLong((String)entry.getKey()))
               .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-          newMessageSaveAndPublish(event, member, visibleKey);
+          newMessageSaveAndPublish(event, member);
 
           iterator.remove();
           log.info("캐시 데이터 삭제: " + entry.getKey());
@@ -67,7 +64,7 @@ public class NewMessageEventHandler {
       }
     }
   }
-  private void newMessageSaveAndPublish(NewMessageEvent event, Member member, String visibleKey) {
+  private void newMessageSaveAndPublish(NewMessageEvent event, Member member) {
     Notification notification = Notification.builder()
         .message(createNewMessageNotification())
         .url(createNewMessageUrl(event.getChatRoomId()))
@@ -79,7 +76,7 @@ public class NewMessageEventHandler {
     notificationRepository.save(notification);
     log.info("Event : 알림 저장 성공 ");
 
-    redisNotificationService.publish(visibleKey, new NotificationResponse(notification));
+    redisNotificationService.publish(String.valueOf(member.getId()), new NotificationResponse(notification));
     log.info("Event : 메세지 발행 ");
   }
 
