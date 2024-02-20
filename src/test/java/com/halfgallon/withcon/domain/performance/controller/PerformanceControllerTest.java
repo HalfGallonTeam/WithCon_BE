@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.halfgallon.withcon.domain.performance.constant.Genre;
 import com.halfgallon.withcon.domain.performance.constant.Status;
 import com.halfgallon.withcon.domain.performance.dto.request.PerformanceRequest;
 import com.halfgallon.withcon.domain.performance.dto.response.PerformanceResponse;
@@ -114,7 +115,7 @@ class PerformanceControllerTest {
   @DisplayName("공연 검색 완료")
   void searchPerformance_Success() throws Exception {
     String keyword = "keyword";
-    String genre = "genre";
+    Genre genre = Genre.ALL;
     Pageable pageable = PageRequest.of(0, 10);
     Page<PerformanceResponse> performancePage = Page.empty(pageable);
 
@@ -124,7 +125,7 @@ class PerformanceControllerTest {
     mockMvc.perform(get("/performance")
             .contentType(MediaType.APPLICATION_JSON)
             .param("keyword", keyword)
-            .param("genre", genre))
+            .param("genre", genre.name()))
         .andExpect(jsonPath("$.totalPages").exists())
         .andExpect(jsonPath("$.totalElements").exists())
         .andExpect(jsonPath("$.content", is(empty())))

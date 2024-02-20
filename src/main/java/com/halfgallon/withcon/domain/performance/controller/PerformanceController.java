@@ -1,5 +1,6 @@
 package com.halfgallon.withcon.domain.performance.controller;
 
+import com.halfgallon.withcon.domain.performance.constant.Genre;
 import com.halfgallon.withcon.domain.performance.dto.request.PerformanceRequest;
 import com.halfgallon.withcon.domain.performance.dto.response.PerformanceResponse;
 import com.halfgallon.withcon.domain.performance.service.PerformanceService;
@@ -26,7 +27,8 @@ public class PerformanceController {
   private final PerformanceService performanceService;
 
   @PostMapping
-  public ResponseEntity<PerformanceResponse> createPerformance(@RequestBody PerformanceRequest request) {
+  public ResponseEntity<PerformanceResponse> createPerformance(
+      @RequestBody PerformanceRequest request) {
     return ResponseEntity.ok(performanceService.createPerformance(request));
   }
 
@@ -36,7 +38,8 @@ public class PerformanceController {
   }
 
   @PutMapping
-  public ResponseEntity<PerformanceResponse> updatePerformance(@RequestBody PerformanceRequest request) {
+  public ResponseEntity<PerformanceResponse> updatePerformance(
+      @RequestBody PerformanceRequest request) {
     return ResponseEntity.ok(performanceService.updatePerformance(request));
   }
 
@@ -46,8 +49,9 @@ public class PerformanceController {
   }
 
   @GetMapping
-  public ResponseEntity<Page<PerformanceResponse>> searchPerformance(@RequestParam String keyword, @RequestParam String genre, @PageableDefault(size = 10)
-      Pageable pageable) {
+  public ResponseEntity<Page<PerformanceResponse>> searchPerformance(@RequestParam(required = false) String keyword,
+      @RequestParam Genre genre, @PageableDefault(size = 10)
+  Pageable pageable) {
     return ResponseEntity.ok(performanceService.searchPerformance(keyword, genre, pageable));
 
   }

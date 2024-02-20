@@ -137,7 +137,7 @@ class PerformanceServiceImplTest {
     //given
     PerformanceRequest request = getPerformanceRequest();
     String keyword = "keyword";
-    String genre = Genre.ALL.name();
+    Genre genre = Genre.ALL;
     Pageable pageable = PageRequest.of(0, 10);
     Page<Performance> expectedResponse = Page.empty(pageable);
 
@@ -156,7 +156,7 @@ class PerformanceServiceImplTest {
   void searchPerformance_KeywordAndGenre_Success() {
     PerformanceRequest request = getPerformanceRequest();
     String keyword = "keyword";
-    String genre = Genre.MUSICAL.name();
+    Genre genre = Genre.MUSICAL;
     Pageable pageable = PageRequest.of(0, 10);
     Page<Performance> expectedResponse = Page.empty(pageable);
 
@@ -169,21 +169,6 @@ class PerformanceServiceImplTest {
     assertThat(actualResponse.getTotalElements()).isEqualTo(expectedResponse.getTotalElements());
     assertThat(actualResponse.getTotalPages()).isEqualTo(expectedResponse.getTotalPages());
     assertThat(actualResponse.getContent().size()).isEqualTo(expectedResponse.getContent().size());
-  }
-
-  @Test
-  @DisplayName("공연 검색 실패 - 장르가 존재하지 않는 경우")
-  void searchPerformance_failed() {
-    PerformanceRequest request = getPerformanceRequest();
-    String keyword = "keyword";
-    String genre = "INVALID";
-    Pageable pageable = PageRequest.of(0, 10);
-    Page<Performance> expectedResponse = Page.empty(pageable);
-
-    CustomException customException = Assertions.assertThrows(CustomException.class,
-        () -> performanceService.searchPerformance(keyword, genre, pageable));
-
-    assertThat(ErrorCode.GENRE_NOT_FOUND).isEqualTo(customException.getErrorCode());
   }
 
   private PerformanceRequest getPerformanceRequest() {

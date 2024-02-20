@@ -62,12 +62,15 @@ public class PerformanceServiceImpl implements PerformanceService {
   }
 
   @Override
-  public Page<PerformanceResponse> searchPerformance(String keyword, String genre,
+  public Page<PerformanceResponse> searchPerformance(String keyword, Genre genre,
       Pageable pageable) {
     Page<Performance> performancePage;
-    validateGenre(genre);
 
-    if (genre.equals(Genre.ALL.name())) {
+    if(keyword == null) {
+      keyword = "";
+    }
+
+    if (genre.equals(Genre.ALL)) {
       performancePage = performanceRepository.searchByKeyword(keyword,
           pageable);
     } else {
@@ -83,11 +86,4 @@ public class PerformanceServiceImpl implements PerformanceService {
     return new PageImpl<>(performanceResponseList, pageable, performancePage.getTotalElements());
   }
 
-  private void validateGenre(String genre) {
-    try {
-      Genre.valueOf(genre.toUpperCase());
-    } catch (IllegalArgumentException e) {
-      throw new CustomException(ErrorCode.GENRE_NOT_FOUND);
-    }
-  }
 }
