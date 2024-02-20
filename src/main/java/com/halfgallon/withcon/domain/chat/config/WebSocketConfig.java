@@ -37,7 +37,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         .setClientLogin(clientLogin)
         .setClientPasscode(clientPasscode)
         .setSystemLogin(systemLogin)
-        .setSystemPasscode(systemPasscode);
+        .setSystemPasscode(systemPasscode)
+        .setSystemHeartbeatSendInterval(4000)
+        .setSystemHeartbeatReceiveInterval(4000);
 
     registry.setApplicationDestinationPrefixes("/app");
   }
