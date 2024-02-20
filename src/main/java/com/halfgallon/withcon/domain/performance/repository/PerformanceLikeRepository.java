@@ -13,14 +13,16 @@ public interface PerformanceLikeRepository extends JpaRepository<PerformanceLike
 
   boolean existsByMember_IdAndPerformance_Id(Long memberId, String performanceId);
 
-  Optional<PerformanceLike> findByMember_idAndPerformance_Id(
+  Optional<PerformanceLike> findByMember_IdAndPerformance_Id(
       Long memberId, String performanceId);
 
-  void deleteByMember_IdAndPerformance_Id(Long memberId, String performanceId);
+  void deletePerformanceLikeById(Long performanceLikeId);
 
   Page<PerformanceLike> findPerformanceLikeByMember_Id(
       Long memberId, Pageable pageable);
 
   List<PerformanceLike> findPerformanceLikeByMember_Id(Long memberId);
+
+  List<PerformanceLike> findPerformanceLikeByPerformance_Id(String performanceId);
 
 }

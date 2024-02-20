@@ -17,9 +17,6 @@ public class ChatRoomNotificationRequest {
   private Long chatRoomId;
 
   @NotNull
-  private Long performanceId;
-
-  @NotNull
   private Long targetId; // 입장/퇴장/강퇴의 대상이 된 사람
 
   @NotNull

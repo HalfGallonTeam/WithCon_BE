@@ -1,6 +1,5 @@
 package com.halfgallon.withcon.domain.notification.service.impl;
 
-import com.halfgallon.withcon.domain.notification.constant.Channel;
 import com.halfgallon.withcon.domain.notification.constant.RedisCacheType;
 import com.halfgallon.withcon.domain.notification.dto.NotificationResponse;
 import com.halfgallon.withcon.domain.notification.dto.VisibleDataDto;
@@ -49,8 +48,7 @@ public class RedisNotificationServiceImpl implements RedisNotificationService {
   // Redis에 visible 데이터 저장.
   @Override
   public void createVisibleCache(Long memberId, VisibleRequest request) {
-    String hashKey = RedisCacheType.VISIBLE_CACHE.getDescription() +
-        Channel.makeChannel(request.getPerformanceId(), request.getChatRoomId());
+    String hashKey = RedisCacheType.VISIBLE_CACHE.getDescription() + request.getChatRoomId();
     log.info("VisibleCache 채널 명 : " + hashKey);
 
     Map<Object, Object> visibleCaches = redisCacheService.getHashByKey(hashKey);

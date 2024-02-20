@@ -14,9 +14,6 @@ import lombok.NoArgsConstructor;
 public class VisibleRequest {
 
   @NotNull
-  private Long performanceId;
-
-  @NotNull
   private Long chatRoomId;
 
   @NotNull

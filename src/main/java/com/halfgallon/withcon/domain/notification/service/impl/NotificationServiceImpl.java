@@ -58,12 +58,12 @@ public class NotificationServiceImpl implements NotificationService {
         NotificationMessage.SUBSCRIBE.getDescription() + " memberId: " + memberId);
     log.info("SSE 구독 완료");
 
-    redisNotificationService.subscribe(emitterId);
+    redisNotificationService.subscribe(String.valueOf(memberId));
 
     sseEmitter.onCompletion(() -> {
       log.info("onCompletion callback");
       sseEmitterRepository.deleteById(emitterId);
-      redisNotificationService.unsubscribe(emitterId);
+      redisNotificationService.unsubscribe(String.valueOf(memberId));
     });
     sseEmitter.onError((e) -> {
       log.info("onError callback");
@@ -72,7 +72,7 @@ public class NotificationServiceImpl implements NotificationService {
     sseEmitter.onTimeout(() -> {
       log.info("onTimeout callback");
       sseEmitterRepository.deleteById(emitterId);
-      redisNotificationService.unsubscribe(emitterId);
+      redisNotificationService.unsubscribe(String.valueOf(memberId));
     });
 
     if (StringUtils.hasText(lastEventId)) { // true -> 있으면 유실 데이터 존재
@@ -124,19 +124,12 @@ public class NotificationServiceImpl implements NotificationService {
   // 채팅방 관련 알림 생성
   @Transactional
   public void createNotificationChatRoom(ChatRoomNotificationRequest request) {
-    /** TODO
-     * 특정 채팅방에서 이벤트 발생시 해당 채팅방의 인원을 조회함.
-     * 실제로는 PerformanceId 와 ChatRoomId로 특정해야함.
-     */
     List<ChatParticipant> chatParticipants = chatParticipantRepository.
         findAllByChatRoom_Id(request.getChatRoomId());
     log.info("Service : 참여 멤버 조회 성공");
 
-    /** TODO
-     * 회원이 탈퇴 했을 때 에러가 아닌 다른 메세지를 보내 줘야함.
-     */
     Member member = memberRepository.findById(request.getTargetId())
-        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        .orElse(withdrawMember());
     log.info("Service : Target 맴버 조회 성공");
     String message = createChatRoomMessage(member.getUsername(),
         request.getMessageType()); // 메세지 생성
@@ -166,8 +159,7 @@ public class NotificationServiceImpl implements NotificationService {
     notificationRepository.save(notification);
     log.info("Service : 알림 저장 성공");
 
-    redisNotificationService.publish(
-        Channel.makeChannel(request.getPerformanceId(), request.getChatRoomId()),
+    redisNotificationService.publish(Channel.CHATROOM_CHANNEL + request.getChatRoomId(),
         new NotificationResponse(notification));
   }
 
@@ -190,5 +182,22 @@ public class NotificationServiceImpl implements NotificationService {
   // URL 생성
   private String createChatRoomUrl(Long chatRoomId) {
     return NotificationType.CHATROOM.getDescription() + "/" + chatRoomId + "/enter";
+  }
+
+  private Member withdrawMember() {
+    return Member.builder()
+        .username("OO")
+        .build();
+  }
+
+  @Override
+  public void readNotification(Long notificationId) {
+    Notification notification =
+        notificationRepository.findById(notificationId)
+            .orElseThrow(() -> new CustomException(ErrorCode.NOT_EXIST_NOTIFICATION));
+
+    notification.updateReadStatus();
+    notificationRepository.save(notification);
+    log.info("Service : 알림 읽음");
   }
 }
