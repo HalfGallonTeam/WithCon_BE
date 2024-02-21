@@ -9,6 +9,9 @@
     },
     "tag_count": {
       "type": "integer"
+    },
+    "performance_id": {
+      "type": "keyword"
     }
   }
 }

@@ -1,6 +1,7 @@
 package com.halfgallon.withcon.domain.tag.entity;
 
 import com.halfgallon.withcon.domain.chat.entity.ChatRoom;
+import com.halfgallon.withcon.domain.performance.entitiy.Performance;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -29,7 +30,10 @@ public class Tag {
   @JoinColumn(name = "chatRoom_id")
   private ChatRoom chatRoom;
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "performance_id")
+  private Performance performance;
+
   @Column(nullable = false)
   private String name;
-
 }
