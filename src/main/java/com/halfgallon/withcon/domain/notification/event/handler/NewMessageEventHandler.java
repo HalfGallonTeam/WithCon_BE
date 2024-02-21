@@ -7,18 +7,13 @@ import com.halfgallon.withcon.domain.notification.constant.NotificationType;
 import com.halfgallon.withcon.domain.notification.constant.RedisCacheType;
 import com.halfgallon.withcon.domain.notification.constant.VisibleType;
 import com.halfgallon.withcon.domain.notification.dto.NotificationResponse;
-import com.halfgallon.withcon.domain.notification.dto.VisibleDataDto;
 import com.halfgallon.withcon.domain.notification.entity.Notification;
 import com.halfgallon.withcon.domain.notification.event.NewMessageEvent;
 import com.halfgallon.withcon.domain.notification.repository.NotificationRepository;
 import com.halfgallon.withcon.domain.notification.service.RedisCacheService;
 import com.halfgallon.withcon.domain.notification.service.RedisNotificationService;
-import com.halfgallon.withcon.global.exception.CustomException;
-import com.halfgallon.withcon.global.exception.ErrorCode;
 import java.time.LocalDateTime;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -45,23 +40,19 @@ public class NewMessageEventHandler {
     Map<Object, Object> cache = redisCacheService.getHashByKey(visibleKey);
     log.info("Event : Visible 캐시 데이터 조회" + cache);
 
-    if(!cache.isEmpty()) { // 기존 캐시 값이 존재 한다면
-      Iterator<Entry<Object, Object>> iterator = cache.entrySet().iterator();
+    if(cache != null) { // 기존 캐시 Map이 존재 한다면
+      for(Map.Entry<Object, Object> entry : cache.entrySet()) {
+        VisibleType visibleType = VisibleType.valueOf((String)entry.getValue());
 
-      while (iterator.hasNext()) {
-        Map.Entry<Object, Object> entry = iterator.next();
-        VisibleDataDto visibleDataDto = (VisibleDataDto) entry.getValue();
-
-        if (visibleDataDto.getVisibleType() == VisibleType.HIDDEN) {
-          Member member = memberRepository.findById(Long.parseLong((String)entry.getKey()))
-              .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-
-          newMessageSaveAndPublish(event, member);
-
-          iterator.remove();
-          log.info("캐시 데이터 삭제: " + entry.getKey());
+        if(visibleType == VisibleType.HIDDEN) {
+          memberRepository.findById(Long.parseLong((String)entry.getKey()))
+              .ifPresent(member -> {
+                newMessageSaveAndPublish(event, member);
+                cache.put(entry.getKey(), VisibleType.NONE);
+              });
         }
       }
+      redisCacheService.saveToHash(visibleKey, cache, 24);
     }
   }
   private void newMessageSaveAndPublish(NewMessageEvent event, Member member) {

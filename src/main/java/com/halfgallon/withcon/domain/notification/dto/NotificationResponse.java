@@ -24,8 +24,6 @@ public class NotificationResponse implements Serializable {
 
   private String url;
 
-  private boolean readStatus;
-
   @JsonProperty("createdAt")
   @JsonSerialize(using = LocalDateTimeSerializer.class)
   @JsonDeserialize(using = LocalDateTimeDeserializer.class)
@@ -37,7 +35,6 @@ public class NotificationResponse implements Serializable {
     this.memberId = notification.getMember().getId();
     this.message = notification.getMessage();
     this.url = notification.getUrl();
-    this.readStatus = notification.isReadStatus();
     this.createdAt = notification.getCreatedAt();
   }
 }
