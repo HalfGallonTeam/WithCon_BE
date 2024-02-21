@@ -14,12 +14,13 @@ public class CustomTagSearchRepositoryImpl implements CustomTagSearchRepository 
   private final ElasticsearchOperations operations;
 
   @Override
-  public void updateTagCount(String id, String name, Integer tagCount) {
-    Map<String, Object> map = Map.of("name", name, "tag_count", tagCount);
-    Document document = operations.getElasticsearchConverter().mapObject(map);
+  public void updateSearchTag(TagSearch tagSearch, Integer tagCount) {
+    Map<String, Object> map = Map.of("name", tagSearch.getName(),
+        "performance_id", tagSearch.getPerformanceId(),
+        "tag_count", tagCount);
 
-    UpdateQuery updateQuery = UpdateQuery.builder(id)
-        .withDocument(document)
+    UpdateQuery updateQuery = UpdateQuery.builder(tagSearch.getId())
+        .withDocument(operations.getElasticsearchConverter().mapObject(map))
         .build();
 
     operations.update(updateQuery, operations.getIndexCoordinatesFor(TagSearch.class));

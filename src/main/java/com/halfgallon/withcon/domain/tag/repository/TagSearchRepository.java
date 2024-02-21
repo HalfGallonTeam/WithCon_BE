@@ -10,9 +10,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TagSearchRepository extends ElasticsearchRepository<TagSearch, String>,
     CustomTagSearchRepository {
-
-  List<TagSearch> findAllByNameStartingWithIgnoreCase(String name, Pageable pageable);
-
-  Optional<TagSearch> findByName(String name);
-
+  Optional<TagSearch> findByNameAndPerformanceId(String name, String PerformanceId);
 }
