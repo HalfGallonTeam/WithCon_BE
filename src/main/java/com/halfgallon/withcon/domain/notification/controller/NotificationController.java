@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -38,12 +37,10 @@ public class NotificationController {
   // 클라이언트가 알림을 구독
   @GetMapping(value = "/notification/subscribe", produces = "text/event-stream; charset=UTF-8")
   public ResponseEntity<SseEmitter> subscribe(
-      @AuthenticationPrincipal CustomUserDetails customUserDetails,
-      @RequestHeader(value = "Last-Event-ID", required = false,
-          defaultValue = "") String lastEventId) {
+      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
     return ResponseEntity.ok(
-        notificationService.subscribe(customUserDetails.getId(), lastEventId));
+        notificationService.subscribe(customUserDetails.getId()));
   }
 
   // 채팅방 관련 알림 생성 및 전송

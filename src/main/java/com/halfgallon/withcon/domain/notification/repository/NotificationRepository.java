@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
-  List<Notification> findAllByMember_Id(Long memberId);
+  List<Notification> findNotificationsByMember_IdAndReadStatus(Long memberId, boolean readStatus);
 
   void deleteByCreatedAtBefore(LocalDateTime time);
 

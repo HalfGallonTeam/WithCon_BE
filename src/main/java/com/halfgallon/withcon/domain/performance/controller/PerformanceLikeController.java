@@ -12,9 +12,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,7 +39,7 @@ public class PerformanceLikeController {
   }
 
   // 찜 하기
-  @PutMapping("/{performanceId}/like")
+  @PostMapping("/{performanceId}/like")
   public ResponseEntity<String> likePerformance(
       @AuthenticationPrincipal CustomUserDetails customUserDetails,
       @PathVariable String performanceId) {
@@ -48,7 +49,7 @@ public class PerformanceLikeController {
   }
 
   // 찜 해제
-  @PutMapping("/{performanceId}/unlike")
+  @DeleteMapping("/{performanceId}/unlike")
   public ResponseEntity<String> unlikePerformance(
       @AuthenticationPrincipal CustomUserDetails customUserDetails,
       @PathVariable String performanceId) {

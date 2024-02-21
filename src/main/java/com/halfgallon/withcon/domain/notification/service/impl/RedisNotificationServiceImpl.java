@@ -2,7 +2,6 @@ package com.halfgallon.withcon.domain.notification.service.impl;
 
 import com.halfgallon.withcon.domain.notification.constant.RedisCacheType;
 import com.halfgallon.withcon.domain.notification.dto.NotificationResponse;
-import com.halfgallon.withcon.domain.notification.dto.VisibleDataDto;
 import com.halfgallon.withcon.domain.notification.dto.VisibleRequest;
 import com.halfgallon.withcon.domain.notification.service.RedisCacheService;
 import com.halfgallon.withcon.domain.notification.service.RedisNotificationService;
@@ -54,16 +53,16 @@ public class RedisNotificationServiceImpl implements RedisNotificationService {
     Map<Object, Object> visibleCaches = redisCacheService.getHashByKey(hashKey);
     log.info("Service : 특정 채팅방에 대한 Visible Map 조회 성공" + visibleCaches);
 
-    VisibleDataDto visibleDataDto = new VisibleDataDto(request);
-
-    if (!visibleCaches.isEmpty()) { // 특정 채팅방의 Map이 이미 존재한다면
-      redisCacheService.updateToHash(hashKey, String.valueOf(memberId), visibleDataDto);
-      log.info("Redis Visible 기존 데이터 변경" + memberId);
+    if (visibleCaches != null) { // 특정 채팅방의 Map이 이미 존재한다면
+      redisCacheService.updateToHash(hashKey, String.valueOf(memberId), request.getVisibleType());
+      log.info("Redis Visible 기존 Map 변경 " + memberId +
+          " : " + request.getVisibleType());
     } else {
       Map<Object, Object> newObject = new HashMap<>();
-      newObject.put(String.valueOf(memberId), visibleDataDto);
+      newObject.put(String.valueOf(memberId), request.getVisibleType());
       redisCacheService.saveToHash(hashKey, newObject, 24);
-      log.info("Redis Visible 새로운 멤버 추가 " + memberId);
+      log.info("Redis Visible 새로운 Map 추가 " + memberId +
+          " : " + request.getVisibleType());
     }
   }
 }

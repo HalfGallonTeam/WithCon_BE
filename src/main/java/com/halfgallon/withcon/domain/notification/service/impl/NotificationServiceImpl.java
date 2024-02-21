@@ -8,28 +8,24 @@ import com.halfgallon.withcon.domain.member.repository.MemberRepository;
 import com.halfgallon.withcon.domain.notification.constant.Channel;
 import com.halfgallon.withcon.domain.notification.constant.NotificationMessage;
 import com.halfgallon.withcon.domain.notification.constant.NotificationType;
-import com.halfgallon.withcon.domain.notification.constant.RedisCacheType;
 import com.halfgallon.withcon.domain.notification.dto.ChatRoomNotificationRequest;
 import com.halfgallon.withcon.domain.notification.dto.NotificationResponse;
 import com.halfgallon.withcon.domain.notification.entity.Notification;
 import com.halfgallon.withcon.domain.notification.repository.NotificationRepository;
 import com.halfgallon.withcon.domain.notification.repository.SseEmitterRepository;
 import com.halfgallon.withcon.domain.notification.service.NotificationService;
-import com.halfgallon.withcon.domain.notification.service.RedisCacheService;
 import com.halfgallon.withcon.domain.notification.service.RedisNotificationService;
 import com.halfgallon.withcon.domain.notification.service.SseEmitterService;
 import com.halfgallon.withcon.global.exception.CustomException;
 import com.halfgallon.withcon.global.exception.ErrorCode;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @Slf4j
@@ -46,10 +42,9 @@ public class NotificationServiceImpl implements NotificationService {
 
   private final SseEmitterService sseEmitterService;
   private final RedisNotificationService redisNotificationService;
-  private final RedisCacheService redisCacheService;
 
   @Override
-  public SseEmitter subscribe(Long memberId, String lastEventId) {
+  public SseEmitter subscribe(Long memberId) {
     String emitterId = createEmitterId(memberId);
     SseEmitter sseEmitter = sseEmitterRepository.save(emitterId, new SseEmitter(TIME_OUT));
 
@@ -75,10 +70,6 @@ public class NotificationServiceImpl implements NotificationService {
       redisNotificationService.unsubscribe(String.valueOf(memberId));
     });
 
-    if (StringUtils.hasText(lastEventId)) { // true -> 있으면 유실 데이터 존재
-      sendLostNotification(sseEmitter, lastEventId);
-    }
-
     return sseEmitter;
   }
 
@@ -86,35 +77,11 @@ public class NotificationServiceImpl implements NotificationService {
     return memberId + "_" + System.currentTimeMillis();
   }
 
-  /**
-   * 예시 마지막으로 받은 emitterId 값인 last-event-id = 3_3556 인 경우 redis 저장소에서 뒷 자리가 3556보다 큰 emitterId key를
-   * 가진 value는 redis에 저장만 되고 전송은 실패했다. 따라서 last-event-id 보다 큰 key에 해당하는 value를 보내준다.
-   */
-  private void sendLostNotification(SseEmitter sseEmitter, String lastEventId) {
-    String[] parts = lastEventId.split("_");
-    String hashKey = RedisCacheType.NOTIFICATION_CACHE.getDescription() + parts[0];
-
-    Map<Object, Object> cache = redisCacheService.getHashByKey(hashKey);
-    log.info("Service : 캐시 리스트 조회: " + cache);
-
-    if(cache == null || cache.isEmpty()) {
-      log.info("Service : 캐시 데이터가 없음.");
-      return;
-    }
-
-    cache.entrySet().stream()
-        .filter(entry -> lastEventId.compareTo((String)entry.getKey()) < 0)
-        .forEach(entry -> sseEmitterService.send(
-            sseEmitter, (String)entry.getKey(), entry.getValue())
-        );
-
-    redisCacheService.deleteToHash(hashKey);
-  }
-
   @Override
   @Transactional(readOnly = true)
   public List<NotificationResponse> findNotification(Long memberId) {
-    List<Notification> notifications = notificationRepository.findAllByMember_Id(memberId);
+    List<Notification> notifications =
+        notificationRepository.findNotificationsByMember_IdAndReadStatus(memberId, false);
     log.info("Service : 알림 조회 완료");
 
     return notifications.stream().map(NotificationResponse::new)
