@@ -14,7 +14,6 @@ import com.halfgallon.withcon.domain.notification.entity.Notification;
 import com.halfgallon.withcon.domain.notification.repository.NotificationRepository;
 import com.halfgallon.withcon.domain.notification.repository.SseEmitterRepository;
 import com.halfgallon.withcon.domain.notification.service.NotificationService;
-import com.halfgallon.withcon.domain.notification.service.RedisCacheService;
 import com.halfgallon.withcon.domain.notification.service.RedisNotificationService;
 import com.halfgallon.withcon.domain.notification.service.SseEmitterService;
 import com.halfgallon.withcon.global.exception.CustomException;
@@ -43,7 +42,6 @@ public class NotificationServiceImpl implements NotificationService {
 
   private final SseEmitterService sseEmitterService;
   private final RedisNotificationService redisNotificationService;
-  private final RedisCacheService redisCacheService;
 
   @Override
   public SseEmitter subscribe(Long memberId) {

@@ -2,7 +2,6 @@ package com.halfgallon.withcon.domain.notification.service.impl;
 
 import com.halfgallon.withcon.domain.notification.dto.NotificationResponse;
 import com.halfgallon.withcon.domain.notification.repository.SseEmitterRepository;
-import com.halfgallon.withcon.domain.notification.service.RedisCacheService;
 import com.halfgallon.withcon.domain.notification.service.SseEmitterService;
 import java.io.IOException;
 import java.util.Map;
@@ -17,7 +16,6 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 @RequiredArgsConstructor
 public class SseEmitterServiceImpl implements SseEmitterService {
 
-  private final RedisCacheService redisCacheService;
   private final SseEmitterRepository sseEmitterRepository;
 
   @Override
