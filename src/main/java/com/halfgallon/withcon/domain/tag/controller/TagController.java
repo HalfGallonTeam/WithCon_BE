@@ -38,8 +38,10 @@ public class TagController {
    * 태그 검색(ElasticSearch)
    */
   @GetMapping("/search")
-  public ResponseEntity<?> findTagKeyword(@RequestParam("keyword") String keyword) {
-    return ResponseEntity.ok(tagService.findTagKeyword(keyword));
+  public ResponseEntity<?> findTagKeyword(
+      @RequestParam("performance") String performanceId,
+      @RequestParam("keyword") String keyword) {
+    return ResponseEntity.ok(tagService.findTagKeyword(performanceId, keyword));
   }
 
 }
