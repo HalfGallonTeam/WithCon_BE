@@ -28,6 +28,7 @@ services:
       - .env
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      TZ: Asia/Seoul
     volumes:
       - /home/ec2-user/mysql_data:/var/lib/mysql
     ports:
@@ -45,6 +46,8 @@ services:
       - /home/ec2-user/config/nginx.conf:/etc/nginx/nginx.conf
       - /home/ec2-user/ssl_data:/etc/nginx/ssl_data
     restart: always
+    environment:
+      TZ: Asia/Seoul
     networks:
       - withcon
 
@@ -56,6 +59,8 @@ services:
     volumes:
       - /home/ec2-user/redis_data:/data
     restart: always
+    environment:
+      TZ: Asia/Seoul
     networks:
       - withcon
 
@@ -72,6 +77,7 @@ services:
       RABBITMQ_ERLANG_COOKIE: "RabbitMQ-My-Cookies"
       RABBITMQ_DEFAULT_USER: "guest"
       RABBITMQ_DEFAULT_PASS: "guest"
+      TZ: Asia/Seoul
     volumes:
       - /home/ec2-user/rabbitmq_data:/var/lib/rabbitmq/mnesia
     networks:
@@ -90,6 +96,7 @@ services:
       - node.name=es01
       - discovery.type=single-node
       - xpack.security.enabled=false
+      - TZ=Asia/Seoul
     ulimits:            #컨테이너 리소스 제한
       memlock:          #메모리 잠금 제한
         soft: -1
@@ -113,6 +120,7 @@ services:
     image: docker.elastic.co/kibana/kibana:8.6.2
     environment:
       ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+      TZ: Asia/Seoul
     ports:
       - "5601:5601"
     depends_on:
