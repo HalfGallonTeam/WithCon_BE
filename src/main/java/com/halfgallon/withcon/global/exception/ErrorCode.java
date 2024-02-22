@@ -43,6 +43,7 @@ public enum ErrorCode {
   NOT_EXIST_LIKE(NOT_FOUND.value(), "찜이 존재하지 않습니다."),
   NOT_EXIST_NOTIFICATION(NOT_FOUND.value(), "알림이 존재하지 않습니다."),
   GENRE_NOT_FOUND(NOT_FOUND.value(), "존재하지 않는 장르입니다."),
+  PERFORMANCE_DETAIL_NOT_FOUND(NOT_FOUND.value(), "존재하지 않는 공연 세부 정보입니다."),
 
   /**
    * 409 conflict
