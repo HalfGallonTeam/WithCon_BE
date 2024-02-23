@@ -8,10 +8,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.halfgallon.withcon.domain.auth.security.service.CustomUserDetails;
+import com.halfgallon.withcon.domain.member.dto.request.CurrentPasswordCheckRequest;
 import com.halfgallon.withcon.domain.member.dto.request.UpdateMemberRequest;
 import com.halfgallon.withcon.domain.member.service.MemberService;
 import com.halfgallon.withcon.global.annotation.WithCustomMockUser;
@@ -67,12 +69,12 @@ class MemberControllerTest {
   }
 
   @Test
-  @DisplayName("내 정보 수정")
+  @DisplayName("내 정보 수정 - 새 비밀번호가 null 일 때")
   @WithCustomMockUser
-  void updateMember() throws Exception {
+  void updateMember_when_newPassword_is_null() throws Exception {
     // given
     UpdateMemberRequest request =
-        new UpdateMemberRequest("위드콘", "010-1234-5678");
+        new UpdateMemberRequest("위드콘", "010-1234-5678", null);
 
     CustomUserDetails principal = (CustomUserDetails) SecurityContextHolder.getContext()
         .getAuthentication().getPrincipal();
@@ -87,6 +89,52 @@ class MemberControllerTest {
 
     // then
     verify(memberService).updateMember(memberId, request);
+  }
+
+  @Test
+  @DisplayName("내 정보 수정 - 새 비밀번호가 null이 아닐 때")
+  @WithCustomMockUser
+  void updateMember_when_newPassword_is_not_null() throws Exception {
+    // given
+    UpdateMemberRequest request =
+        new UpdateMemberRequest("위드콘", "010-1234-5678", "newPassword1!");
+
+    CustomUserDetails principal = (CustomUserDetails) SecurityContextHolder.getContext()
+        .getAuthentication().getPrincipal();
+
+    Long memberId = principal.getId();
+
+    // when
+    mockMvc.perform(patch("/member")
+            .contentType(APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isOk());
+
+    // then
+    verify(memberService).updateMember(memberId, request);
+  }
+
+  @Test
+  @DisplayName("현재 비밀번호 확인")
+  @WithCustomMockUser
+  void currentPasswordCheck() throws Exception {
+    // given
+    CurrentPasswordCheckRequest request =
+        new CurrentPasswordCheckRequest("1q2w3e4r!");
+
+    CustomUserDetails principal = (CustomUserDetails) SecurityContextHolder.getContext()
+        .getAuthentication().getPrincipal();
+
+    Long memberId = principal.getId();
+
+    // when
+    mockMvc.perform(post("/member/current-password-check")
+            .contentType(APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isOk());
+
+    // then
+    verify(memberService).currentPasswordCheck(memberId, request.password());
   }
 
   @Test
