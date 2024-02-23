@@ -64,6 +64,7 @@ class MemberServiceImplTest {
     MemberMyInfoResponse response = memberService.getMyInformation(memberId);
 
     // then
+    assertThat(response.memberId()).isEqualTo(1L);
     assertThat(response.username()).isEqualTo("username");
     assertThat(response.nickname()).isEqualTo("위드콘");
     assertThat(response.phoneNumber()).isEqualTo("010-1234-5678");
