@@ -35,7 +35,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
   @Override
   public ChatMessageDto enterMessage(ChatMessageDto request, Long roomId) {
-    ChatParticipant chatParticipant = participantRepository.findById(request.getMemberId())
+    ChatParticipant chatParticipant = participantRepository.findByMember_Id(request.getMemberId())
         .orElseThrow(() -> new CustomException(PARTICIPANT_NOT_FOUND));
 
     String message = chatParticipant.getMember().getNickname() + "님이 입장하였습니다.";
@@ -51,7 +51,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
   @Override
   public ChatMessageDto exitMessage(ChatMessageDto request, Long roomId) {
-    ChatParticipant chatParticipant = participantRepository.findById(request.getMemberId())
+    ChatParticipant chatParticipant = participantRepository.findByMember_Id(request.getMemberId())
         .orElseThrow(() -> new CustomException(PARTICIPANT_NOT_FOUND));
 
     String message = chatParticipant.getMember().getNickname() + "님이 퇴장하였습니다.";
@@ -67,7 +67,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
   @Override
   public ChatMessageDto kickMessage(ChatMessageDto request, Long roomId) {
-    ChatParticipant chatParticipant = participantRepository.findById(request.getMemberId())
+    ChatParticipant chatParticipant = participantRepository.findByMember_Id(request.getMemberId())
         .orElseThrow(() -> new CustomException(PARTICIPANT_NOT_FOUND));
 
     String message = chatParticipant.getMember().getNickname() + "님이 강퇴당했습니다.";

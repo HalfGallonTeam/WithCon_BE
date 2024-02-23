@@ -4,9 +4,9 @@ Content-Type: application/json
 Authorization: {{accessToken}}
 
 {
-  "roomName": "채팅방7",
-  "performanceId": 7,
-  "tags": ["#123", "#서울", "위드"]
+  "roomName": "채팅방3223345",
+  "performanceId": 1,
+  "tags": ["수지", "서서갈비", "콘서트"]
 }
 
 ### 채팅방 조회
@@ -48,3 +48,11 @@ Authorization: {{accessToken}}
 DELETE http://localhost:8080/chatRoom/{{chatRoomId}}/kick/{{memberId}}
 Content-Type: application/json
 Authorization: {{accessToken}}
+
+### 채팅방 태그로 검색
+< {%
+  request.variables.set("performanceId", "1")
+  request.variables.set("tag", "위드")
+%}
+GET http://localhost:8080/chatRoom/performance/{{performanceId}}/tag/{{tag}}
+Content-Type: application/json
