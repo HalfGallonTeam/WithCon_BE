@@ -18,7 +18,7 @@ Content-Type: application/json
 
 ### 채팅방 입장
 < {%
-  request.variables.set("chatRoomId", "5")
+  request.variables.set("chatRoomId", "1")
 %}
 GET http://localhost:8080/chatRoom/{{chatRoomId}}/enter
 Content-Type: application/json
@@ -36,8 +36,18 @@ Authorization: {{accessToken}}
 < {%
   request.variables.set("chatRoomId", "1")
 %}
-GET http://localhost:8080/chatRoom/{{chatRoomId}}/message?lastMsgId=12
-Content-Type: application/x-www-form-urlencoded
+GET http://localhost:8080/chatRoom/{{chatRoomId}}/message?lastMsgId=25
+Content-Type: application/json
+#Content-Type: application/x-www-form-urlencoded
+Authorization: {{accessToken}}
+
+### 채팅방 메시지 조회 + limit
+< {%
+  request.variables.set("chatRoomId", "1")
+%}
+GET http://localhost:8080/chatRoom/{{chatRoomId}}/message?lastMsgId=25&limit=5
+Content-Type: application/json
+#Content-Type: application/x-www-form-urlencoded
 Authorization: {{accessToken}}
 
 ### 채팅방 강퇴

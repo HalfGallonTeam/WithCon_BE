@@ -300,7 +300,7 @@ class ChatRoomServiceImplTest {
   @DisplayName("채팅 메시지 조회")
   void findAllMessageChatRoom_firstPage() {
     //given
-    ChatMessageRequest request = new ChatMessageRequest(null);
+    ChatMessageRequest request = new ChatMessageRequest(null, null);
 
     ChatRoom chatRoom = ChatRoom.builder()
         .id(1L)
