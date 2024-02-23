@@ -25,8 +25,8 @@ public class TagServiceImpl implements TagService {
 
   @Override
   @Transactional(readOnly = true)
-  public List<TagCountDto> findTagNameOrderByCount(String tagName) {
-    return tagRepository.findTagNameOrderByCount(tagName);
+  public List<TagCountDto> findTagNameOrderByCount(String tagName, String performanceId) {
+    return tagRepository.findTagNameOrderByCount(tagName, performanceId);
   }
 
   @Override

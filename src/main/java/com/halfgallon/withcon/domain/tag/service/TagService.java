@@ -8,7 +8,7 @@ public interface TagService {
 
   List<TagCountDto> findTagOrderByCount();
 
-  List<TagCountDto> findTagNameOrderByCount(String tagName);
+  List<TagCountDto> findTagNameOrderByCount(String tagName, String performanceId);
 
   List<TagSearchDto> findTagKeyword(String performanceId, String keyword);
 }

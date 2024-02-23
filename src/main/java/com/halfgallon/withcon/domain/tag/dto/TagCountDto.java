@@ -6,4 +6,5 @@ import lombok.Getter;
 public class TagCountDto {
   private String name;
   private Long count;
+  private String performance;
 }

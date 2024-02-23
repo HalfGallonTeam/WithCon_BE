@@ -17,10 +17,10 @@ public class CustomTagRepositoryImpl implements CustomTagRepository {
   @Override
   public List<TagCountDto> findTagOrderByCount() {
     return jpaQueryFactory.select(
-        Projections.fields(TagCountDto.class,
-            tag.name,
-            tag.count().as("count")
-        ))
+            Projections.fields(TagCountDto.class,
+                tag.name,
+                tag.count().as("count"),
+                tag.performance.name.as("performance")))
         .from(tag)
         .orderBy(tag.count().desc())
         .groupBy(tag.name)
@@ -29,13 +29,14 @@ public class CustomTagRepositoryImpl implements CustomTagRepository {
   }
 
   @Override
-  public List<TagCountDto> findTagNameOrderByCount(String name) {
+  public List<TagCountDto> findTagNameOrderByCount(String name, String performanceId) {
     return jpaQueryFactory.select(
             Projections.fields(TagCountDto.class,
                 tag.name,
-                tag.count().as("count")))
+                tag.count().as("count"),
+                tag.performance.name.as("performance")))
         .from(tag)
-        .where(tag.name.contains(name))
+        .where(tag.name.startsWithIgnoreCase(name), tag.performance.id.eq(performanceId))
         .groupBy(tag.name)
         .orderBy(tag.count().desc())
         .limit(10)
