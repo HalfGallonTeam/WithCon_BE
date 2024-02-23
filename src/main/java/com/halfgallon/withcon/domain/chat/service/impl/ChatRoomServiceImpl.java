@@ -33,6 +33,7 @@ import com.halfgallon.withcon.domain.tag.repository.TagSearchRepository;
 import com.halfgallon.withcon.global.exception.CustomException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -40,6 +41,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatRoomServiceImpl implements ChatRoomService {
@@ -66,6 +68,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         .orElseThrow(() -> new CustomException(PERFORMANCE_NOT_FOUND));
 
     chatRoom.updatePerformance(performance);
+    log.info("공연 정보 설정 완료");
 
     //채팅방 참여 인원 저장
     chatRoom.addChatParticipant(participantRepository.save(
@@ -73,6 +76,8 @@ public class ChatRoomServiceImpl implements ChatRoomService {
             .chatRoom(chatRoom)
             .member(member)
             .build()));
+
+    log.info("채팅방 참여자 정보 설정 완료");
 
     //태그가 있는 경우에만 - 해당 태그 저장
     if (!CollectionUtils.isEmpty(request.tags())) {
@@ -94,6 +99,8 @@ public class ChatRoomServiceImpl implements ChatRoomService {
       //태그 기록(ElasticSearch 저장)
       upsertTagSearch(tagList);
     }
+
+    log.info("채팅방 태그 정보 설정 완료");
 
     return ChatRoomResponse.fromEntity(chatRoom);
   }
@@ -200,6 +207,13 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         request.lastMsgId(), chatRoomId, Pageable.ofSize(CHAT_MESSAGE_PAGE_SIZE));
 
     return message.map(ChatMessageDto::fromEntity);
+  }
+
+  @Override
+  public Page<ChatRoomResponse> findAllTagNameChatRoom(String performanceId, String tagName,
+      Pageable pageable) {
+    return chatRoomRepository.findAllTagNameChatRoom(performanceId,
+        tagName, pageable).map(ChatRoomResponse::fromEntity);
   }
 
   @Override
