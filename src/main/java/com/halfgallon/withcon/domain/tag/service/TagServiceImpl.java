@@ -7,10 +7,6 @@ import com.halfgallon.withcon.domain.tag.repository.TagRepository;
 import com.halfgallon.withcon.domain.tag.repository.TagSearchRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,11 +31,9 @@ public class TagServiceImpl implements TagService {
 
   @Override
   @Transactional(readOnly = true)
-  public List<TagSearchDto> findTagKeyword(String keyword) {
-    Pageable pageable = PageRequest.of(0, 10, Sort.by(Direction.DESC, "id"));
-
-    List<TagSearch> tagSearches = tagSearchRepository.findAllByNameStartingWithIgnoreCase(keyword, pageable);
-    return tagSearches.stream().map(TagSearchDto::fromEntity).toList();
+  public List<TagSearchDto> findTagKeyword(String performanceId, String keyword) {
+    List<TagSearch> searches = tagSearchRepository.findTagAutoComplete(performanceId, keyword);
+    return searches.stream().map(TagSearchDto::fromEntity).toList();
   }
 
 }

@@ -24,6 +24,7 @@ import com.halfgallon.withcon.domain.chat.repository.ChatRoomRepository;
 import com.halfgallon.withcon.domain.chat.service.ChatRoomService;
 import com.halfgallon.withcon.domain.member.entity.Member;
 import com.halfgallon.withcon.domain.member.repository.MemberRepository;
+import com.halfgallon.withcon.domain.performance.entitiy.Performance;
 import com.halfgallon.withcon.domain.performance.repository.PerformanceRepository;
 import com.halfgallon.withcon.domain.tag.entity.Tag;
 import com.halfgallon.withcon.domain.tag.entity.TagSearch;
@@ -61,8 +62,10 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     ChatRoom chatRoom = chatRoomRepository.save(request.toEntity(member.getUsername()));
 
     //채팅방 생성 시에 공연 정보 추가
-    chatRoom.updatePerformance(performanceRepository.findById(String.valueOf(request.performanceId()))
-        .orElseThrow(() -> new CustomException(PERFORMANCE_NOT_FOUND)));
+    Performance performance = performanceRepository.findById(String.valueOf(request.performanceId()))
+        .orElseThrow(() -> new CustomException(PERFORMANCE_NOT_FOUND));
+
+    chatRoom.updatePerformance(performance);
 
     //채팅방 참여 인원 저장
     chatRoom.addChatParticipant(participantRepository.save(
@@ -78,6 +81,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
           .map(t -> Tag.builder()
               .name(t)
               .chatRoom(chatRoom)
+              .performance(performance)
               .build())
           .toList();
 
@@ -97,21 +101,25 @@ public class ChatRoomServiceImpl implements ChatRoomService {
   private void upsertTagSearch(List<Tag> tagList) {
     List<TagSearch> searches = tagList.stream()
         .map(tag -> {
-          TagSearch tagSearch = tagSearchRepository.findByName(tag.getName()).orElse(null);
+          TagSearch tagSearch = tagSearchRepository.findByNameAndPerformanceId(tag.getName(),
+              tag.getPerformance().getId()).orElse(null);
 
           if (tagSearch == null) {
             return TagSearch.builder()
                 .id(tag.getId().toString())
                 .name(tag.getName())
+                .performanceId(tag.getPerformance().getId())
                 .tagCount(1)
                 .build();
           } else {
-            Integer count = tagRepository.countTagByName(tag.getName());
-            tagSearchRepository.updateTagCount(tagSearch.getId(), tag.getName(), count);
+            Integer count = tagRepository.countTagByNameAndPerformance_Id(tag.getName(),
+                tag.getPerformance().getId());
+            tagSearchRepository.updateSearchTag(tagSearch, count);
 
             return TagSearch.builder()
-                .id(tag.getId().toString())
-                .name(tag.getName())
+                .id(tagSearch.getId())
+                .name(tagSearch.getName())
+                .performanceId(tagSearch.getPerformanceId())
                 .tagCount(count)
                 .build();
           }

@@ -9,3 +9,10 @@ Content-Type: application/json
 %}
 GET http://localhost:8080/tag/{{tags}}/search
 Content-Type: application/json
+
+### 태그 자동완성
+< {%
+  request.variables.set("keyword", "수")
+%}
+GET http://localhost:8080/tag/search?performance=1&keyword={{keyword}}
+Content-Type: application/json

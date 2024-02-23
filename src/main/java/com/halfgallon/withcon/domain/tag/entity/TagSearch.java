@@ -27,10 +27,6 @@ public class TagSearch {
   @Field(type = FieldType.Integer, name = "tag_count")
   private Integer tagCount;
 
-  public static TagSearch fromEntity(Tag tag) {
-    return TagSearch.builder()
-        .id(tag.getId().toString())
-        .name(tag.getName())
-        .build();
-  }
+  @Field(type = FieldType.Text, name = "performance_id")
+  private String performanceId;
 }

@@ -6,6 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TagRepository extends JpaRepository<Tag, Long>, CustomTagRepository {
-
-  Integer countTagByName(String name);
+  Integer countTagByNameAndPerformance_Id(String name, String performanceId);
 }
