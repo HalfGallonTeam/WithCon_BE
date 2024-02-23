@@ -6,7 +6,6 @@ import static com.halfgallon.withcon.global.exception.ErrorCode.DUPLICATE_CHATRO
 import static com.halfgallon.withcon.global.exception.ErrorCode.MEMBER_NOT_FOUND;
 import static com.halfgallon.withcon.global.exception.ErrorCode.PARTICIPANT_NOT_FOUND;
 import static com.halfgallon.withcon.global.exception.ErrorCode.PERFORMANCE_NOT_FOUND;
-import static com.halfgallon.withcon.global.exception.ErrorCode.USER_JUST_ONE_CREATE_CHATROOM;
 
 import com.halfgallon.withcon.domain.auth.security.service.CustomUserDetails;
 import com.halfgallon.withcon.domain.chat.dto.ChatMessageDto;
@@ -59,7 +58,9 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     Member member = memberRepository.findById(customUserDetails.getId())
         .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
 
-    validationCreateChatroom(request, member.getUsername());
+    if (chatRoomRepository.existsByName(request.roomName())) {
+      throw new CustomException(DUPLICATE_CHATROOM);
+    }
 
     ChatRoom chatRoom = chatRoomRepository.save(request.toEntity(member.getUsername()));
 
@@ -231,20 +232,6 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     }
 
     return ChatRoomResponse.fromEntity(chatParticipant.getChatRoom());
-  }
-
-  /**
-   * 채팅방 생성 유효성 검사
-   */
-  private void validationCreateChatroom(ChatRoomRequest request, String username) {
-    //채팅방 이름 검사
-    if (chatRoomRepository.existsByName(request.roomName())) {
-      throw new CustomException(DUPLICATE_CHATROOM);
-    }
-    //채팅방은 1인당 1개만 생성이 가능하다.
-    if (chatRoomRepository.existsByManagerName(username)) {
-      throw new CustomException(USER_JUST_ONE_CREATE_CHATROOM);
-    }
   }
 
 }

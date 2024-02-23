@@ -165,7 +165,8 @@ class ChatRoomServiceImplTest {
   }
 
   @Test
-  @DisplayName("채팅방 생성 실패 - 1인당 1개만 생성 가능합니다.")
+  @Disabled
+  @DisplayName("채팅방 생성 실패 - 1인당 1개만 생성 가능합니다.(해당 조건 미사용)")
   void createChatRoom_FailByJustOne() {
     //given
     ChatRoomRequest request = new ChatRoomRequest("1번 채팅방", 1L,
