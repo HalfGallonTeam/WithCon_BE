@@ -20,7 +20,7 @@ public class TagController {
    * 태그 정보 조회(태그 갯수 많은 순으로 정렬)
    * @return : tagName(태그 이름), count(태그 생성 갯수)
    */
-  @GetMapping("/search/count")
+  @GetMapping("/search")
   public ResponseEntity<?> findTagOrderByCount() {
     return ResponseEntity.ok(tagService.findTagOrderByCount());
   }
@@ -37,7 +37,7 @@ public class TagController {
   /**
    * 태그 검색(ElasticSearch)
    */
-  @GetMapping("/search")
+  @GetMapping("/search/autocomplete")
   public ResponseEntity<?> findTagKeyword(
       @RequestParam("performance") String performanceId,
       @RequestParam("keyword") String keyword) {
