@@ -60,6 +60,10 @@ public class Member extends BaseTimeEntity {
     this.phoneNumber = request.phoneNumber();
   }
 
+  public void updatePassword(String encodedNewPassword) {
+    this.password = encodedNewPassword;
+  }
+
   public void updateProfileImage(String profileImageUrl) {
     this.profileImage = profileImageUrl;
   }

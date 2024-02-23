@@ -1,6 +1,7 @@
 package com.halfgallon.withcon.domain.member.controller;
 
 import com.halfgallon.withcon.domain.auth.security.service.CustomUserDetails;
+import com.halfgallon.withcon.domain.member.dto.request.CurrentPasswordCheckRequest;
 import com.halfgallon.withcon.domain.member.dto.request.UpdateMemberRequest;
 import com.halfgallon.withcon.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,14 @@ public class MemberController {
       @AuthenticationPrincipal CustomUserDetails userDetails,
       @RequestBody UpdateMemberRequest updateMemberRequest) {
     memberService.updateMember(userDetails.getId(), updateMemberRequest);
+    return ResponseEntity.ok().build();
+  }
+
+  @PostMapping("/current-password-check")
+  public ResponseEntity<Void> currentPasswordCheck(
+      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @RequestBody CurrentPasswordCheckRequest request) {
+    memberService.currentPasswordCheck(userDetails.getId(), request.password());
     return ResponseEntity.ok().build();
   }
 
