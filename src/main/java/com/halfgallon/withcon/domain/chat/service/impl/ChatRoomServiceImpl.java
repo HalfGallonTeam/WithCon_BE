@@ -205,7 +205,8 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         .orElseThrow(() -> new CustomException(PARTICIPANT_NOT_FOUND));
 
     Slice<ChatMessage> message = chatMessageRepository.findChatRoomMessage(
-        request.lastMsgId(), chatRoomId, Pageable.ofSize(CHAT_MESSAGE_PAGE_SIZE));
+        request.lastMsgId(), chatRoomId,
+        Pageable.ofSize(request.limit() != 0 ? request.limit() : CHAT_MESSAGE_PAGE_SIZE));
 
     return message.map(ChatMessageDto::fromEntity);
   }
