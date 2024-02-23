@@ -3,6 +3,7 @@ package com.halfgallon.withcon.domain.tag.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.halfgallon.withcon.domain.performance.entitiy.Performance;
 import com.halfgallon.withcon.domain.tag.dto.TagCountDto;
 import com.halfgallon.withcon.domain.tag.entity.Tag;
 import com.halfgallon.withcon.global.config.ElasticSearchConfig;
@@ -62,30 +63,38 @@ class TagRepositoryTest {
   @Test
   @DisplayName("태그 이름 검색 - 태그 갯수가 많은 순으로 정렬")
   void findTagNameOrderByCount() {
+
+    Performance performance = Performance.builder()
+        .id("1").name("공연1").build();
+
     //given
     for (int i = 0; i < 2; i++) {
       tagRepository.save(Tag.builder()
           .name("위드콘")
+          .performance(performance)
           .build());
     }
 
     tagRepository.save(Tag.builder()
         .name("위드")
+        .performance(performance)
         .build());
 
     tagRepository.save(Tag.builder()
         .name("콘서트")
+        .performance(performance)
         .build());
 
     tagRepository.save(Tag.builder()
         .name("월드콘")
+        .performance(performance)
         .build());
 
     //when
-    List<TagCountDto> response = tagRepository.findTagNameOrderByCount("콘");
+    List<TagCountDto> response = tagRepository.findTagNameOrderByCount("콘", "1");
 
     //then
     assertThat(response.size()).isNotZero();
-    assertThat(response.get(0).getName()).isEqualTo("위드콘");
+    assertThat(response.get(0).getName()).isEqualTo("콘서트");
   }
 }
