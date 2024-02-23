@@ -26,12 +26,14 @@ public class TagController {
   }
 
   /**
-   * 태그 이름 검색 시에 태그 갯수가 많은 순으로 정렬
-   * @return : tagName(태그 이름), count(태그 생성 갯수)
+   * 공연에 따른 태그 이름 검색
+   * @return : tagName(태그 이름), count(태그 생성 갯수), performanceId(공연 ID)
    */
-  @GetMapping("/{tagName}/search")
-  public ResponseEntity<?> findTagNameOrderByCount(@PathVariable("tagName") String tagName) {
-    return ResponseEntity.ok(tagService.findTagNameOrderByCount(tagName));
+  @GetMapping("/{tagName}/search/performance/{performanceId}")
+  public ResponseEntity<?> findTagNameOrderByCount(
+      @PathVariable("tagName") String tagName,
+      @PathVariable("performanceId") String performanceId) {
+    return ResponseEntity.ok(tagService.findTagNameOrderByCount(tagName, performanceId));
   }
 
   /**

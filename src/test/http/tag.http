@@ -1,18 +1,18 @@
-### 태그 정보 조회(태그 갯수가 많은 순으로 정렬)
+### 태그 정보 조회(default)
 GET http://localhost:8080/tag/search
 Content-Type: application/json
 
-
-### 태그 이름 검색(태그 갯수가 많은 순으로 정렬)
+### 태그 이름 검색(+ 공연 ID)
 < {%
-  request.variables.set("tags", "위드")
+  request.variables.set("tagName", "위")
+  request.variables.set("performanceId", "1")
 %}
-GET http://localhost:8080/tag/{{tags}}/search
+GET http://localhost:8080/tag/{{tagName}}/search/performance/{{performanceId}}
 Content-Type: application/json
 
-### 태그 자동완성
+### 태그 자동완성(ElasticSearch)
 < {%
   request.variables.set("keyword", "수")
 %}
-GET http://localhost:8080/tag/search?performance=1&keyword={{keyword}}
+GET http://localhost:8080/tag/search/autocomplete?performance=1&keyword={{keyword}}
 Content-Type: application/json

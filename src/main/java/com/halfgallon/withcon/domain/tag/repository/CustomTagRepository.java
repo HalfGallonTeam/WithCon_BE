@@ -7,5 +7,5 @@ public interface CustomTagRepository {
 
   List<TagCountDto> findTagOrderByCount();
 
-  List<TagCountDto> findTagNameOrderByCount(String name);
+  List<TagCountDto> findTagNameOrderByCount(String name, String performanceId);
 }
