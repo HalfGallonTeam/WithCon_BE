@@ -23,6 +23,7 @@ import com.halfgallon.withcon.domain.chat.repository.ChatRoomRepository;
 import com.halfgallon.withcon.domain.chat.service.ChatRoomService;
 import com.halfgallon.withcon.domain.member.entity.Member;
 import com.halfgallon.withcon.domain.member.repository.MemberRepository;
+import com.halfgallon.withcon.domain.performance.dto.response.PerformanceResponse;
 import com.halfgallon.withcon.domain.performance.entitiy.Performance;
 import com.halfgallon.withcon.domain.performance.repository.PerformanceRepository;
 import com.halfgallon.withcon.domain.tag.entity.Tag;
@@ -65,7 +66,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     ChatRoom chatRoom = chatRoomRepository.save(request.toEntity(member.getUsername()));
 
     //채팅방 생성 시에 공연 정보 추가
-    Performance performance = performanceRepository.findById(String.valueOf(request.performanceId()))
+    Performance performance = performanceRepository.findById(request.performanceId())
         .orElseThrow(() -> new CustomException(PERFORMANCE_NOT_FOUND));
 
     chatRoom.updatePerformance(performance);
@@ -174,7 +175,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         .managerName(chatRoom.getManagerName())
         .userCount(chatRoom.getUserCount())
         .chatParticipants(chatParticipants)
-        .performanceName(chatRoom.getPerformance().getName())
+        .performanceName(PerformanceResponse.fromEntity(chatRoom.getPerformance()).getName())
         .build();
   }
 
