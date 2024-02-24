@@ -8,18 +8,22 @@ import com.halfgallon.withcon.domain.member.repository.MemberRepository;
 import com.halfgallon.withcon.domain.notification.constant.Channel;
 import com.halfgallon.withcon.domain.notification.constant.NotificationMessage;
 import com.halfgallon.withcon.domain.notification.constant.NotificationType;
+import com.halfgallon.withcon.domain.notification.constant.RedisCacheType;
+import com.halfgallon.withcon.domain.notification.constant.VisibleType;
 import com.halfgallon.withcon.domain.notification.dto.ChatRoomNotificationRequest;
 import com.halfgallon.withcon.domain.notification.dto.NotificationResponse;
 import com.halfgallon.withcon.domain.notification.entity.Notification;
 import com.halfgallon.withcon.domain.notification.repository.NotificationRepository;
 import com.halfgallon.withcon.domain.notification.repository.SseEmitterRepository;
 import com.halfgallon.withcon.domain.notification.service.NotificationService;
+import com.halfgallon.withcon.domain.notification.service.RedisCacheService;
 import com.halfgallon.withcon.domain.notification.service.RedisNotificationService;
 import com.halfgallon.withcon.domain.notification.service.SseEmitterService;
 import com.halfgallon.withcon.global.exception.CustomException;
 import com.halfgallon.withcon.global.exception.ErrorCode;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +46,7 @@ public class NotificationServiceImpl implements NotificationService {
 
   private final SseEmitterService sseEmitterService;
   private final RedisNotificationService redisNotificationService;
+  private final RedisCacheService redisCacheService;
 
   @Override
   public SseEmitter subscribe(Long memberId) {
@@ -95,23 +100,47 @@ public class NotificationServiceImpl implements NotificationService {
         findAllByChatRoom_Id(request.getChatRoomId());
     log.info("Service : 참여 멤버 조회 성공");
 
+    String message = createMessageOfTarget(request);
+    String url = createChatRoomUrl(request.getChatRoomId());
+    log.info("Service : url 생성");
+
+    String visibleKey = RedisCacheType.VISIBLE_CACHE.getDescription()
+        + request.getChatRoomId();
+    log.info("Service : 채널 KEY: " + visibleKey);
+
+    Map<Object, Object> cache = redisCacheService.getHashByKey(visibleKey);
+    log.info("Service : Visible 캐시 데이터 조회" + cache);
+
+    for (ChatParticipant chatParticipant : chatParticipants) {
+      Member participantMember = chatParticipant.getMember();
+
+      if (Objects.equals(participantMember.getId(), request.getTargetId())) {
+        log.info("Service : Target은 제외");
+        continue;
+      }
+
+      if(!cache.containsKey(String.valueOf(participantMember.getId()))) {
+        log.info("패스");
+        continue;
+      }
+
+      VisibleType visibleType = VisibleType.valueOf(
+          (String)cache.get(String.valueOf(participantMember.getId())));
+
+      if(visibleType == VisibleType.HIDDEN || visibleType == VisibleType.NONE) {
+        notificationSaveAndPublish(request, message, url, participantMember);
+      }
+    }
+  }
+
+  private String createMessageOfTarget(ChatRoomNotificationRequest request) {
     Member member = memberRepository.findById(request.getTargetId())
         .orElse(withdrawMember());
     log.info("Service : Target 맴버 조회 성공");
     String message = createChatRoomMessage(member.getUsername(),
         request.getMessageType()); // 메세지 생성
     log.info("Service : 알림 메세지 생성");
-    String url = createChatRoomUrl(request.getChatRoomId());
-    log.info("Service : url 생성");
-
-    for (ChatParticipant chatParticipant : chatParticipants) {
-      Member participantMember = chatParticipant.getMember();
-      if (Objects.equals(participantMember.getId(), request.getTargetId())) {
-        log.info("Service : Target은 제외");
-        continue;
-      }
-      notificationSaveAndPublish(request, message, url, participantMember);
-    }
+    return message;
   }
 
   private void notificationSaveAndPublish(ChatRoomNotificationRequest request, String message, String url,
