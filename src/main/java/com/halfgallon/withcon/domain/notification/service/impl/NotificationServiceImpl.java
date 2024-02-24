@@ -119,11 +119,14 @@ public class NotificationServiceImpl implements NotificationService {
         continue;
       }
 
-      if(!cache.containsKey(String.valueOf(chatParticipant.getId()))) {
+      if(!cache.containsKey(String.valueOf(participantMember.getId()))) {
+        log.info("패스");
         continue;
       }
 
-      VisibleType visibleType = (VisibleType)cache.get(String.valueOf(chatParticipant.getId()));
+      VisibleType visibleType = VisibleType.valueOf(
+          (String)cache.get(String.valueOf(participantMember.getId())));
+
       if(visibleType == VisibleType.HIDDEN || visibleType == VisibleType.NONE) {
         notificationSaveAndPublish(request, message, url, participantMember);
       }
