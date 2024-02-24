@@ -55,7 +55,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     // 더미 데이터(503 에러 방지)
     sseEmitterService.send(sseEmitter, emitterId,
-        NotificationMessage.SUBSCRIBE.getDescription() + " memberId: " + memberId);
+        NotificationMessage.SUBSCRIBE.getDescription() + memberId + "\"}");
     log.info("SSE 구독 완료");
 
     redisNotificationService.subscribe(String.valueOf(memberId));
