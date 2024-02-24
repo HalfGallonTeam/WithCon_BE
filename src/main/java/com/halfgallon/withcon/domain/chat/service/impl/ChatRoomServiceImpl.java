@@ -65,7 +65,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     ChatRoom chatRoom = chatRoomRepository.save(request.toEntity(member.getUsername()));
 
     //채팅방 생성 시에 공연 정보 추가
-    Performance performance = performanceRepository.findById(String.valueOf(request.performanceId()))
+    Performance performance = performanceRepository.findById(request.performanceId())
         .orElseThrow(() -> new CustomException(PERFORMANCE_NOT_FOUND));
 
     chatRoom.updatePerformance(performance);

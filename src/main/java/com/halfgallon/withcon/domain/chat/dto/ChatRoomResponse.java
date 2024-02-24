@@ -12,7 +12,7 @@ public record ChatRoomResponse(
     Long chatRoomId,
     String roomName,
     String managerName,
-    Long performanceId,
+    String performanceId,
     Integer userCount,
     List<String> tags,
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -24,7 +24,7 @@ public record ChatRoomResponse(
         .chatRoomId(chatRoom.getId())
         .roomName(chatRoom.getName())
         .managerName(chatRoom.getManagerName())
-        .performanceId(Long.valueOf(chatRoom.getPerformance().getId()))
+        .performanceId(chatRoom.getPerformance().getId())
         .userCount(chatRoom.getUserCount())
         .tags(chatRoom.getTags().stream().map(Tag::getName).toList())
         .createdAt(chatRoom.getCreatedAt())
