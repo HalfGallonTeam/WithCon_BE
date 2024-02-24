@@ -23,6 +23,7 @@ import com.halfgallon.withcon.domain.chat.repository.ChatRoomRepository;
 import com.halfgallon.withcon.domain.chat.service.ChatRoomService;
 import com.halfgallon.withcon.domain.member.entity.Member;
 import com.halfgallon.withcon.domain.member.repository.MemberRepository;
+import com.halfgallon.withcon.domain.performance.dto.response.PerformanceResponse;
 import com.halfgallon.withcon.domain.performance.entitiy.Performance;
 import com.halfgallon.withcon.domain.performance.repository.PerformanceRepository;
 import com.halfgallon.withcon.domain.tag.entity.Tag;
@@ -174,7 +175,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         .managerName(chatRoom.getManagerName())
         .userCount(chatRoom.getUserCount())
         .chatParticipants(chatParticipants)
-        .performanceName(chatRoom.getPerformance().getName())
+        .performanceName(PerformanceResponse.fromEntity(chatRoom.getPerformance()).getName())
         .build();
   }
 
