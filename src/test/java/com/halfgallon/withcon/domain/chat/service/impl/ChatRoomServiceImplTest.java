@@ -1,6 +1,6 @@
 package com.halfgallon.withcon.domain.chat.service.impl;
 
-import static com.halfgallon.withcon.global.exception.ErrorCode.DUPLICATE_CHATROOM;
+import static com.halfgallon.withcon.global.exception.ErrorCode.DUPLICATE_CHATROOM_NAME;
 import static com.halfgallon.withcon.global.exception.ErrorCode.USER_JUST_ONE_CREATE_CHATROOM;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -93,7 +93,7 @@ class ChatRoomServiceImplTest {
   @DisplayName("채팅방 생성 성공")
   void createChatRoom_Success() {
     //given
-    ChatRoomRequest request = new ChatRoomRequest("1번채팅방", 1L,
+    ChatRoomRequest request = new ChatRoomRequest("1번채팅방", "1",
         List.of("#1번방", "#2번방"));
 
     ChatRoom chatRoom = ChatRoom.builder()
@@ -104,10 +104,10 @@ class ChatRoomServiceImplTest {
     given(memberRepository.findById(anyLong()))
         .willReturn(Optional.of(member));
 
-    given(chatRoomRepository.existsByName(anyString()))
+    given(chatRoomRepository.existsByNameAndPerformance_Id(anyString(), anyString()))
         .willReturn(false);
 
-    given(chatParticipantRepository.checkRoomManagerName(anyString()))
+    given(chatParticipantRepository.checkRoomManagerId(anyLong()))
         .willReturn(false);
 
     Performance performance = Performance.builder()
@@ -150,10 +150,16 @@ class ChatRoomServiceImplTest {
     given(memberRepository.findById(anyLong()))
         .willReturn(Optional.of(member));
 
-    given(chatRoomRepository.existsByName(anyString()))
+    given(performanceRepository.findById(anyString()))
+        .willReturn(Optional.of(Performance.builder()
+            .id("123456")
+            .name("1번 공연")
+            .build()));
+
+    given(chatRoomRepository.existsByNameAndPerformance_Id(anyString(), anyString()))
         .willReturn(true);
 
-    ChatRoomRequest request = new ChatRoomRequest("1번 채팅방", 1L,
+    ChatRoomRequest request = new ChatRoomRequest("1번 채팅방", "1",
         List.of("#1번방", "#2번방"));
 
     //when
@@ -161,7 +167,7 @@ class ChatRoomServiceImplTest {
         () -> chatRoomService.createChatRoom(customUserDetails, request));
 
     //then
-    assertThat(DUPLICATE_CHATROOM.getStatus()).isEqualTo(customException.getErrorCode().getStatus());
+    assertThat(DUPLICATE_CHATROOM_NAME.getStatus()).isEqualTo(customException.getErrorCode().getStatus());
   }
 
   @Test
@@ -169,13 +175,13 @@ class ChatRoomServiceImplTest {
   @DisplayName("채팅방 생성 실패 - 1인당 1개만 생성 가능합니다.(해당 조건 미사용)")
   void createChatRoom_FailByJustOne() {
     //given
-    ChatRoomRequest request = new ChatRoomRequest("1번 채팅방", 1L,
+    ChatRoomRequest request = new ChatRoomRequest("1번 채팅방", "1",
         List.of("#1번방", "#2번방"));
 
     given(memberRepository.findById(anyLong()))
         .willReturn(Optional.of(member));
 
-    given(chatRoomRepository.existsByManagerName(anyString()))
+    given(chatRoomRepository.existsByNameAndPerformance_Id(anyString(),anyString()))
         .willReturn(true);
 
     //when
@@ -276,7 +282,7 @@ class ChatRoomServiceImplTest {
     ChatRoom chatRoom = ChatRoom.builder()
         .id(1L)
         .name("1번채팅방")
-        .managerName(member.getUsername())
+        .managerId(member.getId())
         .performance(performance)
         .build();
 
@@ -369,7 +375,7 @@ class ChatRoomServiceImplTest {
             .member(user)
             .build()));
 
-    given(chatParticipantRepository.checkRoomManagerName(anyString()))
+    given(chatParticipantRepository.checkRoomManagerId(anyLong()))
         .willReturn(true);
 
     //when
