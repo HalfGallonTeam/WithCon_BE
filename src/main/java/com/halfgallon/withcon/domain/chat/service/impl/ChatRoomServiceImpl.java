@@ -2,7 +2,7 @@ package com.halfgallon.withcon.domain.chat.service.impl;
 
 import static com.halfgallon.withcon.domain.chat.constant.ChattingConstant.CHAT_MESSAGE_PAGE_SIZE;
 import static com.halfgallon.withcon.global.exception.ErrorCode.CHATROOM_NOT_FOUND;
-import static com.halfgallon.withcon.global.exception.ErrorCode.DUPLICATE_CHATROOM;
+import static com.halfgallon.withcon.global.exception.ErrorCode.DUPLICATE_CHATROOM_NAME;
 import static com.halfgallon.withcon.global.exception.ErrorCode.MEMBER_NOT_FOUND;
 import static com.halfgallon.withcon.global.exception.ErrorCode.PARTICIPANT_NOT_FOUND;
 import static com.halfgallon.withcon.global.exception.ErrorCode.PERFORMANCE_NOT_FOUND;
@@ -59,17 +59,18 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     Member member = memberRepository.findById(customUserDetails.getId())
         .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
 
-    if (chatRoomRepository.existsByName(request.roomName())) {
-      throw new CustomException(DUPLICATE_CHATROOM);
-    }
-
-    ChatRoom chatRoom = chatRoomRepository.save(request.toEntity(member.getUsername()));
-
     //채팅방 생성 시에 공연 정보 추가
     Performance performance = performanceRepository.findById(request.performanceId())
         .orElseThrow(() -> new CustomException(PERFORMANCE_NOT_FOUND));
 
-    chatRoom.updatePerformance(performance);
+    //동일한 공연에 동일 채팅방 이름은 사용 불가
+    if (chatRoomRepository.existsByNameAndPerformance_Id(request.roomName(), performance.getId())) {
+      throw new CustomException(DUPLICATE_CHATROOM_NAME);
+    }
+
+    //채팅방 데이터 저장
+    ChatRoom chatRoom = chatRoomRepository.save(getChatRoom(request, member, performance));
+
     log.info("공연 정보 설정 완료");
 
     //채팅방 참여 인원 저장
@@ -107,6 +108,15 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     return ChatRoomResponse.fromEntity(chatRoom);
   }
 
+  private static ChatRoom getChatRoom(ChatRoomRequest request,
+      Member member, Performance performance) {
+    return ChatRoom.builder()
+        .name(request.roomName())
+        .managerId(member.getId())
+        .performance(performance)
+        .build();
+  }
+
   private void upsertTagSearch(List<Tag> tagList) {
     List<TagSearch> searches = tagList.stream()
         .map(tag -> {
@@ -141,7 +151,8 @@ public class ChatRoomServiceImpl implements ChatRoomService {
   @Override
   @Transactional(readOnly = true)
   public Page<ChatRoomResponse> findChatRoom(String performanceId, Pageable pageable) {
-    return chatRoomRepository.findAllByPerformance_Id(performanceId, pageable).map(ChatRoomResponse::fromEntity);
+    return chatRoomRepository.findAllByPerformance_Id(performanceId, pageable)
+        .map(ChatRoomResponse::fromEntity);
   }
 
   @Override
@@ -172,7 +183,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     return ChatRoomEnterResponse.builder()
         .roomName(chatRoom.getName())
         .chatRoomId(chatRoomId)
-        .managerName(chatRoom.getManagerName())
+        .managerId(chatRoom.getManagerId())
         .userCount(chatRoom.getUserCount())
         .chatParticipants(chatParticipants)
         .performanceName(PerformanceResponse.fromEntity(chatRoom.getPerformance()).getName())
@@ -192,7 +203,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     ChatRoomResponse response = ChatRoomResponse.fromEntity(participant.getChatRoom());
 
     //채팅방 인원이 전부 나간 경우 or 채팅방 방장이 방을 없앤 경우
-    if (response.userCount() <= 0 || response.managerName().equals(customUserDetails.getUsername())) {
+    if (response.userCount() <= 0 || response.managerId().equals(customUserDetails.getId())) {
       chatRoomRepository.delete(participant.getChatRoom());
     }
   }
@@ -215,8 +226,8 @@ public class ChatRoomServiceImpl implements ChatRoomService {
   @Override
   public Page<ChatRoomResponse> findAllTagNameChatRoom(String performanceId, String tagName,
       Pageable pageable) {
-    return chatRoomRepository.findAllTagNameChatRoom(performanceId,
-        tagName, pageable).map(ChatRoomResponse::fromEntity);
+    return chatRoomRepository.findAllTagNameChatRoom(performanceId, tagName, pageable)
+        .map(ChatRoomResponse::fromEntity);
   }
 
   @Override
@@ -228,7 +239,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
             memberId, chatRoomId)
         .orElseThrow(() -> new CustomException(PARTICIPANT_NOT_FOUND));
 
-    if (participantRepository.checkRoomManagerName(customUserDetails.getUsername())) {
+    if (participantRepository.checkRoomManagerId(customUserDetails.getId())) {
       participantRepository.delete(chatParticipant);
       chatParticipant.getChatRoom().removeChatParticipant(chatParticipant);
     }
