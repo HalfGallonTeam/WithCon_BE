@@ -49,7 +49,7 @@ public enum ErrorCode {
   /**
    * 409 conflict
    */
-  DUPLICATE_CHATROOM(CONFLICT.value(), "이미 존재하는 채팅방입니다."),
+  DUPLICATE_CHATROOM_NAME(CONFLICT.value(), "이미 사용하는 채팅방 이름입니다."),
   DUPLICATE_USERNAME(CONFLICT.value(), "이미 사용하고 있는 ID 입니다."),
   DUPLICATE_PHONE_NUMBER(CONFLICT.value(), "이미 사용하고 있는 핸드폰 번호입니다."),
   ALREADY_LIKE_EXIST(CONFLICT.value(), "이미 찜한 공연입니다."),
