@@ -17,7 +17,6 @@ public record ChatParticipantDto(
   public static ChatParticipantDto fromEntity(ChatParticipant chatParticipant) {
     return ChatParticipantDto.builder()
         .memberId(chatParticipant.getMember().getId())
-//        .username(chatParticipant.getMember().getUsername())
         .password(chatParticipant.getMember().getPassword())
         .userProfile(chatParticipant.getMember().getProfileImage())
         .loginType(chatParticipant.getMember().getLoginType())
