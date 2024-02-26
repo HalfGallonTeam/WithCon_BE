@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface CustomChatParticipantRepository {
 
-  boolean checkRoomManagerName(String managerName);
+  boolean checkRoomManagerId(Long managerId);
 
   Page<ChatParticipant> findAllMyChattingRoom(Long memberId, Pageable pageable);
 }
