@@ -31,7 +31,7 @@ public class CustomChatMessageRepositoryImpl implements CustomChatMessageReposit
             chatMessage.room.id.eq(roomId)
         )
         .limit(pageable.getPageSize() + 1)  //마지막 페이지 확인을 위해서 +1 조회
-        .orderBy(chatMessage.sendAt.asc())
+        .orderBy(chatMessage.sendAt.desc())
         .fetch();
 
     return new SliceImpl<>(messages, pageable, checkLastPage(messages, pageable));
