@@ -24,12 +24,17 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
   @Override
   public ChatMessageDto chatMessage(ChatMessageDto request, Long roomId) {
+    ChatParticipant chatParticipant = participantRepository.findByMember_Id(request.getMemberId())
+        .orElseThrow(() -> new CustomException(PARTICIPANT_NOT_FOUND));
+
     return ChatMessageDto.builder()
         .memberId(request.getMemberId())
         .roomId(roomId)
         .message(request.getMessage())
         .messageType(MessageType.CHAT)
         .sendAt(System.currentTimeMillis())
+        .nickName(chatParticipant.getMember().getNickname())
+        .userProfile(chatParticipant.getMember().getProfileImage())
         .build();
   }
 
@@ -46,6 +51,8 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         .message(message)
         .messageType(MessageType.ENTER)
         .sendAt(System.currentTimeMillis())
+        .nickName(chatParticipant.getMember().getNickname())
+        .userProfile(chatParticipant.getMember().getProfileImage())
         .build();
   }
 
@@ -62,6 +69,8 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         .message(message)
         .messageType(MessageType.EXIT)
         .sendAt(System.currentTimeMillis())
+        .nickName(chatParticipant.getMember().getNickname())
+        .userProfile(chatParticipant.getMember().getProfileImage())
         .build();
   }
 

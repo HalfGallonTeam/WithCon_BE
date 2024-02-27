@@ -1,7 +1,7 @@
 package com.halfgallon.withcon.domain.chat.controller;
 
 import com.halfgallon.withcon.domain.auth.security.service.CustomUserDetails;
-import com.halfgallon.withcon.domain.chat.dto.ChatMessageRequest;
+import com.halfgallon.withcon.domain.chat.dto.ChatLastMessageRequest;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomEnterResponse;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomRequest;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomResponse;
@@ -67,7 +67,7 @@ public class ChatRoomController {
   @GetMapping("/chatRoom/{chatRoomId}/message")
   public ResponseEntity<?> findAllMessageChatRoom(
       @AuthenticationPrincipal CustomUserDetails customUserDetails,
-      @ModelAttribute ChatMessageRequest chatMessageRequest,
+      @ModelAttribute ChatLastMessageRequest chatMessageRequest,
       @PathVariable("chatRoomId") Long chatRoomId) {
     return ResponseEntity.ok(
         chatRoomService.findAllMessageChatRoom(customUserDetails, chatMessageRequest, chatRoomId));

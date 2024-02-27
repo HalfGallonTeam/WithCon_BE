@@ -22,8 +22,8 @@ public class ChatMessageController {
 
   @MessageMapping("/chat/message/{roomId}")
   public void sendMessage(@Payload ChatMessageDto chatDto, @DestinationVariable("roomId") Long roomId) {
-    ChatMessageDto chatMessageDto = chatMessageService.chatMessage(chatDto, roomId);
-    rabbitTemplate.convertAndSend(CHAT_EXCHANGE_NAME, "room." + roomId, chatMessageDto);
+    rabbitTemplate.convertAndSend(CHAT_EXCHANGE_NAME, "room." + roomId,
+        chatMessageService.chatMessage(chatDto, roomId));
   }
 
   @MessageMapping("/chat/enter/{roomId}")
