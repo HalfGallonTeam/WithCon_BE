@@ -9,7 +9,7 @@ import static com.halfgallon.withcon.global.exception.ErrorCode.PERFORMANCE_NOT_
 
 import com.halfgallon.withcon.domain.auth.security.service.CustomUserDetails;
 import com.halfgallon.withcon.domain.chat.dto.ChatMessageDto;
-import com.halfgallon.withcon.domain.chat.dto.ChatMessageRequest;
+import com.halfgallon.withcon.domain.chat.dto.ChatLastMessageRequest;
 import com.halfgallon.withcon.domain.chat.dto.ChatParticipantDto;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomEnterResponse;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomRequest;
@@ -211,7 +211,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
   @Override
   @Transactional(readOnly = true)
   public Slice<ChatMessageDto> findAllMessageChatRoom(CustomUserDetails customUserDetails,
-      ChatMessageRequest request, Long chatRoomId) {
+      ChatLastMessageRequest request, Long chatRoomId) {
 
     participantRepository.findByMemberIdAndChatRoomId(customUserDetails.getId(), chatRoomId)
         .orElseThrow(() -> new CustomException(PARTICIPANT_NOT_FOUND));

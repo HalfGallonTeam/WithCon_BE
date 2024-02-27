@@ -15,7 +15,7 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 import com.halfgallon.withcon.domain.auth.security.service.CustomUserDetails;
 import com.halfgallon.withcon.domain.chat.constant.MessageType;
 import com.halfgallon.withcon.domain.chat.dto.ChatMessageDto;
-import com.halfgallon.withcon.domain.chat.dto.ChatMessageRequest;
+import com.halfgallon.withcon.domain.chat.dto.ChatLastMessageRequest;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomEnterResponse;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomRequest;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomResponse;
@@ -307,7 +307,7 @@ class ChatRoomServiceImplTest {
   @DisplayName("채팅 메시지 조회")
   void findAllMessageChatRoom_firstPage() {
     //given
-    ChatMessageRequest request = new ChatMessageRequest(null, null);
+    ChatLastMessageRequest request = new ChatLastMessageRequest(null, null);
 
     ChatRoom chatRoom = ChatRoom.builder()
         .id(1L)
