@@ -66,3 +66,12 @@ Authorization: {{accessToken}}
 %}
 GET http://localhost:8080/chatRoom/performance/{{performanceId}}/tag/{{tag}}
 Content-Type: application/json
+
+### 마지막 메시지 확인
+POST http://localhost:8080/chatRoom/lastChat
+Content-Type: application/json
+
+{
+  "memberId": 2,
+  "chatRoomId": 1
+}
