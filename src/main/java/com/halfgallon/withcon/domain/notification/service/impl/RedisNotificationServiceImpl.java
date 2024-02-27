@@ -3,7 +3,7 @@ package com.halfgallon.withcon.domain.notification.service.impl;
 import com.halfgallon.withcon.domain.notification.constant.RedisCacheType;
 import com.halfgallon.withcon.domain.notification.dto.NotificationResponse;
 import com.halfgallon.withcon.domain.notification.dto.VisibleRequest;
-import com.halfgallon.withcon.domain.notification.service.RedisCacheService;
+import com.halfgallon.withcon.domain.notification.service.RedisService;
 import com.halfgallon.withcon.domain.notification.service.RedisNotificationService;
 import com.halfgallon.withcon.domain.notification.service.handler.RedisListener;
 import java.util.HashMap;
@@ -23,7 +23,7 @@ public class RedisNotificationServiceImpl implements RedisNotificationService {
   private final RedisMessageListenerContainer container;
   private final RedisListener subscriber;
   private final RedisTemplate<String, Object> redisTemplate;
-  private final RedisCacheService redisCacheService;
+  private final RedisService redisService;
 
   @Override
   public void subscribe(String channel) {
@@ -50,17 +50,17 @@ public class RedisNotificationServiceImpl implements RedisNotificationService {
     String hashKey = RedisCacheType.VISIBLE_CACHE.getDescription() + request.getChatRoomId();
     log.info("VisibleCache 채널 명 : " + hashKey);
 
-    Map<Object, Object> visibleCaches = redisCacheService.getHashByKey(hashKey);
+    Map<Object, Object> visibleCaches = redisService.getHashByKey(hashKey);
     log.info("Service : 특정 채팅방에 대한 Visible Map 조회 성공" + visibleCaches);
 
     if (visibleCaches != null) { // 특정 채팅방의 Map이 이미 존재한다면
-      redisCacheService.updateToHash(hashKey, String.valueOf(memberId), request.getVisibleType());
+      redisService.updateToHash(hashKey, String.valueOf(memberId), request.getVisibleType());
       log.info("Redis Visible 기존 Map 변경 " + memberId +
           " : " + request.getVisibleType());
     } else {
       Map<Object, Object> newObject = new HashMap<>();
       newObject.put(String.valueOf(memberId), request.getVisibleType());
-      redisCacheService.saveToHash(hashKey, newObject, 24);
+      redisService.saveToHash(hashKey, newObject, 24);
       log.info("Redis Visible 새로운 Map 추가 " + memberId +
           " : " + request.getVisibleType());
     }

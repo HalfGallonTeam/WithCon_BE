@@ -16,7 +16,7 @@ import com.halfgallon.withcon.domain.notification.entity.Notification;
 import com.halfgallon.withcon.domain.notification.repository.NotificationRepository;
 import com.halfgallon.withcon.domain.notification.repository.SseEmitterRepository;
 import com.halfgallon.withcon.domain.notification.service.NotificationService;
-import com.halfgallon.withcon.domain.notification.service.RedisCacheService;
+import com.halfgallon.withcon.domain.notification.service.RedisService;
 import com.halfgallon.withcon.domain.notification.service.RedisNotificationService;
 import com.halfgallon.withcon.domain.notification.service.SseEmitterService;
 import com.halfgallon.withcon.global.exception.CustomException;
@@ -46,7 +46,7 @@ public class NotificationServiceImpl implements NotificationService {
 
   private final SseEmitterService sseEmitterService;
   private final RedisNotificationService redisNotificationService;
-  private final RedisCacheService redisCacheService;
+  private final RedisService redisService;
 
   @Override
   public SseEmitter subscribe(Long memberId) {
@@ -108,7 +108,7 @@ public class NotificationServiceImpl implements NotificationService {
         + request.getChatRoomId();
     log.info("Service : 채널 KEY: " + visibleKey);
 
-    Map<Object, Object> cache = redisCacheService.getHashByKey(visibleKey);
+    Map<Object, Object> cache = redisService.getHashByKey(visibleKey);
     log.info("Service : Visible 캐시 데이터 조회" + cache);
 
     for (ChatParticipant chatParticipant : chatParticipants) {
