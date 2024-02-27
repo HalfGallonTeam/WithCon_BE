@@ -36,7 +36,13 @@ public class RedisServiceImpl implements RedisService {
   }
 
   @Override
-  public void deleteToHash(String hashKey) {
-    redisTemplate.delete(hashKey);
+  public ChatRoomSessionDto getChatRoomHashKey(String key, String sessionId) {
+    HashOperations<String, Object, ChatRoomSessionDto> hashOps = redisTemplate.opsForHash();
+    return hashOps.get(key, sessionId);
+  }
+
+  @Override
+  public void deleteHashKey(String hashKey, Object value) {
+    redisTemplate.opsForHash().delete(hashKey, value);
   }
 }

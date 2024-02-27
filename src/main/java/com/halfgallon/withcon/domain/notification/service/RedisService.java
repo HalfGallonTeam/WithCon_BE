@@ -14,6 +14,7 @@ public interface RedisService {
   // HashKey - Map 값 변경
   void updateToHash(String hashKey, Object field, Object value);
 
-  void deleteToHash(String hashKey);
+  ChatRoomSessionDto getChatRoomHashKey(String key, String sessionId);
 
+  void deleteHashKey(String hashKey, Object value);
 }
