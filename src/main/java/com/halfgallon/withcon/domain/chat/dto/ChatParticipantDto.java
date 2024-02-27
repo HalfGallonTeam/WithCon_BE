@@ -6,7 +6,7 @@ import lombok.Builder;
 
 @Builder
 public record ChatParticipantDto(
-    String username,
+    Long memberId,
     String password,
     String userProfile,
     LoginType loginType,
@@ -16,7 +16,7 @@ public record ChatParticipantDto(
 
   public static ChatParticipantDto fromEntity(ChatParticipant chatParticipant) {
     return ChatParticipantDto.builder()
-        .username(chatParticipant.getMember().getUsername())
+        .memberId(chatParticipant.getMember().getId())
         .password(chatParticipant.getMember().getPassword())
         .userProfile(chatParticipant.getMember().getProfileImage())
         .loginType(chatParticipant.getMember().getLoginType())

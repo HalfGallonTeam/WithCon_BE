@@ -5,10 +5,10 @@ import lombok.Builder;
 
 @Builder
 public record ChatRoomEnterResponse(
+    Long managerId,
     Long chatRoomId,
     String performanceName,
     String roomName,
-    String managerName,
     Integer userCount,
     List<ChatParticipantDto> chatParticipants
 ) {

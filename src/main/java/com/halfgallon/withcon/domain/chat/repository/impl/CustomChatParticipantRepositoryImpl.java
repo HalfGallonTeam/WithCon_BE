@@ -19,14 +19,14 @@ public class CustomChatParticipantRepositoryImpl implements CustomChatParticipan
   private final JPAQueryFactory jpaQueryFactory;
 
   @Override
-  public boolean checkRoomManagerName(String managerName) {
-    Integer i = jpaQueryFactory.selectOne()
+  public boolean checkRoomManagerId(Long managerId) {
+    Integer integer = jpaQueryFactory.selectOne()
         .from(chatParticipant)
         .leftJoin(chatParticipant.chatRoom, chatRoom)
-        .where(chatRoom.managerName.eq(managerName))
+        .where(chatRoom.managerId.eq(managerId))
         .fetchFirst();
 
-    return i != null;
+    return integer != null;
   }
 
   @Override

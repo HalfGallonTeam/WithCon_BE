@@ -8,9 +8,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long>, CustomChatRoomRepository {
-  boolean existsByName(String name);
+  boolean existsByNameAndPerformance_Id(String name, String performanceId);
 
   Page<ChatRoom> findAllByPerformance_Id(String performanceId, Pageable pageable);
-
-  boolean existsByManagerName(String managerName);
 }

@@ -50,7 +50,7 @@ public class ChatRoom extends BaseTimeEntity {
   private Performance performance;
 
   @Column(nullable = false)
-  private String managerName;
+  private Long managerId;
 
   public void updateUserCount() {
     this.userCount = this.chatParticipants.size();
@@ -68,10 +68,6 @@ public class ChatRoom extends BaseTimeEntity {
 
   public void addTag(Tag tag) {
     this.tags.add(tag);
-  }
-
-  public void updatePerformance(Performance performance) {
-    this.performance = performance;
   }
 
 }
