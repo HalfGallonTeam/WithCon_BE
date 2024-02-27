@@ -28,7 +28,7 @@ public class CustomChatMessageRepositoryImpl implements CustomChatMessageReposit
         .fetchJoin()
         .where(
             ltMessageId(messageId), //no-offset 페이징 처리
-            chatMessage.room.id.eq(roomId)
+            chatMessage.chatRoom.id.eq(roomId)
         )
         .limit(pageable.getPageSize() + 1)  //마지막 페이지 확인을 위해서 +1 조회
         .orderBy(chatMessage.sendAt.desc())

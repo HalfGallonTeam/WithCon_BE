@@ -28,8 +28,8 @@ public class ChatMessage {
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "room_id")
-  private ChatRoom room;
+  @JoinColumn(name = "chatRoom_id")
+  private ChatRoom chatRoom;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "chatParticipant_id")
@@ -45,7 +45,7 @@ public class ChatMessage {
   private Long sendAt;
 
   public void updateChatRoom(ChatRoom chatRoom) {
-    this.room = chatRoom;
+    this.chatRoom = chatRoom;
   }
 
   public void updateChatParticipant(ChatParticipant chatParticipant) {

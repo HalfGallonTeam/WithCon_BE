@@ -2,6 +2,7 @@ package com.halfgallon.withcon.domain.chat.dto;
 
 import com.halfgallon.withcon.domain.chat.constant.MessageType;
 import com.halfgallon.withcon.domain.chat.entity.ChatMessage;
+import com.halfgallon.withcon.domain.chat.entity.ChatParticipant;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,13 +33,15 @@ public class ChatMessageDto {
         .build();
   }
 
-  public static ChatMessageDto fromEntity(ChatMessage chatMessage) {
+  public static ChatMessageDto fromEntity(ChatMessage chatMessage, ChatParticipant chatParticipant) {
     return ChatMessageDto.builder()
-        .roomId(chatMessage.getRoom().getId())
+        .roomId(chatMessage.getChatRoom().getId())
         .memberId(chatMessage.getChatParticipant().getId())
         .message(chatMessage.getMessage())
         .messageType(chatMessage.getMessageType())
         .sendAt(chatMessage.getSendAt())
+        .nickName(chatParticipant.getMember().getNickname())
+        .userProfile(chatParticipant.getMember().getProfileImage())
         .build();
   }
 }

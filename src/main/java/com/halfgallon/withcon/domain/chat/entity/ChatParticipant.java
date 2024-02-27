@@ -1,6 +1,7 @@
 package com.halfgallon.withcon.domain.chat.entity;
 
 import com.halfgallon.withcon.domain.member.entity.Member;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -31,4 +32,11 @@ public class ChatParticipant {
   @ManyToOne
   @JoinColumn(name = "chatRoom_id")
   private ChatRoom chatRoom;
+
+  @Column(nullable = false)
+  private Long lastReadId;
+
+  public void updateLastReadId(Long lastReadId) {
+    this.lastReadId = lastReadId;
+  }
 }
