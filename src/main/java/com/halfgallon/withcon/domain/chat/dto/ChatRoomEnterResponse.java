@@ -1,5 +1,6 @@
 package com.halfgallon.withcon.domain.chat.dto;
 
+import com.halfgallon.withcon.domain.chat.constant.EnterStatus;
 import java.util.List;
 import lombok.Builder;
 
@@ -7,9 +8,10 @@ import lombok.Builder;
 public record ChatRoomEnterResponse(
     Long managerId,
     Long chatRoomId,
-    String performanceName,
     String roomName,
     Integer userCount,
+    EnterStatus enterStatus,
+    String performanceName,
     List<ChatParticipantDto> chatParticipants
 ) {
 
