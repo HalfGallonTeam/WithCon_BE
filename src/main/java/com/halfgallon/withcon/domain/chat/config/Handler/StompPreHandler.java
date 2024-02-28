@@ -51,6 +51,8 @@ public class StompPreHandler implements ChannelInterceptor {
         MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
 
     assert accessor != null;
+    log.info("accessor.getCommand() : {}", accessor.getCommand());
+
     if (StompCommand.CONNECT.equals(accessor.getCommand())) {
       String token = resolveToken(accessor.getFirstNativeHeader("Authorization"));
 
@@ -89,10 +91,14 @@ public class StompPreHandler implements ChannelInterceptor {
 
     } else if (StompCommand.DISCONNECT.equals(accessor.getCommand())) {
       String sessionId = accessor.getSessionId();
+      assert sessionId != null;
+
       ChatRoomSessionDto sessionDto = redisService.getChatRoomHashKey(CHATROOM_SESSION, sessionId);
+      if (sessionDto == null) {
+        return message;
+      }
 
       try {
-        assert sessionDto != null;
         ChatRoom chatRoom = findChatRoomOrThrow(sessionDto.chatRoomId());
         Member member = findMemberOrThrow(sessionDto.memberId());
 
