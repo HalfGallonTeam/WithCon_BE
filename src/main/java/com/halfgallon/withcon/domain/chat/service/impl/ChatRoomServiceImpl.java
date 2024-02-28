@@ -11,7 +11,7 @@ import static com.halfgallon.withcon.global.exception.ErrorCode.PERFORMANCE_NOT_
 
 import com.halfgallon.withcon.domain.auth.security.service.CustomUserDetails;
 import com.halfgallon.withcon.domain.chat.dto.ChatLastMessageRequest;
-import com.halfgallon.withcon.domain.chat.dto.ChatMessageDto;
+import com.halfgallon.withcon.domain.chat.dto.ChatMessageResponse;
 import com.halfgallon.withcon.domain.chat.dto.ChatParticipantDto;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomEnterResponse;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomRequest;
@@ -212,7 +212,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
   @Override
   @Transactional(readOnly = true)
-  public Slice<ChatMessageDto> findAllMessageChatRoom(CustomUserDetails customUserDetails,
+  public Slice<ChatMessageResponse> findAllMessageChatRoom(CustomUserDetails customUserDetails,
       ChatLastMessageRequest request, Long chatRoomId) {
 
     ChatParticipant chatParticipant = findChatParticipantOrThrow(chatRoomId, customUserDetails.getId());
@@ -221,7 +221,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         request.lastMsgId(), chatRoomId,
         Pageable.ofSize(request.limit() != 0 ? request.limit() : CHAT_MESSAGE_PAGE_SIZE));
 
-    return message.map(m -> ChatMessageDto.fromEntity(m, chatParticipant));
+    return message.map(m -> ChatMessageResponse.fromEntity(m, chatParticipant));
   }
 
   @Override
