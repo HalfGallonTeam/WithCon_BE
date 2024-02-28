@@ -200,7 +200,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
   public void exitChatRoom(CustomUserDetails customUserDetails, Long chatRoomId) {
     ChatParticipant participant = findChatParticipantOrThrow(chatRoomId, customUserDetails.getId());
 
-    deleteChattingData(participant);
+    deleteChattingData(chatRoomId, participant);
 
     ChatRoomResponse response = ChatRoomResponse.fromEntity(participant.getChatRoom());
 
@@ -239,7 +239,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     ChatParticipant chatParticipant = findChatParticipantOrThrow(chatRoomId, memberId);
 
     if (participantRepository.checkRoomManagerId(customUserDetails.getId())) {
-      deleteChattingData(chatParticipant);
+      deleteChattingData(chatRoomId, chatParticipant);
     }
 
     return ChatRoomResponse.fromEntity(chatParticipant.getChatRoom());
@@ -250,8 +250,10 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         .orElseThrow(() -> new CustomException(PARTICIPANT_NOT_FOUND));
   }
 
-  private void deleteChattingData(ChatParticipant chatParticipant) {
-    List<ChatMessage> messages = chatMessageRepository.findAllByChatParticipantId(chatParticipant.getId());
+  private void deleteChattingData(Long chatRoomId, ChatParticipant chatParticipant) {
+    List<ChatMessage> messages = chatMessageRepository.findAllByChatRoomIdAndChatParticipantId(
+        chatRoomId, chatParticipant.getId());
+
     if (!CollectionUtils.isEmpty(messages)) {
       chatMessageRepository.deleteAll(messages);
     }
