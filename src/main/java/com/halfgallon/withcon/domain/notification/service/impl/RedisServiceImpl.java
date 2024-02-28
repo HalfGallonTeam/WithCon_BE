@@ -1,6 +1,7 @@
 package com.halfgallon.withcon.domain.notification.service.impl;
 
-import com.halfgallon.withcon.domain.notification.service.RedisCacheService;
+import com.halfgallon.withcon.domain.chat.dto.ChatRoomSessionDto;
+import com.halfgallon.withcon.domain.notification.service.RedisService;
 import java.time.Duration;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class RedisCacheServiceImpl implements RedisCacheService {
+public class RedisServiceImpl implements RedisService {
 
   private final RedisTemplate<String, Object> redisTemplate;
 
@@ -35,7 +36,13 @@ public class RedisCacheServiceImpl implements RedisCacheService {
   }
 
   @Override
-  public void deleteToHash(String hashKey) {
-    redisTemplate.delete(hashKey);
+  public ChatRoomSessionDto getChatRoomHashKey(String key, String sessionId) {
+    HashOperations<String, Object, ChatRoomSessionDto> hashOps = redisTemplate.opsForHash();
+    return hashOps.get(key, sessionId);
+  }
+
+  @Override
+  public void deleteHashKey(String hashKey, Object value) {
+    redisTemplate.opsForHash().delete(hashKey, value);
   }
 }

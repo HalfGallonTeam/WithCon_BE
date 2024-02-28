@@ -9,7 +9,7 @@ import lombok.Builder;
 public record ChatParticipantResponse(
     Long memberId,
     Long chatRoomId,
-    String chatRoomName,
+    String roomName,
     List<String> tags
 ) {
 
@@ -17,7 +17,7 @@ public record ChatParticipantResponse(
     return ChatParticipantResponse.builder()
         .memberId(participant.getMember().getId())
         .chatRoomId(participant.getChatRoom().getId())
-        .chatRoomName(participant.getChatRoom().getName())
+        .roomName(participant.getChatRoom().getName())
         .tags(participant.getChatRoom().getTags().stream().map(Tag::getName).toList())
         .build();
   }

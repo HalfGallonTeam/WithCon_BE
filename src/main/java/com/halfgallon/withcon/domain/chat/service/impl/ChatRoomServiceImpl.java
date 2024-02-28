@@ -1,6 +1,7 @@
 package com.halfgallon.withcon.domain.chat.service.impl;
 
 import static com.halfgallon.withcon.domain.chat.constant.ChattingConstant.CHAT_MESSAGE_PAGE_SIZE;
+import static com.halfgallon.withcon.domain.chat.constant.EnterStatus.*;
 import static com.halfgallon.withcon.global.exception.ErrorCode.CHATROOM_NOT_FOUND;
 import static com.halfgallon.withcon.global.exception.ErrorCode.DUPLICATE_CHATROOM_NAME;
 import static com.halfgallon.withcon.global.exception.ErrorCode.MEMBER_NOT_FOUND;
@@ -158,6 +159,8 @@ public class ChatRoomServiceImpl implements ChatRoomService {
   @Override
   @Transactional
   public ChatRoomEnterResponse enterChatRoom(CustomUserDetails customUserDetails, Long chatRoomId) {
+    boolean isEnter = false; //입장 여부 체크 : 첫 입장: true, 재입장: false
+
     Member member = memberRepository.findById(customUserDetails.getId())
         .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
 
@@ -165,15 +168,15 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         .orElseThrow(() -> new CustomException(CHATROOM_NOT_FOUND));
 
     //채팅방 참여 인원 저장(첫 방문인 경우 데이터 저장)
-    participantRepository.findByMemberIdAndChatRoomId(customUserDetails.getId(), chatRoomId)
-        .ifPresentOrElse(
-            participant -> {},
-            () -> chatRoom.addChatParticipant(participantRepository.save(
-                ChatParticipant.builder()
-                    .chatRoom(chatRoom)
-                    .member(member)
-                    .build()))
-        );
+    if (!participantRepository.existsByMemberIdAndChatRoomId(customUserDetails.getId(), chatRoomId)) {
+      chatRoom.addChatParticipant(participantRepository.save(
+          ChatParticipant.builder()
+              .chatRoom(chatRoom)
+              .member(member)
+              .build()));
+
+      isEnter = true;
+    }
 
     //채팅방 참여하고 있는 인원 리스트
     List<ChatParticipantDto> chatParticipants = chatRoom.getChatParticipants()
@@ -187,6 +190,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         .userCount(chatRoom.getUserCount())
         .chatParticipants(chatParticipants)
         .performanceName(PerformanceResponse.fromEntity(chatRoom.getPerformance()).getName())
+        .enterStatus(isEnter ? NEW : ALREADY)
         .build();
   }
 
@@ -213,14 +217,15 @@ public class ChatRoomServiceImpl implements ChatRoomService {
   public Slice<ChatMessageDto> findAllMessageChatRoom(CustomUserDetails customUserDetails,
       ChatLastMessageRequest request, Long chatRoomId) {
 
-    participantRepository.findByMemberIdAndChatRoomId(customUserDetails.getId(), chatRoomId)
+    ChatParticipant chatParticipant = participantRepository.findByMemberIdAndChatRoomId(
+            customUserDetails.getId(), chatRoomId)
         .orElseThrow(() -> new CustomException(PARTICIPANT_NOT_FOUND));
 
     Slice<ChatMessage> message = chatMessageRepository.findChatRoomMessage(
         request.lastMsgId(), chatRoomId,
         Pageable.ofSize(request.limit() != 0 ? request.limit() : CHAT_MESSAGE_PAGE_SIZE));
 
-    return message.map(ChatMessageDto::fromEntity);
+    return message.map(m -> ChatMessageDto.fromEntity(m, chatParticipant));
   }
 
   @Override

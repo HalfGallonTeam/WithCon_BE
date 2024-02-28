@@ -5,4 +5,5 @@ public class ChattingConstant {
   public static final String CHAT_EXCHANGE_NAME = "chat.exchange";
   public static final String ROUTING_KEY = "room.*";
   public static final Integer CHAT_MESSAGE_PAGE_SIZE = 10;
+  public static final String CHATROOM_SESSION = "CHATROOM_SESSION";
 }

@@ -1,8 +1,9 @@
 package com.halfgallon.withcon.domain.notification.service;
 
+import com.halfgallon.withcon.domain.chat.dto.ChatRoomSessionDto;
 import java.util.Map;
 
-public interface RedisCacheService {
+public interface RedisService {
 
   // hashKey로 조회
   Map<Object, Object> getHashByKey(String key);
@@ -13,6 +14,7 @@ public interface RedisCacheService {
   // HashKey - Map 값 변경
   void updateToHash(String hashKey, Object field, Object value);
 
-  void deleteToHash(String hashKey);
+  ChatRoomSessionDto getChatRoomHashKey(String key, String sessionId);
 
+  void deleteHashKey(String hashKey, Object value);
 }
