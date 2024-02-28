@@ -1,5 +1,6 @@
 package com.halfgallon.withcon.domain.chat.service.impl;
 
+import static com.halfgallon.withcon.global.exception.ErrorCode.MEMBER_NOT_FOUND;
 import static com.halfgallon.withcon.global.exception.ErrorCode.PARTICIPANT_NOT_FOUND;
 
 import com.halfgallon.withcon.domain.chat.constant.MessageType;
@@ -9,6 +10,8 @@ import com.halfgallon.withcon.domain.chat.entity.ChatParticipant;
 import com.halfgallon.withcon.domain.chat.repository.ChatMessageRepository;
 import com.halfgallon.withcon.domain.chat.repository.ChatParticipantRepository;
 import com.halfgallon.withcon.domain.chat.service.ChatMessageService;
+import com.halfgallon.withcon.domain.member.entity.Member;
+import com.halfgallon.withcon.domain.member.repository.MemberRepository;
 import com.halfgallon.withcon.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,13 +22,14 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ChatMessageServiceImpl implements ChatMessageService {
 
+  private final MemberRepository memberRepository;
   private final ChatMessageRepository chatMessageRepository;
   private final ChatParticipantRepository participantRepository;
 
   @Override
   public ChatMessageDto chatMessage(ChatMessageDto request, Long roomId) {
-    ChatParticipant chatParticipant = participantRepository.findByMember_Id(request.getMemberId())
-        .orElseThrow(() -> new CustomException(PARTICIPANT_NOT_FOUND));
+    Member member = memberRepository.findById(request.getMemberId())
+        .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
 
     return ChatMessageDto.builder()
         .memberId(request.getMemberId())
@@ -33,8 +37,8 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         .message(request.getMessage())
         .messageType(MessageType.CHAT)
         .sendAt(System.currentTimeMillis())
-        .nickName(chatParticipant.getMember().getNickname())
-        .userProfile(chatParticipant.getMember().getProfileImage())
+        .nickName(member.getNickname())
+        .userProfile(member.getProfileImage())
         .build();
   }
 
