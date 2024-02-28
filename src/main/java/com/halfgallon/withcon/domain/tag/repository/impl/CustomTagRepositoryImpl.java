@@ -23,7 +23,7 @@ public class CustomTagRepositoryImpl implements CustomTagRepository {
                 tag.performance.name.as("performance")))
         .from(tag)
         .orderBy(tag.count().desc())
-        .groupBy(tag.name)
+        .groupBy(tag.name, tag.performance.name)
         .limit(10)  //인기 태그 Top 10
         .fetch();
   }

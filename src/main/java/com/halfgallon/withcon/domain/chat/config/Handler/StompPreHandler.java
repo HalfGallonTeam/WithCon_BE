@@ -54,6 +54,8 @@ public class StompPreHandler implements ChannelInterceptor {
     if (StompCommand.CONNECT.equals(accessor.getCommand())) {
       String token = resolveToken(accessor.getFirstNativeHeader("Authorization"));
 
+      log.info("[preSend] stomp connection : {}", token);
+
       AccessToken findAccessToken = findAccessTokenOrThrow(token);
 
       Member member = findMemberOrThrow(findAccessToken.getMemberId());
@@ -72,14 +74,18 @@ public class StompPreHandler implements ChannelInterceptor {
           accessor.getSessionId());
 
       String sessionId = accessor.getSessionId();
+      log.info("[preSend] stomp subscribe sessionId : {}", sessionId);
 
       Member member = memberRepository.findByUsername(accessor.getUser().getName())
           .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
 
       Long roomId = getRoomIdFromDestination(Objects.requireNonNull(accessor.getDestination()));
+      log.info("[preSend] stomp subscribe roomId : {}", roomId);
+
       ChatRoom chatRoom = findChatRoomOrThrow(roomId);
 
       saveSession(chatRoom.getId(), member.getId(), sessionId);
+      log.info("[preSend] stomp subscribe redis 구독 저장 완료");
 
     } else if (StompCommand.DISCONNECT.equals(accessor.getCommand())) {
       String sessionId = accessor.getSessionId();
@@ -97,14 +103,17 @@ public class StompPreHandler implements ChannelInterceptor {
                     .ifPresent(chatMessage -> {
                       p.updateLastReadId(chatMessage.getId());
                       participantRepository.save(p);
+                      log.info("[preSend] stomp disconnect 마지막 메시지 저장 완료");
                     })
                 );
 
+        redisService.deleteHashKey(CHATROOM_SESSION, sessionId);
+        log.info("[preSend] stomp disconnect deleteHashKey 완료");
+
       } catch (Exception e) {
         log.error("[preSend] stomp disconnect is occurred : {}", e.getMessage());
-      } finally {
-        redisService.deleteHashKey(CHATROOM_SESSION, sessionId);
       }
+
     }
 
     return message;
