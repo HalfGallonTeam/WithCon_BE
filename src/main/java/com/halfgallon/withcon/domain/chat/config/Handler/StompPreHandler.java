@@ -51,15 +51,12 @@ public class StompPreHandler implements ChannelInterceptor {
         MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
 
     assert accessor != null;
-    log.info("accessor.getCommand() : {}", accessor.getCommand());
 
     if (StompCommand.CONNECT.equals(accessor.getCommand())) {
       String token = resolveToken(accessor.getFirstNativeHeader("Authorization"));
-
-      log.info("[preSend] stomp connection : {}", token);
+      log.info("[preSend] stomp connection token : {}", token);
 
       AccessToken findAccessToken = findAccessTokenOrThrow(token);
-
       Member member = findMemberOrThrow(findAccessToken.getMemberId());
 
       // WS Header save to userData
@@ -76,14 +73,11 @@ public class StompPreHandler implements ChannelInterceptor {
           accessor.getSessionId());
 
       String sessionId = accessor.getSessionId();
-      log.info("[preSend] stomp subscribe sessionId : {}", sessionId);
 
       Member member = memberRepository.findByUsername(accessor.getUser().getName())
           .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
 
       Long roomId = getRoomIdFromDestination(Objects.requireNonNull(accessor.getDestination()));
-      log.info("[preSend] stomp subscribe roomId : {}", roomId);
-
       ChatRoom chatRoom = findChatRoomOrThrow(roomId);
 
       saveSession(chatRoom.getId(), member.getId(), sessionId);

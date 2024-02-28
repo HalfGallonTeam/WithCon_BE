@@ -1,8 +1,8 @@
 package com.halfgallon.withcon.domain.chat.service;
 
 import com.halfgallon.withcon.domain.auth.security.service.CustomUserDetails;
-import com.halfgallon.withcon.domain.chat.dto.ChatMessageDto;
 import com.halfgallon.withcon.domain.chat.dto.ChatLastMessageRequest;
+import com.halfgallon.withcon.domain.chat.dto.ChatMessageResponse;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomEnterResponse;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomRequest;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomResponse;
@@ -22,8 +22,8 @@ public interface ChatRoomService {
 
   ChatRoomResponse kickChatRoom(CustomUserDetails customUserDetails, Long chatRoomId, Long memberId);
 
-  Slice<ChatMessageDto> findAllMessageChatRoom(CustomUserDetails customUserDetails, ChatLastMessageRequest request,
-      Long chatRoomId);
+  Slice<ChatMessageResponse> findAllMessageChatRoom(CustomUserDetails customUserDetails,
+      ChatLastMessageRequest request, Long chatRoomId);
 
   Page<ChatRoomResponse> findAllTagNameChatRoom(String performanceId, String tagName, Pageable pageable);
 }
