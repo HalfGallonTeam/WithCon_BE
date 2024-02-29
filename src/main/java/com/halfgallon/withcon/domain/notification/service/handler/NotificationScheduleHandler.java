@@ -38,7 +38,7 @@ public class NotificationScheduleHandler {
   }
 
   @Transactional
-  @Scheduled(cron = "0 */5 14-15 * * *") // 매일 자정에 오픈 공연 조회 후 알림 생성
+  @Scheduled(cron = "0 */5 19-20 * * *") // 매일 자정에 오픈 공연 조회 후 알림 생성
   public void createPerformanceOpenNotification() {
     LocalDate today = LocalDate.now();
     LocalDate day = today.minusDays(5);
