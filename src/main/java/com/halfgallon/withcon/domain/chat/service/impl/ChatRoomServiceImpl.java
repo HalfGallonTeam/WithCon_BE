@@ -215,13 +215,11 @@ public class ChatRoomServiceImpl implements ChatRoomService {
   public Slice<ChatMessageResponse> findAllMessageChatRoom(CustomUserDetails customUserDetails,
       ChatLastMessageRequest request, Long chatRoomId) {
 
-    ChatParticipant chatParticipant = findChatParticipantOrThrow(chatRoomId, customUserDetails.getId());
-
     Slice<ChatMessage> message = chatMessageRepository.findChatRoomMessage(
         request.lastMsgId(), chatRoomId,
         Pageable.ofSize(request.limit() != 0 ? request.limit() : CHAT_MESSAGE_PAGE_SIZE));
 
-    return message.map(m -> ChatMessageResponse.fromEntity(m, chatParticipant));
+    return message.map(ChatMessageResponse::fromEntity);
   }
 
   @Override

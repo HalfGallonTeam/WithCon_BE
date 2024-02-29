@@ -80,10 +80,10 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
   @Override
   public ChatMessageDto kickMessage(ChatMessageDto request, Long roomId) {
-    ChatParticipant chatParticipant = participantRepository.findByMember_Id(request.getMemberId())
-        .orElseThrow(() -> new CustomException(PARTICIPANT_NOT_FOUND));
+    Member member = memberRepository.findById(request.getMemberId())
+        .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
 
-    String message = chatParticipant.getMember().getNickname() + "님이 강퇴당했습니다.";
+    String message = member.getNickname() + "님이 강퇴당했습니다.";
 
     return ChatMessageDto.builder()
         .roomId(roomId)
@@ -91,6 +91,8 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         .message(message)
         .messageType(MessageType.KICK)
         .sendAt(System.currentTimeMillis())
+        .nickName(member.getNickname())
+        .userProfile(member.getProfileImage())
         .build();
   }
 

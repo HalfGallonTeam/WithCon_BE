@@ -2,7 +2,6 @@ package com.halfgallon.withcon.domain.chat.dto;
 
 import com.halfgallon.withcon.domain.chat.constant.MessageType;
 import com.halfgallon.withcon.domain.chat.entity.ChatMessage;
-import com.halfgallon.withcon.domain.chat.entity.ChatParticipant;
 import lombok.Builder;
 
 @Builder
@@ -16,16 +15,16 @@ public record ChatMessageResponse (
     String userProfile,
     Long sendAt
 ) {
-  public static ChatMessageResponse fromEntity(ChatMessage chatMessage, ChatParticipant chatParticipant) {
+  public static ChatMessageResponse fromEntity(ChatMessage chatMessage) {
     return ChatMessageResponse.builder()
         .roomId(chatMessage.getChatRoom().getId())
         .messageId(chatMessage.getId())
         .message(chatMessage.getMessage())
         .messageType(chatMessage.getMessageType())
         .sendAt(chatMessage.getSendAt())
-        .memberId(chatParticipant.getMember().getId())
-        .nickName(chatParticipant.getMember().getNickname())
-        .userProfile(chatParticipant.getMember().getProfileImage())
+        .memberId(chatMessage.getChatParticipant().getMember().getId())
+        .nickName(chatMessage.getChatParticipant().getMember().getNickname())
+        .userProfile(chatMessage.getChatParticipant().getMember().getProfileImage())
         .build();
   }
 }
