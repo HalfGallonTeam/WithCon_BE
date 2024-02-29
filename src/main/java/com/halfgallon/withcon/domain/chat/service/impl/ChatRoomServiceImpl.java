@@ -1,7 +1,8 @@
 package com.halfgallon.withcon.domain.chat.service.impl;
 
 import static com.halfgallon.withcon.domain.chat.constant.ChattingConstant.CHAT_MESSAGE_PAGE_SIZE;
-import static com.halfgallon.withcon.domain.chat.constant.EnterStatus.*;
+import static com.halfgallon.withcon.domain.chat.constant.EnterStatus.ALREADY;
+import static com.halfgallon.withcon.domain.chat.constant.EnterStatus.NEW;
 import static com.halfgallon.withcon.global.exception.ErrorCode.CHATROOM_NOT_FOUND;
 import static com.halfgallon.withcon.global.exception.ErrorCode.DUPLICATE_CHATROOM_NAME;
 import static com.halfgallon.withcon.global.exception.ErrorCode.MEMBER_NOT_FOUND;
@@ -9,8 +10,8 @@ import static com.halfgallon.withcon.global.exception.ErrorCode.PARTICIPANT_NOT_
 import static com.halfgallon.withcon.global.exception.ErrorCode.PERFORMANCE_NOT_FOUND;
 
 import com.halfgallon.withcon.domain.auth.security.service.CustomUserDetails;
-import com.halfgallon.withcon.domain.chat.dto.ChatMessageDto;
 import com.halfgallon.withcon.domain.chat.dto.ChatLastMessageRequest;
+import com.halfgallon.withcon.domain.chat.dto.ChatMessageResponse;
 import com.halfgallon.withcon.domain.chat.dto.ChatParticipantDto;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomEnterResponse;
 import com.halfgallon.withcon.domain.chat.dto.ChatRoomRequest;
@@ -197,12 +198,9 @@ public class ChatRoomServiceImpl implements ChatRoomService {
   @Override
   @Transactional
   public void exitChatRoom(CustomUserDetails customUserDetails, Long chatRoomId) {
-    ChatParticipant participant
-        = participantRepository.findByMemberIdAndChatRoomId(customUserDetails.getId(), chatRoomId)
-        .orElseThrow(() -> new CustomException(PARTICIPANT_NOT_FOUND));
+    ChatParticipant participant = findChatParticipantOrThrow(chatRoomId, customUserDetails.getId());
 
-    participantRepository.delete(participant);
-    participant.getChatRoom().removeChatParticipant(participant);
+    deleteChattingData(chatRoomId, participant);
 
     ChatRoomResponse response = ChatRoomResponse.fromEntity(participant.getChatRoom());
 
@@ -214,18 +212,16 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
   @Override
   @Transactional(readOnly = true)
-  public Slice<ChatMessageDto> findAllMessageChatRoom(CustomUserDetails customUserDetails,
+  public Slice<ChatMessageResponse> findAllMessageChatRoom(CustomUserDetails customUserDetails,
       ChatLastMessageRequest request, Long chatRoomId) {
 
-    ChatParticipant chatParticipant = participantRepository.findByMemberIdAndChatRoomId(
-            customUserDetails.getId(), chatRoomId)
-        .orElseThrow(() -> new CustomException(PARTICIPANT_NOT_FOUND));
+    ChatParticipant chatParticipant = findChatParticipantOrThrow(chatRoomId, customUserDetails.getId());
 
     Slice<ChatMessage> message = chatMessageRepository.findChatRoomMessage(
         request.lastMsgId(), chatRoomId,
         Pageable.ofSize(request.limit() != 0 ? request.limit() : CHAT_MESSAGE_PAGE_SIZE));
 
-    return message.map(m -> ChatMessageDto.fromEntity(m, chatParticipant));
+    return message.map(m -> ChatMessageResponse.fromEntity(m, chatParticipant));
   }
 
   @Override
@@ -240,16 +236,30 @@ public class ChatRoomServiceImpl implements ChatRoomService {
   public ChatRoomResponse kickChatRoom(CustomUserDetails customUserDetails, Long chatRoomId,
       Long memberId) {
     //현재 채팅방에서 강퇴할 인원 참여 여부 체크
-    ChatParticipant chatParticipant = participantRepository.findByMemberIdAndChatRoomId(
-            memberId, chatRoomId)
-        .orElseThrow(() -> new CustomException(PARTICIPANT_NOT_FOUND));
+    ChatParticipant chatParticipant = findChatParticipantOrThrow(chatRoomId, memberId);
 
     if (participantRepository.checkRoomManagerId(customUserDetails.getId())) {
-      participantRepository.delete(chatParticipant);
-      chatParticipant.getChatRoom().removeChatParticipant(chatParticipant);
+      deleteChattingData(chatRoomId, chatParticipant);
     }
 
     return ChatRoomResponse.fromEntity(chatParticipant.getChatRoom());
+  }
+
+  private ChatParticipant findChatParticipantOrThrow(Long chatRoomId, Long memberId) {
+    return participantRepository.findByMemberIdAndChatRoomId(memberId, chatRoomId)
+        .orElseThrow(() -> new CustomException(PARTICIPANT_NOT_FOUND));
+  }
+
+  private void deleteChattingData(Long chatRoomId, ChatParticipant chatParticipant) {
+    List<ChatMessage> messages = chatMessageRepository.findAllByChatRoomIdAndChatParticipantId(
+        chatRoomId, chatParticipant.getId());
+
+    if (!CollectionUtils.isEmpty(messages)) {
+      chatMessageRepository.deleteAll(messages);
+    }
+
+    participantRepository.delete(chatParticipant);
+    chatParticipant.getChatRoom().removeChatParticipant(chatParticipant);
   }
 
 }
