@@ -1,10 +1,5 @@
 package com.halfgallon.withcon.domain.auth.client;
 
-import static com.halfgallon.withcon.domain.member.constant.LoginType.*;
-
-import com.halfgallon.withcon.domain.auth.client.kakao.service.KakaoOAuth2Service;
-import com.halfgallon.withcon.domain.auth.client.naver.service.NaverOAuth2Service;
-import com.halfgallon.withcon.domain.member.constant.LoginType;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
