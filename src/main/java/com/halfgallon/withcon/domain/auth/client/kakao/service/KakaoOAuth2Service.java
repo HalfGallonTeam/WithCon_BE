@@ -2,19 +2,21 @@ package com.halfgallon.withcon.domain.auth.client.kakao.service;
 
 import static com.nimbusds.oauth2.sdk.GrantType.AUTHORIZATION_CODE;
 
+import com.halfgallon.withcon.domain.auth.client.OAuth2Service;
 import com.halfgallon.withcon.domain.auth.client.OAuth2UserInfo;
 import com.halfgallon.withcon.domain.auth.client.kakao.KakaoLoginClient;
 import com.halfgallon.withcon.domain.auth.client.kakao.KakaoUserInfoClient;
 import com.halfgallon.withcon.domain.auth.client.kakao.dto.request.KaKaoAccessTokenRequest;
 import com.halfgallon.withcon.domain.auth.client.kakao.dto.response.KakaoAccessTokenResponse;
 import com.halfgallon.withcon.domain.auth.client.kakao.dto.response.KakaoUserInfoResponse;
+import com.halfgallon.withcon.domain.member.constant.LoginType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class KakaoOAuth2Service {
+public class KakaoOAuth2Service implements OAuth2Service {
 
   @Value("${oauth2.client.registration.kakao.client-id}")
   private String clientId;
@@ -42,5 +44,10 @@ public class KakaoOAuth2Service {
   public OAuth2UserInfo getUserInfo(String accessToken) {
     KakaoUserInfoResponse response = kakaoUserInfoClient.getUserInfo(URLENCODED_UTF_8, accessToken);
     return OAuth2UserInfo.ofKakao(response);
+  }
+
+  @Override
+  public String supports() {
+    return LoginType.KAKAO.name();
   }
 }

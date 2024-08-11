@@ -2,12 +2,14 @@ package com.halfgallon.withcon.domain.auth.client.naver.service;
 
 import static com.nimbusds.oauth2.sdk.GrantType.AUTHORIZATION_CODE;
 
+import com.halfgallon.withcon.domain.auth.client.OAuth2Service;
 import com.halfgallon.withcon.domain.auth.client.OAuth2UserInfo;
 import com.halfgallon.withcon.domain.auth.client.naver.NaverLoginClient;
 import com.halfgallon.withcon.domain.auth.client.naver.NaverUserInfoClient;
 import com.halfgallon.withcon.domain.auth.client.naver.dto.request.NaverAccessTokenRequest;
 import com.halfgallon.withcon.domain.auth.client.naver.dto.response.NaverAccessTokenResponse;
 import com.halfgallon.withcon.domain.auth.client.naver.dto.response.NaverUserInfoResponse;
+import com.halfgallon.withcon.domain.member.constant.LoginType;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +17,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class NaverOAuth2Service {
+public class NaverOAuth2Service implements OAuth2Service {
 
   @Value("${oauth2.client.registration.naver.client-id}")
   private String clientId;
@@ -44,5 +46,10 @@ public class NaverOAuth2Service {
   public OAuth2UserInfo getUserInfo(String accessToken) {
     NaverUserInfoResponse response = naverUserInfoClient.getUserInfo(accessToken);
     return OAuth2UserInfo.ofNaver(response);
+  }
+
+  @Override
+  public String supports() {
+    return LoginType.NAVER.name();
   }
 }
