@@ -1,5 +1,6 @@
 package com.halfgallon.withcon.domain.auth.dto.request;
 
+import com.halfgallon.withcon.domain.member.constant.LoginType;
 import com.halfgallon.withcon.domain.member.entity.Member;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -44,6 +45,7 @@ public class AuthJoinRequest {
         .password(encodedPassword)
         .nickname(nickname)
         .phoneNumber(phoneNumber)
+        .loginType(LoginType.HOME)
         .build();
   }
 }

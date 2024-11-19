@@ -1,0 +1,77 @@
+### 채팅방 생성
+POST http://localhost:8080/chatRoom
+Content-Type: application/json
+Authorization: {{accessToken}}
+
+{
+  "roomName": "채팅방3223345",
+  "performanceId": 1,
+  "tags": ["수지", "서서갈비", "콘서트"]
+}
+
+### 채팅방 조회
+< {%
+  request.variables.set("performanceId", "1")
+%}
+GET http://localhost:8080/chatRoom/performance/{{performanceId}}
+Content-Type: application/json
+
+### 채팅방 입장
+< {%
+  request.variables.set("chatRoomId", "1")
+%}
+GET http://localhost:8080/chatRoom/{{chatRoomId}}/enter
+Content-Type: application/json
+Authorization: {{accessToken}}
+
+### 채팅방 퇴장
+< {%
+  request.variables.set("chatRoomId", "5")
+%}
+DELETE http://localhost:8080/chatRoom/{{chatRoomId}}/exit
+Content-Type: application/json
+Authorization: {{accessToken}}
+
+### 채팅방 메시지 조회
+< {%
+  request.variables.set("chatRoomId", "1")
+%}
+GET http://localhost:8080/chatRoom/{{chatRoomId}}/message?lastMsgId=25
+Content-Type: application/json
+#Content-Type: application/x-www-form-urlencoded
+Authorization: {{accessToken}}
+
+### 채팅방 메시지 조회 + limit
+< {%
+  request.variables.set("chatRoomId", "1")
+%}
+GET http://localhost:8080/chatRoom/{{chatRoomId}}/message?lastMsgId=25&limit=5
+Content-Type: application/json
+#Content-Type: application/x-www-form-urlencoded
+Authorization: {{accessToken}}
+
+### 채팅방 강퇴
+< {%
+  request.variables.set("chatRoomId", "5")
+  request.variables.set("memberId", "6")
+%}
+DELETE http://localhost:8080/chatRoom/{{chatRoomId}}/kick/{{memberId}}
+Content-Type: application/json
+Authorization: {{accessToken}}
+
+### 채팅방 태그로 검색
+< {%
+  request.variables.set("performanceId", "1")
+  request.variables.set("tag", "위드")
+%}
+GET http://localhost:8080/chatRoom/performance/{{performanceId}}/tag/{{tag}}
+Content-Type: application/json
+
+### 마지막 메시지 확인
+POST http://localhost:8080/chatRoom/lastChat
+Content-Type: application/json
+
+{
+  "memberId": 2,
+  "chatRoomId": 1
+}
