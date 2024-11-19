@@ -13,9 +13,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,14 +41,6 @@ public class MemberController {
       @AuthenticationPrincipal CustomUserDetails userDetails,
       @RequestBody CurrentPasswordCheckRequest request) {
     memberService.currentPasswordCheck(userDetails.getId(), request.password());
-    return ResponseEntity.ok().build();
-  }
-
-  @PostMapping("/profile-image")
-  public ResponseEntity<?> uploadProfileImage(
-      @AuthenticationPrincipal CustomUserDetails userDetails,
-      @RequestPart MultipartFile image) {
-    memberService.uploadProfileImage(userDetails.getId(), image);
     return ResponseEntity.ok().build();
   }
 

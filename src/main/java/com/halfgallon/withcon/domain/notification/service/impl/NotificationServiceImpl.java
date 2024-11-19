@@ -1,12 +1,21 @@
 package com.halfgallon.withcon.domain.notification.service.impl;
 
+import static com.halfgallon.withcon.domain.chat.constant.MessageType.ENTER;
+import static com.halfgallon.withcon.domain.chat.constant.MessageType.EXIT;
+import static com.halfgallon.withcon.domain.chat.constant.MessageType.KICK;
+import static com.halfgallon.withcon.domain.notification.constant.NotificationMessage.ENTER_CHATROOM;
+import static com.halfgallon.withcon.domain.notification.constant.NotificationMessage.EXIT_CHATROOM;
+import static com.halfgallon.withcon.domain.notification.constant.NotificationMessage.KICK_CHATROOM;
+import static com.halfgallon.withcon.domain.notification.constant.NotificationMessage.SUBSCRIBE;
+import static com.halfgallon.withcon.global.exception.ErrorCode.INVALID_PARAMETER;
+import static com.halfgallon.withcon.global.exception.ErrorCode.NOT_EXIST_NOTIFICATION;
+
 import com.halfgallon.withcon.domain.chat.constant.MessageType;
 import com.halfgallon.withcon.domain.chat.entity.ChatParticipant;
 import com.halfgallon.withcon.domain.chat.repository.ChatParticipantRepository;
 import com.halfgallon.withcon.domain.member.entity.Member;
 import com.halfgallon.withcon.domain.member.repository.MemberRepository;
 import com.halfgallon.withcon.domain.notification.constant.Channel;
-import com.halfgallon.withcon.domain.notification.constant.NotificationMessage;
 import com.halfgallon.withcon.domain.notification.constant.NotificationType;
 import com.halfgallon.withcon.domain.notification.constant.RedisCacheType;
 import com.halfgallon.withcon.domain.notification.constant.VisibleType;
@@ -16,11 +25,10 @@ import com.halfgallon.withcon.domain.notification.entity.Notification;
 import com.halfgallon.withcon.domain.notification.repository.NotificationRepository;
 import com.halfgallon.withcon.domain.notification.repository.SseEmitterRepository;
 import com.halfgallon.withcon.domain.notification.service.NotificationService;
-import com.halfgallon.withcon.domain.notification.service.RedisService;
 import com.halfgallon.withcon.domain.notification.service.RedisNotificationService;
+import com.halfgallon.withcon.domain.notification.service.RedisService;
 import com.halfgallon.withcon.domain.notification.service.SseEmitterService;
 import com.halfgallon.withcon.global.exception.CustomException;
-import com.halfgallon.withcon.global.exception.ErrorCode;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +63,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     // 더미 데이터(503 에러 방지)
     sseEmitterService.send(sseEmitter, emitterId,
-        NotificationMessage.SUBSCRIBE.getDescription() + memberId + "\"}");
+        SUBSCRIBE.getDescription() + memberId + "\"}");
     log.info("SSE 구독 완료");
 
     redisNotificationService.subscribe(String.valueOf(memberId));
@@ -98,18 +106,20 @@ public class NotificationServiceImpl implements NotificationService {
   public void createNotificationChatRoom(ChatRoomNotificationRequest request) {
     List<ChatParticipant> chatParticipants = chatParticipantRepository.
         findAllByChatRoom_Id(request.getChatRoomId());
-    log.info("Service : 참여 멤버 조회 성공");
+    log.info("참여 맴버 조회 : {}", chatParticipants);
 
     String message = createMessageOfTarget(request);
     String url = createChatRoomUrl(request.getChatRoomId());
-    log.info("Service : url 생성");
 
     String visibleKey = RedisCacheType.VISIBLE_CACHE.getDescription()
         + request.getChatRoomId();
-    log.info("Service : 채널 KEY: " + visibleKey);
+    log.info("채널명 : {}", visibleKey);
 
     Map<Object, Object> cache = redisService.getHashByKey(visibleKey);
-    log.info("Service : Visible 캐시 데이터 조회" + cache);
+    log.info("Visible 캐시 데이터 조회 : {} ", cache);
+    if(cache == null) {
+      return;
+    }
 
     for (ChatParticipant chatParticipant : chatParticipants) {
       Member participantMember = chatParticipant.getMember();
@@ -120,7 +130,6 @@ public class NotificationServiceImpl implements NotificationService {
       }
 
       if(!cache.containsKey(String.valueOf(participantMember.getId()))) {
-        log.info("패스");
         continue;
       }
 
@@ -136,10 +145,9 @@ public class NotificationServiceImpl implements NotificationService {
   private String createMessageOfTarget(ChatRoomNotificationRequest request) {
     Member member = memberRepository.findById(request.getTargetId())
         .orElse(withdrawMember());
-    log.info("Service : Target 맴버 조회 성공");
     String message = createChatRoomMessage(member.getUsername(),
         request.getMessageType()); // 메세지 생성
-    log.info("Service : 알림 메세지 생성");
+    log.info("알림 메시지 생성 : {}", message);
     return message;
   }
 
@@ -161,28 +169,29 @@ public class NotificationServiceImpl implements NotificationService {
 
   // 알림 메세지 반환
   private String createChatRoomMessage(String username, MessageType messageType) {
-    if (messageType.equals(MessageType.ENTER)) {
-      return username + NotificationMessage.ENTER_CHATROOM.getDescription();
+    StringBuilder sb = new StringBuilder(username);
+    if (messageType.equals(ENTER)) {
+      sb.append(ENTER_CHATROOM.getDescription());
+    } else if (messageType.equals(EXIT)) {
+      sb.append(EXIT_CHATROOM.getDescription());
+    } else if (messageType.equals(KICK)) {
+      sb.append(KICK_CHATROOM.getDescription());
+    } else {
+      throw new CustomException(INVALID_PARAMETER);
     }
-
-    if (messageType.equals(MessageType.EXIT)) {
-      return username + NotificationMessage.EXIT_CHATROOM.getDescription();
-    }
-
-    if (messageType.equals(MessageType.KICK)) {
-      return username + NotificationMessage.DROP_CHATROOM.getDescription();
-    }
-    throw new CustomException(ErrorCode.INVALID_PARAMETER);
+    return sb.toString();
   }
 
   // URL 생성
   private String createChatRoomUrl(Long chatRoomId) {
-    return NotificationType.CHATROOM.getDescription() + "/" + chatRoomId + "/enter";
+    String url = NotificationType.CHATROOM.getDescription() + "/" + chatRoomId + "/enter";
+    log.info("url 생성 : {}",url);
+    return url;
   }
 
   private Member withdrawMember() {
     return Member.builder()
-        .username("OO")
+        .username("탈퇴한 회원")
         .build();
   }
 
@@ -190,7 +199,7 @@ public class NotificationServiceImpl implements NotificationService {
   public void readNotification(Long notificationId) {
     Notification notification =
         notificationRepository.findById(notificationId)
-            .orElseThrow(() -> new CustomException(ErrorCode.NOT_EXIST_NOTIFICATION));
+            .orElseThrow(() -> new CustomException(NOT_EXIST_NOTIFICATION));
 
     notification.updateReadStatus();
     notificationRepository.save(notification);

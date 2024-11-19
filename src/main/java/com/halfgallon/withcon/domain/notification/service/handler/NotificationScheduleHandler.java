@@ -30,7 +30,7 @@ public class NotificationScheduleHandler {
   private final PerformanceLikeRepository performanceLikeRepository;
 
   @Transactional
-  @Scheduled(cron = "0 0 1 * * *") // 매일 새벽 1시에 알림 데이터 삭제
+  @Scheduled(cron = "0 0 * * * *") // 매일 정각에 알림 데이터 삭제
   public void clearNotification() {
     LocalDateTime agoTime = LocalDateTime.now().minusDays(3); // 3일전
     notificationRepository.deleteByCreatedAtBefore(agoTime);
@@ -38,10 +38,11 @@ public class NotificationScheduleHandler {
   }
 
   @Transactional
-  @Scheduled(cron = "0 */5 19-20 * * *") // 매일 자정에 오픈 공연 조회 후 알림 생성
+  @Scheduled(cron = "0 */30 * * * *") // 매일 자정에 오픈 공연 조회 후 알림 생성
   public void createPerformanceOpenNotification() {
     LocalDate today = LocalDate.now();
-    LocalDate day = today.minusDays(5);
+    LocalDate day = today.minusDays(271);
+    log.info(day.toString());
     List<Performance> todayPerformances = performanceRepository.findAllByStartDate(day);
     log.info("Scheduler : 오픈 당일 공연 조회 성공");
 

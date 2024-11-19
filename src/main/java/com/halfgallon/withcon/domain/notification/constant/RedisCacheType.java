@@ -7,7 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum RedisCacheType {
 
-  VISIBLE_CACHE("VisibleCache:");
+  VISIBLE_CACHE("visibleCache:");
 
   private final String description;
 }

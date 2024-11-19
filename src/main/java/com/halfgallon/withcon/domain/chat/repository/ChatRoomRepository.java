@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long>, CustomChatRoomRepository {
+public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
   boolean existsByNameAndPerformance_Id(String name, String performanceId);
 
   Page<ChatRoom> findAllByPerformance_Id(String performanceId, Pageable pageable);

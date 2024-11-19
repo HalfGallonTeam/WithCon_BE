@@ -12,7 +12,6 @@ public record ChatMessageResponse (
     String message,
     MessageType messageType,
     String nickName,
-    String userProfile,
     Long sendAt
 ) {
   public static ChatMessageResponse fromEntity(ChatMessage chatMessage) {
@@ -24,7 +23,6 @@ public record ChatMessageResponse (
         .sendAt(chatMessage.getSendAt())
         .memberId(chatMessage.getChatParticipant().getMember().getId())
         .nickName(chatMessage.getChatParticipant().getMember().getNickname())
-        .userProfile(chatMessage.getChatParticipant().getMember().getProfileImage())
         .build();
   }
 }

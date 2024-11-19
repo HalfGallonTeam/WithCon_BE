@@ -2,7 +2,7 @@ package com.halfgallon.withcon.domain.member.entity;
 
 import static lombok.AccessLevel.PROTECTED;
 
-import com.halfgallon.withcon.domain.member.constant.LoginType;
+
 import com.halfgallon.withcon.domain.member.dto.request.UpdateMemberRequest;
 import com.halfgallon.withcon.domain.performance.entitiy.PerformanceLike;
 import com.halfgallon.withcon.global.entity.BaseTimeEntity;
@@ -40,10 +40,6 @@ public class Member extends BaseTimeEntity {
   private String password;
 
   @Column(nullable = false)
-  @Enumerated(EnumType.STRING)
-  private LoginType loginType;
-
-  @Column(nullable = false)
   private String nickname;
 
   @Column
@@ -52,9 +48,6 @@ public class Member extends BaseTimeEntity {
   @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
   @Builder.Default private List<PerformanceLike> likes = new ArrayList<>();
 
-  @Column
-  private String profileImage;
-
   public void update(UpdateMemberRequest request) {
     this.nickname = request.nickname();
     this.phoneNumber = request.phoneNumber();
@@ -62,9 +55,5 @@ public class Member extends BaseTimeEntity {
 
   public void updatePassword(String encodedNewPassword) {
     this.password = encodedNewPassword;
-  }
-
-  public void updateProfileImage(String profileImageUrl) {
-    this.profileImage = profileImageUrl;
   }
 }

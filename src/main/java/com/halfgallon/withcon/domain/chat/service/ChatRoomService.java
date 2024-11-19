@@ -24,6 +24,4 @@ public interface ChatRoomService {
 
   Slice<ChatMessageResponse> findAllMessageChatRoom(CustomUserDetails customUserDetails,
       ChatLastMessageRequest request, Long chatRoomId);
-
-  Page<ChatRoomResponse> findAllTagNameChatRoom(String performanceId, String tagName, Pageable pageable);
 }

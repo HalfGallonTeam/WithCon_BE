@@ -1,7 +1,6 @@
 package com.halfgallon.withcon.domain.chat.entity;
 
 import com.halfgallon.withcon.domain.performance.entitiy.Performance;
-import com.halfgallon.withcon.domain.tag.entity.Tag;
 import com.halfgallon.withcon.global.entity.BaseTimeEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -41,10 +40,6 @@ public class ChatRoom extends BaseTimeEntity {
   @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
   List<ChatParticipant> chatParticipants = new ArrayList<>();
 
-  @Builder.Default
-  @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
-  List<Tag> tags = new ArrayList<>();
-
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "performance_id")
   private Performance performance;
@@ -65,9 +60,4 @@ public class ChatRoom extends BaseTimeEntity {
     this.chatParticipants.remove(chatParticipant);
     this.updateUserCount();
   }
-
-  public void addTag(Tag tag) {
-    this.tags.add(tag);
-  }
-
 }

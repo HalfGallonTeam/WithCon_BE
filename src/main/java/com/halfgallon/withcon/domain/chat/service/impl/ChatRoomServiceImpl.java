@@ -28,10 +28,6 @@ import com.halfgallon.withcon.domain.member.repository.MemberRepository;
 import com.halfgallon.withcon.domain.performance.dto.response.PerformanceResponse;
 import com.halfgallon.withcon.domain.performance.entitiy.Performance;
 import com.halfgallon.withcon.domain.performance.repository.PerformanceRepository;
-import com.halfgallon.withcon.domain.tag.entity.Tag;
-import com.halfgallon.withcon.domain.tag.entity.TagSearch;
-import com.halfgallon.withcon.domain.tag.repository.TagRepository;
-import com.halfgallon.withcon.domain.tag.repository.TagSearchRepository;
 import com.halfgallon.withcon.global.exception.CustomException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -51,9 +47,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
   private final ChatRoomRepository chatRoomRepository;
   private final ChatParticipantRepository participantRepository;
   private final MemberRepository memberRepository;
-  private final TagRepository tagRepository;
   private final ChatMessageRepository chatMessageRepository;
-  private final TagSearchRepository tagSearchRepository;
   private final PerformanceRepository performanceRepository;
 
   @Override
@@ -84,29 +78,6 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
     log.info("채팅방 참여자 정보 설정 완료");
 
-    //태그가 있는 경우에만 - 해당 태그 저장
-    if (!CollectionUtils.isEmpty(request.tags())) {
-      List<Tag> tagList = request.tags()
-          .stream()
-          .map(t -> Tag.builder()
-              .name(t)
-              .chatRoom(chatRoom)
-              .performance(performance)
-              .build())
-          .toList();
-
-      tagRepository.saveAll(tagList);
-
-      for (Tag tag : tagList) {
-        chatRoom.addTag(tag);
-      }
-
-      //태그 기록(ElasticSearch 저장)
-      upsertTagSearch(tagList);
-    }
-
-    log.info("채팅방 태그 정보 설정 완료");
-
     return ChatRoomResponse.fromEntity(chatRoom);
   }
 
@@ -118,37 +89,6 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         .performance(performance)
         .build();
   }
-
-  private void upsertTagSearch(List<Tag> tagList) {
-    List<TagSearch> searches = tagList.stream()
-        .map(tag -> {
-          TagSearch tagSearch = tagSearchRepository.findByNameAndPerformanceId(tag.getName(),
-              tag.getPerformance().getId()).orElse(null);
-
-          if (tagSearch == null) {
-            return TagSearch.builder()
-                .id(tag.getId().toString())
-                .name(tag.getName())
-                .performanceId(tag.getPerformance().getId())
-                .tagCount(1)
-                .build();
-          } else {
-            Integer count = tagRepository.countTagByNameAndPerformance_Id(tag.getName(),
-                tag.getPerformance().getId());
-            tagSearchRepository.updateSearchTag(tagSearch, count);
-
-            return TagSearch.builder()
-                .id(tagSearch.getId())
-                .name(tagSearch.getName())
-                .performanceId(tagSearch.getPerformanceId())
-                .tagCount(count)
-                .build();
-          }
-        }).toList();
-
-    tagSearchRepository.saveAll(searches);
-  }
-
 
   @Override
   @Transactional(readOnly = true)
@@ -220,13 +160,6 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         Pageable.ofSize(request.limit() != 0 ? request.limit() : CHAT_MESSAGE_PAGE_SIZE));
 
     return message.map(ChatMessageResponse::fromEntity);
-  }
-
-  @Override
-  public Page<ChatRoomResponse> findAllTagNameChatRoom(String performanceId, String tagName,
-      Pageable pageable) {
-    return chatRoomRepository.findAllTagNameChatRoom(performanceId, tagName, pageable)
-        .map(ChatRoomResponse::fromEntity);
   }
 
   @Override

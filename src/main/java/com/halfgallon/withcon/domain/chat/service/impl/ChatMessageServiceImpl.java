@@ -35,7 +35,6 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         .messageType(MessageType.CHAT)
         .sendAt(System.currentTimeMillis())
         .nickName(member.getNickname())
-        .userProfile(member.getProfileImage())
         .build();
   }
 
@@ -51,7 +50,6 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         .messageType(MessageType.ENTER)
         .sendAt(System.currentTimeMillis())
         .nickName(member.getNickname())
-        .userProfile(member.getProfileImage())
         .build();
   }
 
@@ -67,7 +65,6 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         .messageType(MessageType.EXIT)
         .sendAt(System.currentTimeMillis())
         .nickName(member.getNickname())
-        .userProfile(member.getProfileImage())
         .build();
   }
 
@@ -88,7 +85,6 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         .messageType(MessageType.KICK)
         .sendAt(System.currentTimeMillis())
         .nickName(member.getNickname())
-        .userProfile(member.getProfileImage())
         .build();
   }
 

@@ -6,7 +6,6 @@ import com.halfgallon.withcon.domain.notification.dto.NotificationResponse;
 import com.halfgallon.withcon.domain.notification.dto.VisibleRequest;
 import com.halfgallon.withcon.domain.notification.service.NotificationService;
 import com.halfgallon.withcon.domain.notification.service.RedisNotificationService;
-import com.halfgallon.withcon.domain.notification.service.handler.ChatRoomRedisSubscriber;
 import com.halfgallon.withcon.domain.notification.service.handler.GenerateEvent;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -32,8 +31,6 @@ public class NotificationController {
   private final RedisNotificationService redisNotificationService;
   private final GenerateEvent event;
 
-  private final ChatRoomRedisSubscriber chatRoomRedisSubscriber;
-
   // 클라이언트가 알림을 구독
   @GetMapping(value = "/notification/subscribe", produces = "text/event-stream; charset=UTF-8")
   public ResponseEntity<SseEmitter> subscribe(
@@ -50,22 +47,6 @@ public class NotificationController {
 
     notificationService.createNotificationChatRoom(request);
     return ResponseEntity.ok().build();
-  }
-
-  // 채팅방 생성시 redis 구독
-  @PostMapping("/notification/subscribe-channel")
-  public ResponseEntity<Void> subscribeChatRoomChannel(
-      @RequestParam Long chatRoomId) {
-      chatRoomRedisSubscriber.subscribeChatRoomChannel(chatRoomId);
-      return ResponseEntity.ok().build();
-  }
-
-  // 채팅방 폭파시 redis 해지
-  @PostMapping("/notification/unsubscribe-channel")
-  public ResponseEntity<Void> unsubscribeChatRoomChannel(
-      @RequestParam Long chatRoomId) {
-      chatRoomRedisSubscriber.unSubscribeChatRoomChannel(chatRoomId);
-      return ResponseEntity.ok().build();
   }
 
   // 나에게 온 알림 조회
@@ -88,7 +69,7 @@ public class NotificationController {
     return ResponseEntity.ok().build();
   }
 
-  // 채팅방 visible 이슈가 발생
+  // 채팅방 메시지 발생 event
   @PostMapping("/notification/event")
   public ResponseEntity<Void> generateEvent(
       @RequestParam Long chatRoomId) {

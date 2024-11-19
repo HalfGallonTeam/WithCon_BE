@@ -6,7 +6,6 @@ import static com.halfgallon.withcon.domain.performance.entitiy.QPerformanceDeta
 import com.halfgallon.withcon.domain.performance.constant.Genre;
 import com.halfgallon.withcon.domain.performance.entitiy.Performance;
 import com.halfgallon.withcon.domain.performance.repository.CustomPerformanceRepository;
-import com.querydsl.core.QueryResults;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,7 @@ public class CustomPerformanceRepositoryImpl implements CustomPerformanceReposit
 
   @Override
   public Page<Performance> searchByKeyword(String keyword, Pageable pageable) {
-    QueryResults<Performance> results = jpaQueryFactory
+    List<Performance> results = jpaQueryFactory
         .selectFrom(performance)
         .leftJoin(performance.performanceDetail, performanceDetail)
         .where(performance.name.contains(keyword)
@@ -30,14 +29,14 @@ public class CustomPerformanceRepositoryImpl implements CustomPerformanceReposit
         .orderBy(performance.createdAt.asc())
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize())
-        .fetchResults();
+        .fetch();
 
-    return new PageImpl<>(results.getResults(), pageable, results.getTotal());
+    return new PageImpl<>(results, pageable, results.size());
   }
 
   @Override
   public Page<Performance> searchByKeywordAndGenre(String keyword, Genre genre, Pageable pageable) {
-    QueryResults<Performance> results = jpaQueryFactory
+    List<Performance> results = jpaQueryFactory
         .selectFrom(performance)
         .leftJoin(performance.performanceDetail, performanceDetail)
         .where(performance.name.contains(keyword)
@@ -47,9 +46,9 @@ public class CustomPerformanceRepositoryImpl implements CustomPerformanceReposit
         .orderBy(performance.createdAt.asc())
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize())
-        .fetchResults();
+        .fetch();
 
-    return new PageImpl<>(results.getResults(), pageable, results.getTotal());
+    return new PageImpl<>(results, pageable, results.size());
   }
 
   public List<Performance> findBestByPerformance(Genre genre, int size) {

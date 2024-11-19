@@ -73,12 +73,4 @@ public class ChatRoomController {
         chatRoomService.findAllMessageChatRoom(customUserDetails, chatMessageRequest, chatRoomId));
   }
 
-  @GetMapping("/chatRoom/performance/{performanceId}/tag/{tagName}")
-  public ResponseEntity<Page<ChatRoomResponse>> searchTagChatRoom(
-      @PathVariable("performanceId") String performanceId,
-      @PathVariable("tagName") String tag,
-      @PageableDefault(size = 5, sort = "createdAt", direction = Direction.DESC) Pageable pageable) {
-    return ResponseEntity.ok(chatRoomService.findAllTagNameChatRoom(performanceId, tag, pageable));
-  }
-
 }

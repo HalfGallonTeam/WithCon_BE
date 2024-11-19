@@ -9,13 +9,11 @@ import com.halfgallon.withcon.domain.member.entity.Member;
 import com.halfgallon.withcon.domain.member.repository.MemberRepository;
 import com.halfgallon.withcon.domain.member.service.MemberService;
 import com.halfgallon.withcon.global.exception.CustomException;
-import com.halfgallon.withcon.global.storage.service.StorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +21,6 @@ public class MemberServiceImpl implements MemberService {
 
   private final MemberRepository memberRepository;
   private final PasswordEncoder passwordEncoder;
-  private final StorageService storageService;
 
   @Override
   public MemberMyInfoResponse getMyInformation(Long memberId) {
@@ -51,14 +48,6 @@ public class MemberServiceImpl implements MemberService {
     if (!isMatches) {
       throw new CustomException(CURRENT_PASSWORD_MISMATCH);
     }
-  }
-
-  @Override
-  @Transactional
-  public void uploadProfileImage(Long memberId, MultipartFile image) {
-    Member findMember = findMemberOrThrow(memberId);
-    String profileImageUrl = storageService.uploadFile(image);
-    findMember.updateProfileImage(profileImageUrl);
   }
 
   @Override

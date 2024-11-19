@@ -8,7 +8,7 @@ import org.springframework.data.redis.core.index.Indexed;
 
 @Getter
 @AllArgsConstructor
-@RedisHash(value = "accessToken", timeToLive = 60 * 30) // 30분
+@RedisHash(value = "accessToken", timeToLive = 60 * 60 * 3) // 3시간
 public class AccessToken {
 
   @Id
