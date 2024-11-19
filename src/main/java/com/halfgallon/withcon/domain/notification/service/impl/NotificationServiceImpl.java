@@ -106,18 +106,20 @@ public class NotificationServiceImpl implements NotificationService {
   public void createNotificationChatRoom(ChatRoomNotificationRequest request) {
     List<ChatParticipant> chatParticipants = chatParticipantRepository.
         findAllByChatRoom_Id(request.getChatRoomId());
-    log.info("Service : 참여 멤버 조회 성공");
+    log.info("참여 맴버 조회 : {}", chatParticipants);
 
     String message = createMessageOfTarget(request);
     String url = createChatRoomUrl(request.getChatRoomId());
-    log.info("Service : url 생성");
 
     String visibleKey = RedisCacheType.VISIBLE_CACHE.getDescription()
         + request.getChatRoomId();
-    log.info("채널 KEY : {}", visibleKey);
+    log.info("채널명 : {}", visibleKey);
 
     Map<Object, Object> cache = redisService.getHashByKey(visibleKey);
     log.info("Visible 캐시 데이터 조회 : {} ", cache);
+    if(cache == null) {
+      return;
+    }
 
     for (ChatParticipant chatParticipant : chatParticipants) {
       Member participantMember = chatParticipant.getMember();
@@ -182,7 +184,9 @@ public class NotificationServiceImpl implements NotificationService {
 
   // URL 생성
   private String createChatRoomUrl(Long chatRoomId) {
-    return NotificationType.CHATROOM.getDescription() + "/" + chatRoomId + "/enter";
+    String url = NotificationType.CHATROOM.getDescription() + "/" + chatRoomId + "/enter";
+    log.info("url 생성 : {}",url);
+    return url;
   }
 
   private Member withdrawMember() {
